@@ -35,7 +35,7 @@ Meta Busking is a platform that will lead the new online busking culture. Form y
 ### 4. 팀 소개
 |이름|학번|역할|Github 레포지토리|
 |:---|:---:|---:|---:|
-|김예리&nbsp;|⭐⭐⭐⭐1565&nbsp;&nbsp;&nbsp;&nbsp;|팀장, 파일 서버 구축 및 음원 스트리밍 담당|&nbsp;&nbsp;&nbsp;&nbsp;https://github.com/yeringii/capstone-2022-11|
+|김예리&nbsp;|⭐⭐⭐⭐1565&nbsp;&nbsp;&nbsp;|팀장, 파일 서버 구축 및 음원 스트리밍 담당|&nbsp;&nbsp;&nbsp;&nbsp;https://github.com/yeringii/capstone-2022-11|
 |김서경|⭐⭐⭐⭐1560|회원가입, 로그인, 로비, 음악리스트 클라이언트 담당|https://github.com/Kimseogyoung/capstone-2022-11|
 |김현민|⭐⭐⭐⭐1609|DB 및 유저 서버 구축 담당|https://github.com/20171609/capstone-2022-11|
 |이아연|⭐⭐⭐⭐1643|광장 및 멀티 플레이 클라이언트 담당|https://github.com/leeZn30/capstone-2022-11|
