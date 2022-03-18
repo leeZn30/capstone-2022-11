@@ -8,18 +8,18 @@
 ### 2. Abstract
 Meta Busking is a platform that will lead the new online busking culture. Form your music culture in this virtual space.
 
--***Upload***<br>
+***Upload***<br>
   -Upload the music you made. Other users will enjoy and share the music you make.<br>
 
--***Listen***<br>
+***Listen***<br>
   -You can stream the music you want from your playlist right away.<br>
   -provide instant streaming without downloading music separately.<br>
 
--***Perform***?<br>
+***Perform***<br>
   -If you are ready, always hold your own performance.<br>
   -Busking is conducted in real time (using webrtc).<br>
 
--***Communicate***<br>
+***Communicate***<br>
   -Meet various people in a virtual space and share your taste in music.<br>
   -You can follow a composer who suits you.<br>
   -You can watch busking and show various reactions.<br>
@@ -34,7 +34,7 @@ Meta Busking is a platform that will lead the new online busking culture. Form y
 
 ### 4. 팀 소개
 |이름|학번|역할|Github 레포지토리|
-|:---|:---:|---:|-----:|
+|:---|:---:|---:|---:|
 |김예리|⭐⭐⭐⭐1565|팀장, 파일 서버 구축 및 음원 스트리밍 담당|https://github.com/yeringii/capstone-2022-11|
 |김서경|⭐⭐⭐⭐1560|회원가입, 로그인, 로비, 음악리스트 클라이언트 담당|https://github.com/Kimseogyoung/capstone-2022-11|
 |김현민|⭐⭐⭐⭐1609|DB 및 유저 서버 구축 담당|https://github.com/20171609/capstone-2022-11|
