@@ -1,5 +1,5 @@
 {
-  "name": "akdgotek",
+  "name": "loginserver",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -18,7 +18,10 @@
     "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.1",
-    "mongoose": "^6.2.4"
+    "mongoose": "^6.2.4",
+    "of": "^1.0.0",
+    "peer": "^0.6.1",
+    "webpack": "^5.70.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.17.6",
