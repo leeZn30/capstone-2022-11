@@ -6,7 +6,6 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from "morgan";
 
-// import postsRouters from './routes/api/post';
 import usersRouters from './routes/api/user';
 import authRouters from './routes/api/auth';
 
@@ -30,7 +29,7 @@ mongoose.connect(MONGO_URI, {
 
 //routes
 app.get('/');
-// app.use('/api/post', postsRouters);
+
 app.use('/api/user', usersRouters);
 app.use('/api/auth', authRouters);
 

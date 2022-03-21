@@ -9,6 +9,7 @@ import User from '../../models/user';
 
 const router = express.Router();
 
+
 router.post('/', (req, res)=> {
     const {id, password} = req.body;
 
@@ -43,7 +44,7 @@ router.post('/logout', (req, res)=> {
 
 router.get('/user', auth, async(req, res)=>{
     try{
-        let id = req.user.id
+        let id = req.user.id;
         const user = await User.findOne({id}).select("-password");
         if (!user) throw Error("유저가 존재하지 않습니다.");
         res.json(user);
