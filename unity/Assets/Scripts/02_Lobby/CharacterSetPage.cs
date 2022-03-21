@@ -5,11 +5,77 @@ using UnityEngine.UI;
 public class CharacterSetPage : Page
 {
 
+    public Transform sampleObj;
+    public Button setBtn;
+
+    [SerializeField]
+    private int partsCount;
+    [SerializeField]
+    private int[] partsIdxs;
+    private List<Image> characterPartsImages;
+    private List<CharacterPartsSlot> characterPartsSlots;
+
+
+    public delegate void CharacterHandler();
+    public event CharacterHandler OnChangeCharacter;
     // Start is called before the first frame update
     void Start()
     {
-      
+        Init();
     }
+    void SetCharacter()
+    {
+        //character넘버로 변환
+        int tmp = 0;
+        for (int i = 0; i < partsCount; i++)
+        {
+             tmp += partsIdxs[i] * (int)Mathf.Pow(10, (partsCount-i-1) * 2);
+        }
+        UserData.Instance.user.character = tmp;
+        OnChangeCharacter();
+        //DB에 바뀐 char 값 업로드
+        //
+        //
 
+        Close();
 
+    }
+    void Init()
+    {
+        if (partsCount == 0)
+        {//초기 셋팅이 안되어있다면
+            partsCount = sampleObj.childCount;
+            partsIdxs = new int[partsCount];
+
+            characterPartsImages = new List<Image>();
+            for (int i = 0; i < partsCount; i++)
+            {
+                characterPartsImages.Add(sampleObj.GetChild(i).gameObject.GetComponent<Image>());
+            }
+
+            characterPartsSlots = new List<CharacterPartsSlot>(GetComponentsInChildren<CharacterPartsSlot>());
+            for (int i = 0; i < partsCount; i++)
+            {
+                characterPartsSlots[i].SetNum(i);
+                characterPartsSlots[i].OnChangeSlotImage += LoadParts;
+            }
+            setBtn.onClick.AddListener(SetCharacter);
+        }
+    }
+    override public void Load()
+    {//캐릭터 로드
+        Init();
+
+        int tmp = UserData.Instance.user.character;
+        for(int i=0; i < partsCount; i++)
+        {
+            partsIdxs[partsCount-1-i] = (tmp % (int)Mathf.Pow(10, (i+1)*2))/ (int)Mathf.Pow(10, i*2);
+            characterPartsSlots[partsCount - 1 - i].cur = partsIdxs[partsCount - 1 - i];
+        }
+    }
+    void LoadParts(int partsNum, int idx, Sprite sprite)
+    {
+        characterPartsImages[partsNum].sprite = sprite;
+        partsIdxs[partsNum] = idx;
+    }
 }

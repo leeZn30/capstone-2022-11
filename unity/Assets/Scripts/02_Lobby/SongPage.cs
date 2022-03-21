@@ -23,6 +23,7 @@ public class SongPage : Page
 
         searchBtn.onClick.AddListener(searchPage.Open);
         addBtn.onClick.AddListener(addPage.Open);
+        Debug.Log(gameObject.name + "open");
     }
     override public void Reset()
     {

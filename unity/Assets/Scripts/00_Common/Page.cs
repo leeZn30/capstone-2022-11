@@ -20,6 +20,12 @@ public class Page : MonoBehaviour
     {
         gameObject.SetActive(true);
 
+        Load();
+
+    }
+    virtual public void Load()
+    {//해당 페이지 초기화하기
+
     }
     public void Close()
     {
