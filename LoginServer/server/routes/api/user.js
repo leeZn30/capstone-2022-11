@@ -22,54 +22,87 @@ router.get('/', async(req, res) =>{
     }
 })
 
+router.get('/checked', async(req, res) =>{
+    const {id, email, nickname} = req.body;
+
+    if (id){
+        try{
+            User.findOne({id:id}).then((userExist) => {
+                if (userExist)
+                    res.json({idExist: true});
+                else
+                    res.json({idExist: false});
+            })
+        } catch (e) {
+            console.log(e);
+            res.status(400).json({msg:e.message});
+        }
+    }
+    else if (email){
+        try{
+            User.findOne({email:email}).then((emailExist)=> {
+                if (emailExist)
+                    return res.status(400).json({emailExist: true});
+
+                else
+                    res.json({emailExist: false});
+            })
+        } catch(e) {
+            console.log(e);
+            res.status(400).json({msg: e.message});
+        }
+    }
+    else if (nickname){
+        try{
+            User.findOne({nickname:nickname}).then((nicknameExist)=> {
+                if (nicknameExist)
+                    res.json({nicknameExist: true});
+
+                else
+                    res.json({nicknameExist: false});
+            })
+        } catch (e) {
+            console.log(e);
+            res.status(400).json({msg: e.message});
+        }
+    }
+
+})
+
 router.post('/', async(req, res) => {
     const {id, email, password, nickname, character} = req.body;
 
     // if (!id || !email || !password || !nickname || !character) {
     //     return res.status(400).json({msg: "모든 항목을 채워주세용"})
     // }
+    const newUser = new User({
+        id, email, password, nickname, character
+    })
 
-    User.findOne({id}).then((idExist)=> {
-        if (idExist)
-            return res.status(400).json({msg: "존재하는 id 입니다."});
-        User.findOne({email}).then((emailExist)=> {
-            if (emailExist)
-                return res.status(400).json({msg: "존재하는 email 입니다."});
-            User.findOne({nickname}).then((nicknameExist)=> {
-                if (nicknameExist)
-                    return res.status(400).json({msg: "존재하는 nickname 입니다."});
-                const newUser = new User({
-                    id, email, password, nickname, character
-                })
-
-                bcrypt.genSalt(10, (err, salt) => {
-                    bcrypt.hash(newUser.password, salt, (err, hash) => {
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+            if (err) throw err;
+            newUser.password = hash;
+            newUser.save().then((user) => {
+                jwt.sign(
+                    {id: user.id},
+                    JWT_SECRET,
+                    {expiresIn: 3600},
+                    (err, token) => {
                         if (err) throw err;
-                        newUser.password = hash;
-                        newUser.save().then((user) => {
-                            jwt.sign(
-                                {id: user.id},
-                                JWT_SECRET,
-                                {expiresIn: 3600},
-                                (err, token) => {
-                                    if (err) throw err;
-                                    res.json({
-                                        token,
-                                        user: {
-                                            id: user.id,
-                                            name: user.name,
-                                            email: user.email,
-                                            character: user.character,
-                                        }
-                                    })
-                                }
-                            )
+                        res.json({
+                            token,
+                            user: {
+                                id: user.id,
+                                name: user.name,
+                                email: user.email,
+                                character: user.character,
+                            }
                         })
-                    })
-                })
+                    }
+                )
             })
         })
-
     })
 })
 
