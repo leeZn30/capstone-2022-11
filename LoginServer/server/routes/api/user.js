@@ -29,9 +29,9 @@ router.get('/checked', async(req, res) =>{
         try{
             User.findOne({id:id}).then((userExist) => {
                 if (userExist)
-                    res.json({idExist: true});
+                    res.status(400).json({idExist: true});
                 else
-                    res.json({idExist: false});
+                    res.status(200).json({idExist: false});
             })
         } catch (e) {
             console.log(e);
@@ -45,7 +45,7 @@ router.get('/checked', async(req, res) =>{
                     return res.status(400).json({emailExist: true});
 
                 else
-                    res.json({emailExist: false});
+                    res.status(200).json({emailExist: false});
             })
         } catch(e) {
             console.log(e);
@@ -56,25 +56,21 @@ router.get('/checked', async(req, res) =>{
         try{
             User.findOne({nickname:nickname}).then((nicknameExist)=> {
                 if (nicknameExist)
-                    res.json({nicknameExist: true});
+                    res.status(400).json({nicknameExist: true});
 
                 else
-                    res.json({nicknameExist: false});
+                    res.status(200).json({nicknameExist: false});
             })
         } catch (e) {
             console.log(e);
             res.status(400).json({msg: e.message});
         }
     }
-
 })
 
 router.post('/', async(req, res) => {
     const {id, email, password, nickname, character} = req.body;
 
-    // if (!id || !email || !password || !nickname || !character) {
-    //     return res.status(400).json({msg: "모든 항목을 채워주세용"})
-    // }
     const newUser = new User({
         id, email, password, nickname, character
     })
