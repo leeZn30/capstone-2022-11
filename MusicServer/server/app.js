@@ -1,10 +1,10 @@
-import express from 'express';
-import mongoose from "mongoose";
-import config from './config/index';
-import helmet from 'helmet';
+const express = require('express');
+const mongoose = require('mongoose');
+const config = require('./config/index');
+const helmet = require('helmet');
 
-import mediaRouter from './routes/api/media';
-import musicRouter from './routes/api/musicDB';
+const mediaRouter = require('./routes/api/media');
+const musicRouter = require('./routes/api/musicDB');
 
 const app = express();
 const { MONGO_URI } = config;
@@ -25,4 +25,4 @@ app.get('/');
 app.use('/media', mediaRouter);
 app.use('/music', musicRouter);
 
-export default app;
+module.exports = app;

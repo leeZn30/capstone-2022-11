@@ -1,5 +1,3 @@
-import Music from '../../models/music';
-
 const router = require('express').Router()
 const multiparty = require('multiparty')
 const url = require('url')
@@ -43,4 +41,4 @@ router.get('/*',(req,res)=>{
     readStream.pipe(res);
 })
 
-export default router;
+module.exports = router;
