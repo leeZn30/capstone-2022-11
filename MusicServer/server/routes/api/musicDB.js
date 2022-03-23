@@ -1,6 +1,6 @@
-import express from 'express';
-import Music from '../../models/music';
-import User from '../../models/user';
+const express = require('express');
+const Music = require('../../models/music');
+const User = require('../../models/user');
 
 const router = express.Router();
 
@@ -47,4 +47,4 @@ router.post('/', async(req, res) => {
     })
 })
 
-export default router; 
+module.exports = router;

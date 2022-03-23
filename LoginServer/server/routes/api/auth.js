@@ -1,11 +1,12 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import auth from '../../middleware/auth';
-import config from '../../config/index';
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const auth = require('../../middleware/auth');
+const config = require('../../config/index');
+
 const { JWT_SECRET } = config;
 
-import User from '../../models/user';
+const User = require('../../models/user');
 
 const router = express.Router();
 
@@ -54,4 +55,4 @@ router.get('/user', auth, async(req, res)=>{
     }
 })
 
-export default router;
+module.exports = router;

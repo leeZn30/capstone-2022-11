@@ -1,5 +1,5 @@
-import app from './app';
-import config from './config/index';
+const app = require('./app');
+const config = require('./config/index');
 
 const {PORT} = config
 

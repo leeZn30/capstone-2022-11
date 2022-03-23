@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
-import config from '../config/index';
+const jwt = require('jsonwebtoken');
+const config = require('../config/index');
 
 const{JWT_SECRET} = config;
 
@@ -19,4 +19,4 @@ const auth = (req, res, next) => {
     }
 };
 
-export default auth;
+module.exports = auth;

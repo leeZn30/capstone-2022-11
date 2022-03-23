@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose');
 
 const MusicSchema = new mongoose.Schema({
     locate: {
@@ -29,4 +29,4 @@ const MusicSchema = new mongoose.Schema({
 
 const Music = mongoose.model("music", MusicSchema);
 
-export default Music; 
+module.exports = Music;
