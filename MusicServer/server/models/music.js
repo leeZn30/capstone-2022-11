@@ -1,37 +1,32 @@
 const mongoose = require('mongoose');
 
-const UserSchema = new mongoose.Schema({
+const MusicSchema = new mongoose.Schema({
+    locate: {
+        type: String,
+        required: true,
+    },
+    title: {
+        type: String,
+        required: true,
+    },
     id: {
         type: String,
         required: true,
     },
-    email: {
+    userID: {
         type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-    nickname: {
-        type: String,
-        required: true,
-    },
-    character: {
-        type: Number,
         required: true,
     },
     created: {
         type:Date,
         default:Date.now,
     },
-    totalNum: {
-        type: Number,
-        default: 0,
+    category: {
+        type: String,
+        required: true,
     }
 });
 
-const User = mongoose.model("user", UserSchema);
+const Music = mongoose.model("music", MusicSchema);
 
-module.exports = User;
+module.exports = Music;

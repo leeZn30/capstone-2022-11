@@ -1,13 +1,15 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import auth from '../../middleware/auth';
-import config from '../../config/index';
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const auth = require('../../middleware/auth');
+const config = require('../../config/index');
+
 const { JWT_SECRET } = config;
 
-import User from '../../models/user';
+const User = require('../../models/user');
 
 const router = express.Router();
+
 
 router.post('/', (req, res)=> {
     const {id, password} = req.body;
@@ -43,7 +45,7 @@ router.post('/logout', (req, res)=> {
 
 router.get('/user', auth, async(req, res)=>{
     try{
-        let id = req.user.id
+        let id = req.user.id;
         const user = await User.findOne({id}).select("-password");
         if (!user) throw Error("유저가 존재하지 않습니다.");
         res.json(user);
@@ -53,4 +55,4 @@ router.get('/user', auth, async(req, res)=>{
     }
 })
 
-export default router;
+module.exports = router;
