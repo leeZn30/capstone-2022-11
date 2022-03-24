@@ -9,7 +9,7 @@ const User = require('../../models/user');
 
 const router = express.Router();
 
-router.get('/checked', async(req, res) =>{
+router.get('/check', async(req, res) =>{
     const {id, email, nickname} = req.body;
 
     if (id){
@@ -85,6 +85,19 @@ router.post('/', async(req, res) => {
                     }
                 )
             })
+        })
+    })
+})
+
+router.post('/modifiedChar', async(req, res) => {
+    const {id, value} = req.body;
+
+    User.findOne({id: id}).then((user)=> {
+        console.log(user);
+        user.character = value;
+        user.save();
+        res.status(200).json({
+            character : user.character
         })
     })
 })
