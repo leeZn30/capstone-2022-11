@@ -29,6 +29,10 @@ const UserSchema = new mongoose.Schema({
     totalNum: {
         type: Number,
         default: 0,
+    },
+    musicList: {
+        type: Array,
+        default: [],
     }
 });
 
