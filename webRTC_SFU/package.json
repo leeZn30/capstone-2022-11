@@ -1,0 +1,15 @@
+{
+  "name": "webrtc_sfu",
+  "version": "1.0.0",
+  "description": "SFU Server Create",
+  "main": "sfuServer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "peer-calls": "^3.0.21",
+    "socket.io": "^4.4.1"
+  }
+}
