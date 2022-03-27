@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-
+//using System.Windows.Forms;
 public class Lobby : MonoBehaviour
 {
     public Button settingBtn;
@@ -18,6 +18,7 @@ public class Lobby : MonoBehaviour
     public Character character;
     void Start()
     {
+        
         //버튼 이벤트 등록
         settingBtn.onClick.AddListener(delegate { lobbySetting.Init(); });
         loadSquareSceneBtn.onClick.AddListener(LoadSquareScene);
@@ -42,6 +43,7 @@ public class Lobby : MonoBehaviour
     }
     void ChangeCharacter()
     {
+        Debug.Log(UserData.Instance.user.character);
         character.ChangeSprite(UserData.Instance.user.character);
     }
     // Update is called once per frame

@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 public class Page : MonoBehaviour
 {//상속용 클래스
-    public Button exitBtn;
+    public Button exitBtn; 
+    protected bool isAlreadyInit = false;
     // Start is called before the first frame update
     void Awake()
     {
@@ -18,9 +19,16 @@ public class Page : MonoBehaviour
     }
     public void Open()
     {
+        Init();
+
         gameObject.SetActive(true);
 
         Load();
+
+    }
+
+    virtual public void Init()
+    {//해당 페이지 이벤트리스너, 객체 등록
 
     }
     virtual public void Load()

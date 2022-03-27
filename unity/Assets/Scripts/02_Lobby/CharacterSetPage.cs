@@ -40,9 +40,9 @@ public class CharacterSetPage : Page
         Close();
 
     }
-    void Init()
+    public override void Init()
     {
-        if (partsCount == 0)
+        if (isAlreadyInit==false)
         {//초기 셋팅이 안되어있다면
             partsCount = sampleObj.childCount;
             partsIdxs = new int[partsCount];
@@ -60,6 +60,7 @@ public class CharacterSetPage : Page
                 characterPartsSlots[i].OnChangeSlotImage += LoadParts;
             }
             setBtn.onClick.AddListener(SetCharacter);
+            isAlreadyInit = true;
         }
     }
     override public void Load()
