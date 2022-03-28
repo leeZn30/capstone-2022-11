@@ -10,15 +10,16 @@ public class PlayerControl : MonoBehaviourPun
     // 플레이어 설정
     float moveSpeed = 10f;
     public bool isMoveAble = true;
+    public bool isUIActable = true;
 
     // 상호작용 버튼
     [SerializeField] bool isInteractiveAble = false;
-    GameObject InteractiveButton;
+    public GameObject InteractiveButton;
     [SerializeField] Sprite[] buttonImages;
 
     // 비디오
-    [SerializeField] bool isVideoPanelShown = false;
-    GameObject videoPanel;
+    public bool isVideoPanelShown = false;
+    public GameObject videoPanel;
 
     // Start is called before the first frame update
     void Start()
@@ -37,6 +38,7 @@ public class PlayerControl : MonoBehaviourPun
         {
             PlyerMove();
         }
+
     }
 
     private void PlyerMove()
@@ -104,56 +106,29 @@ public class PlayerControl : MonoBehaviourPun
         }
     }
 
-    public void sendEmoji(int emojiNum)
+    // -------------- 이모지 동기화 관련 함수들 -------------
+    public IEnumerator sendEmoji(int emojiNum)
     {
         GameObject bubble = transform.GetChild(0).gameObject;
         bubble.SetActive(true);
         bubble.transform.GetChild(0).gameObject.GetComponent<TextMeshPro>().text = "<sprite=" + emojiNum + ">";
+
+        yield return new WaitForSeconds(1f);
+
+        bubble.SetActive(false);
     }
 
-    public void startBusking()
+    [PunRPC]
+    public void callEmoji(int emojiNum)
     {
-
+        StartCoroutine(sendEmoji(emojiNum));
     }
 
-    /**
-     * 이럴 경우 ontrigger가 두번씩 처리됨 why
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void rpctest(int emojiNum)
     {
-        print("enter");
-        switch (collision.tag)
-        {
-            case "BuskingSpot":
-                OnVideoPanel();
-                break;
-
-            case "InteractiveObject":
-                OnInteractiveButton();
-                break;
-
-            default:
-                break;
-        }
+        photonView.RPC("callEmoji", RpcTarget.AllBuffered, emojiNum);
     }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        switch (collision.tag)
-        {
-            case "BuskingSpot":
-                OffVideoPanel();
-                break;
-
-            case "InteractiveObject":
-                OffInteractiveButton();
-                break;
-
-            default:
-                break;
-        }
-
-    }
-    **/
+    //----------------------------------------------------------------
     
 
 }

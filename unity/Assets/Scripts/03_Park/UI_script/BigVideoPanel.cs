@@ -13,11 +13,12 @@ public class BigVideoPanel : MonoBehaviour
         shutButton.GetComponent<Button>().onClick.AddListener(ScaleDownPanel);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;
     }
+
 
     public void ScaleDownPanel()
     {

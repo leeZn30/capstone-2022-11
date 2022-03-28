@@ -133,5 +133,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c60c44135718e2943bed6420f88e691f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  emojiNum: 1
-  player: {fileID: 0}
+  emojiNum: 0
+  player: {fileID: 1190112660106767378, guid: a75414b5e09e8ea47921ee681b3c9606, type: 3}

@@ -5,6 +5,13 @@ using UnityEngine;
 public class SmallVideoPanel : MonoBehaviour
 {
 
+    private void OnEnable()
+    {
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+    }
+
+
     public void ScaleUpPanel()
     {
         /**
@@ -14,8 +21,6 @@ public class SmallVideoPanel : MonoBehaviour
         **/
         this.gameObject.SetActive(false);
         FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.SetActive(true);
-
-        
     }
     
 }
