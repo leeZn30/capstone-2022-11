@@ -10,7 +10,7 @@ const User = require('../../models/user');
 const router = express.Router();
 
 router.get('/check', async(req, res) =>{
-    const {id, email, nickname} = req.body;
+    const {id, email} = req.body;
 
     if (id){
         try{
@@ -35,20 +35,6 @@ router.get('/check', async(req, res) =>{
                     res.status(200).json({emailExist: false});
             })
         } catch(e) {
-            console.log(e);
-            res.status(400).json({msg: e.message});
-        }
-    }
-    else if (nickname){
-        try{
-            User.findOne({nickname:nickname}).then((nicknameExist)=> {
-                if (nicknameExist)
-                    res.status(400).json({nicknameExist: true});
-
-                else
-                    res.status(200).json({nicknameExist: false});
-            })
-        } catch (e) {
             console.log(e);
             res.status(400).json({msg: e.message});
         }
