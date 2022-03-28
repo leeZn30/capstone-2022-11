@@ -55,4 +55,12 @@ router.get('/user', auth, async(req, res)=>{
     }
 })
 
+router.get('/musicList', auth, async(req,res) => {
+    const {id} = req.user.id;
+
+    User.findOne({id:id}).then((user) => {
+        res.status(200).json({musicList:user.musicList})
+    })
+})
+
 module.exports = router;
