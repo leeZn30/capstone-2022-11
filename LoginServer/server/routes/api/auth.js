@@ -63,4 +63,12 @@ router.get('/musicList', auth, async(req,res) => {
     })
 })
 
+router.get('/myList', auth, async(req,res) => {
+    const {id} = req.user.id;
+
+    User.findOne({id:id}).then((user) => {
+        res.status(200).json({myList:user.myList})
+    })
+})
+
 module.exports = router;
