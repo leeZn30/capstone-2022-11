@@ -89,17 +89,4 @@ router.post('/', async(req, res) => {
     })
 })
 
-router.post('/modifiedChar', async(req, res) => {
-    const {id, value} = req.body;
-
-    User.findOne({id: id}).then((user)=> {
-        console.log(user);
-        user.character = value;
-        user.save();
-        res.status(200).json({
-            character : user.character
-        })
-    })
-})
-
 module.exports = router;
