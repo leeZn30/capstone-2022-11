@@ -37,7 +37,7 @@ public class InteractiveObject : MonoBehaviour
                     }
                     else
                     {
-                        collision.transform.GetComponent<PlayerControl>().OnVideoPanel();
+                        collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
                     }
                     break;
 

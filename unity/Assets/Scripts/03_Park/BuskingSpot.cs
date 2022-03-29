@@ -18,8 +18,12 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         }
     }
 
+    // 카메라 관련
     protected WebCamTexture textureWebCam = null;
     [SerializeField] private GameObject objectTarget;
+
+    // 마이크 관련
+    [SerializeField] private AudioSource micAudioSource;
 
     public bool isUsed = false;
 
@@ -53,10 +57,11 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         this.GetComponent<BuskingSpot>().isUsed = true;
 
         GameObject player = GameManager.instance.myPlayer;
-        player.GetComponent<PlayerControl>().OnVideoPanel();
+        //player.GetComponent<PlayerControl>().OnVideoPanel();
 
-        // 카메라
-        WebCamDevice[] devices = WebCamTexture.devices; 
+        // 카메라 및 마이크
+        WebCamDevice[] devices = WebCamTexture.devices;
+
         int selectedCameraIndex = -1;
         for (int i = 0; i < devices.Length; i++)
         {
@@ -71,8 +76,6 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
                 break;
             }
         }
-
-        print("selectedNumger: " + selectedCameraIndex);
 
         // WebCamTexture 생성
         if (selectedCameraIndex >= 0)
@@ -90,14 +93,32 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         // objectTarget으로 카메라가 표시되도록 설정
         if (textureWebCam != null)
         {
+            // 카메라
             objectTarget.GetComponent<RawImage>().texture = textureWebCam;
+            player.GetComponent<PlayerControl>().OnVideoPanel(1);
+            textureWebCam.Play();
 
-            GameManager.instance.myPlayer.GetComponent<PlayerControl>().OnVideoPanel();
+            // 소리
+            try
+            {
+                string mic = Microphone.devices[0];
+                micAudioSource.clip = Microphone.Start(mic, true, 10, 44100);
+                while (!(Microphone.GetPosition(mic) > 0)) { } // Wait until the recording has started
+                micAudioSource.Play(); // Play the audio source!
+                player.GetComponent<PlayerControl>().OffInteractiveButton();
+            }
+            catch
+            {
+                Debug.Log("No mic");
+            }
+
+        }
+        else // 카메라 텍스쳐 없음
+        {
+            Debug.Log("No Camera Texture");
         }
 
-        textureWebCam.Play();
 
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton();
     }
 
 }

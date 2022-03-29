@@ -88,10 +88,11 @@ public class PlayerControl : MonoBehaviourPun
 
     }
 
-    public void OnVideoPanel()
+    public void OnVideoPanel(int mode)
     {
         if (!isVideoPanelShown)
         {
+            videoPanel.GetComponent<SmallVideoPanel>().mode = mode;
             videoPanel.SetActive(true);
             isVideoPanelShown = true;
         }
@@ -109,7 +110,8 @@ public class PlayerControl : MonoBehaviourPun
     // -------------- 이모지 동기화 관련 함수들 -------------
     public IEnumerator sendEmoji(int emojiNum)
     {
-        GameObject bubble = transform.GetChild(0).gameObject;
+        GameObject bubble = transform.GetChild(1).gameObject;
+        bubble.GetComponent<Canvas>().worldCamera = Camera.main;
         bubble.SetActive(true);
         bubble.transform.GetChild(0).gameObject.GetComponent<TextMeshPro>().text = "<sprite=" + emojiNum + ">";
 
