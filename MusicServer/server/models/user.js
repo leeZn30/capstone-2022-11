@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema({
     musicList: {
         type: Array,
         default: [],
+    },
+    myList: {
+        type: Array,
+        default: [],
     }
 });
 

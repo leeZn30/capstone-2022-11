@@ -43,6 +43,20 @@ router.post('/logout', (req, res)=> {
     res.json("로그아웃 했습니다.")
 })
 
+router.post('/modifiedChar', auth, async(req, res) => {
+    const {id} = req.user.id;
+    const {value} = req.body;
+
+    User.findOne({id: id}).then((user)=> {
+        console.log(user);
+        user.character = value;
+        user.save();
+        res.status(200).json({
+            character : user.character
+        })
+    })
+})
+
 router.get('/user', auth, async(req, res)=>{
     try{
         let id = req.user.id;
@@ -53,6 +67,22 @@ router.get('/user', auth, async(req, res)=>{
         console.log(e);
         res.status(400).json({msg: e.message})
     }
+})
+
+router.get('/musicList', auth, async(req,res) => {
+    const {id} = req.user.id;
+
+    User.findOne({id:id}).then((user) => {
+        res.status(200).json({musicList:user.musicList})
+    })
+})
+
+router.get('/myList', auth, async(req,res) => {
+    const {id} = req.user.id;
+
+    User.findOne({id:id}).then((user) => {
+        res.status(200).json({myList:user.myList})
+    })
 })
 
 module.exports = router;
