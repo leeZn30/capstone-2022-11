@@ -5,6 +5,7 @@ const app = express();
 const fs = require('fs');
 const { join } = require("path");
 const port = 8080;
+const wrtc = require("wrtc");
 
 const option = {
     key: fs.readFileSync('privkey.pem', 'utf8'), 
@@ -24,9 +25,10 @@ app.get("/", (req, res) => {
 });
 
 let io = socket(httpsServer);
-let roomCreator = {};
-let roomJoiner = {};
+let serverReceiverPCs = {};
+let serverSenderPCs = [];
 let userStreams = {};
+let rooms = {};
 
 let iceServers = {
     iceServers: [
@@ -38,78 +40,140 @@ let iceServers = {
 io.on('connection', function(socket) {
     console.log("User Connected :" + socket.id);
 
-    socket.on('joinRoom', function(room) {
-        let rooms = io.sockets.adapter.rooms;
-        let userId = room[0];
-        let roomNum = room[1];
-        let roomDefine = rooms.get(roomNum);
+    socket.on('joinRoom', function(userOption) {
+        let userId = userOption.userId;
+        let roomNum = userOption.roomNum;
 
-        if (roomDefine == undefined) {
-            console.log("Create Room :" + roomNum + " ID : " + userId);
-            roomOption = {roomNum:roomNum, user:userId};
+        if (roomNum in rooms) {
+            rooms[roomNum].push({'userId':userId});
+            roomOption = {'roomNum':roomNum, 'userId':userId};
             socket.join(roomNum);
-            socket.emit('create', roomOption);
+            socket.emit("joinRoom", roomOption);
         }
         else {
-            console.log("Join Room :" + roomNum + " ID : " + userId);
-            roomOption = {roomNum:roomNum, user:userId};
+            rooms[roomNum] = [{'userId':userId}];
+            roomOption = {'roomNum':roomNum, 'userId':userId};
             socket.join(roomNum);
-            socket.emit("join", roomOption);
+            socket.emit('createRoom', roomOption);
         }
         console.log(rooms);
     });
 
-    socket.on('senderOffer', function(offer, senderOption) {
-        console.log("Server Get Sender Offer");
+    socket.on('senderOffer', async function(offer, userOption) {
+        console.log("[SERVER]get Offer");
         try {
-                let receiverPC = createReceiverPeerConnection(senderOption);
-                receiverPC.setRemoteDescription(offer);
-                let answer = receiverPC.createAnswer({
-                    offerToReceiveAudio: true,
-                    offerToReceiveVideo: true,
-            });
-            receiverPC.setLocalDescription(answer);
+            socket.join(userOption.roomNum);
+            serverReceiverPCs[userOption.roomNum] = {'senderPC':userOption.senderPC};
+            let receiverPC = createReceiverPeerConnection(userOption);
+            receiverPC.onicecandidate = event => {
+                if (event.candidate) {
+                    console.log("[SERVER]send Candi");
+                    socket.emit("getCandidate", event.candidate, userOption.option);
+                }
+            }
+            serverReceiverPCs[userOption.roomNum]['receivePC'] = receiverPC;
+            receiverPC.setRemoteDescription(offer);
+            receiverPC
+            .createAnswer({
+                offerToReceiveAudio: true,
+                offerToReceiveVideo: true,
+            })
+            .then((answer) => {
+                console.log("[SERVER]userID : " + userOption.userId);
+                receiverPC.setLocalDescription(new wrtc.RTCSessionDescription(answer));
+                socket.emit("getReceiverAnswer", answer);
+            })
         } catch (error) {
             console.log(error);
         }
-    })
+    });
 
-    // socket.on('senderCandidate', function(candi, senderPC) {
-    //     console.log("Candidate : " + senderPC);
-    //     socket.broadcast.to(senderPC).emit("receiverPC", candi); //Sends Candidate to the other peer in the room.    
-    // })
+    socket.on("joinRoomFromClient", function(userOption){
+        socket.join(userOption.roomNum);
+        let sendStream = userStreams[userOption.roomNum].stream;
 
-    socket.on('senderCandidate', function(candi, rtcPeerConnection){
-        console.log("Candidate : " + senderPC);
-        rtcPeerConnection.addIceCandidate(candi);
-    })
+        //create Sender PC
+        let sendPC = createSenderPeerConnection(sendStream, userOption);
+        sendPC.onicecandidate = event => {
+            socket.emit("getCandidate", event.candidate, userOption.option);
+        };
+        serverSenderPCs.push({
+                'receivePC':userOption.receivePC, 
+                'senderPC':sendPC, 
+                'id':userOption.userId
+        });
+        sendPC
+        .createOffer({
+          offerToReceiveAudio: true,
+          offerToReceiveVideo: true,
+        })
+        .then((offer) => {
+            console.log("[SERVER]sender Offer");
+            sendPC.setLocalDescription(new wrtc.RTCSessionDescription(offer));
+            socket.emit("senderOffer", offer, userOption);
+        })
+    });
+
+    socket.on("getSenderCandidate", async function(candidate, userOption){
+        console.log("[SERVER] get Sender Candi");
+        let icecandidate = new wrtc.RTCIceCandidate(candidate);
+        let rtcPC = serverReceiverPCs[userOption.roomNum].receivePC;
+        await rtcPC.addIceCandidate(icecandidate);
+        console.log("ServerCandi Perfect");
+    });
+    
+    socket.on("getReceiverCandidate", async function(candidate, userOption){
+        console.log("[SERVER]get Receiver Candi");
+        let icecandidate = new wrtc.RTCIceCandidate(candidate);
+        let rtcPC;
+        for (let i = 0; i < serverSenderPCs.length; i++) {
+            if (serverSenderPCs[i].id === userOption.userId) {
+                rtcPC = serverSenderPCs[i].senderPC;
+                await rtcPC.addIceCandidate(icecandidate);
+                break;
+            }
+        }
+    });
+
+    socket.on("getReceiverAnswer", async function(answer, userOption){
+        console.log("[SERVER]get Answer");
+        let rtcPC;
+        for (let i = 0; i < serverSenderPCs.length; i++) {
+            if (serverSenderPCs[i].id == userOption.userId) {
+                rtcPC = serverSenderPCs[i].senderPC;
+                break;
+            }
+        }
+
+        await rtcPC.setRemoteDescription(answer);
+    });
 });
 
-function createReceiverPeerConnection(senderOption) {
-    let rtcPeerConnection = new wrtc.RTCPeerConnection(iceServers);
-    rtcPeerConnection.onicecandidate = OnIceCandidateFunction;
-    rtcPeerConnection.ontrack = e => {
-        if (userStreams[senderOption.roomNum]) {
-            if (!isIncluded(userStreams[senderOption.roomNum], senderOption.userId)) {
-                userStreams[senderOption.roomNum].push({
-                    id: senderOption.userId,
-                    stream: e.streams[0],
-                });
-            } else return;
-        } else {
-            userStreams[senderOption.roomNum] = [
-                {
-                    id: senderOption.userId,
-                    stream: e.streams[0],
-                },
-            ];
-        }
-    return rtcPeerConnection;
-    }   
+function createSenderPeerConnection(userStream) {
+    try{
+        let rtcPeerConnection = new wrtc.RTCPeerConnection(iceServers);
+        rtcPeerConnection.addTrack(userStream.getTracks()[0], userStream);
+        rtcPeerConnection.addTrack(userStream.getTracks()[1], userStream);
+        return rtcPeerConnection;
+    }
+    catch(e) {
+        console.log(e);
+    }
 }
 
-function OnIceCandidateFunction(event) {
-    if (event.candidate) {
-      socket.emit("getSenderCandidate", event.candidate);
+function createReceiverPeerConnection(senderOption) {
+    try {
+        let rtcPeerConnection = new wrtc.RTCPeerConnection(iceServers);
+        rtcPeerConnection.ontrack = e => {
+            userStreams[senderOption.roomNum] = 
+                    {
+                        id: senderOption.userId,
+                        stream: e.streams[0],
+                    };
+            }
+        return rtcPeerConnection;
+    }   
+    catch (e) {
+        console.log(e);
     }
 }
