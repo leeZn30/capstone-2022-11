@@ -1,0 +1,49 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+public class Page : MonoBehaviour
+{//상속용 클래스
+    public Button exitBtn; 
+    protected bool isAlreadyInit = false;
+    // Start is called before the first frame update
+    void Awake()
+    {
+        exitBtn.onClick.AddListener(Close);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+    public void Open()
+    {
+        Init();
+
+        gameObject.SetActive(true);
+
+        Load();
+
+    }
+
+    virtual public void Init()
+    {//해당 페이지 이벤트리스너, 객체 등록
+
+    }
+    virtual public void Load()
+    {//해당 페이지 초기화하기
+
+    }
+    public void Close()
+    {
+        //초기화
+        Reset();
+        //닫기
+        gameObject.SetActive(false);
+    }
+    virtual public void Reset()
+    {//해당 페이지 초기화하기
+
+    }
+}
