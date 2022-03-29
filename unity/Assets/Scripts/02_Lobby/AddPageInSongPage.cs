@@ -1,11 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using TMPro;
 using UnityEngine.Networking;
-
+using System;
 public class AddPageInSongPage : Page
 {
     public Button imageUploadBtn;
@@ -17,11 +16,11 @@ public class AddPageInSongPage : Page
     public TextMeshProUGUI localFileName;
 
     public MusicControllerMini musicControllerMini;
+    public TextMeshProUGUI errorText;
 
-    string filePath;//¹ÂÁ÷°æ¤··Î
     byte[] musicBytes;
     byte[] imageBytes;
-    string[] infos;//¹ÂÁ÷ÀÎÆ÷ ¹è¿­ (¼ø¼­´Â enum°ú °°À½(ÇÏµåÄÚµù))
+    string[] infos;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ enumï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½Ïµï¿½ï¿½Úµï¿½))
     private TMP_InputField[] infoInputs;
 
     enum MusicInfo
@@ -49,12 +48,10 @@ public class AddPageInSongPage : Page
             });
             musicUploadBtn.onClick.AddListener(delegate
             {
-                filePath = fileOpenDialog.FileOpen(FileOpenDialog.Type.Music);
+                string filePath = fileOpenDialog.FileOpen(FileOpenDialog.Type.Music);
                 if (!string.IsNullOrEmpty(filePath))
                 {
-                    musicBytes = File.ReadAllBytes(filePath);
-                    localFileName.text = filePath;
-                    StartCoroutine("SetAudioCilpUsingWebRequest");
+                    StartCoroutine(SetAudioCilpUsingWebRequest(filePath));
                 }
             });
             okayBtn.onClick.AddListener(UploadAndFinish);
@@ -63,17 +60,24 @@ public class AddPageInSongPage : Page
     }
     void UploadAndFinish()
     {
-        MusicUpload.Instance.FileUpload(musicBytes, filePath);
-        Close();
+        if (musicControllerMini.audioClip != null && infoInputs[0].text.Length>0)
+        {
+            MusicUpload.Instance.FileUpload(musicBytes, localFileName.text);
+            Close();
+        }
+        else
+        {
+            Debug.Log("ì…ë ¥í•œ íŒŒì¼ê³¼ ë‚´ìš©ì„ í™•ì¸í•˜ì„¸ìš”");
+        }
+
     }
     override public void Reset()
     {
-        //ÃÊ±âÈ­
-        filePath = "";
+        errorText.text = "";
         musicBytes = new byte[0];
         imageBytes = new byte[0];
         infos = new string[0];
-        localFileName.text = "ÆÄÀÏ ¸í";
+        localFileName.text = "íŒŒì¼ ì—†ìŒ";
     }
     private void LoadImage(byte[] byteTexture)
     {
@@ -86,21 +90,55 @@ public class AddPageInSongPage : Page
         songImage.color = new Color(255, 255, 255, 1);
 
     }
-    IEnumerator SetAudioCilpUsingWebRequest()
+    IEnumerator SetAudioCilpUsingWebRequest(string _filePath)
     {
-        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filePath, AudioType.WAV))
+        AudioType aType = AudioType.UNKNOWN;
+
+        string type = _filePath.Substring(_filePath.Length - 3);
+        if (type == "wav")
+        {
+            aType = AudioType.WAV;
+        }
+        else if (type == "mp3")
+        {
+            aType = AudioType.MPEG;
+        }
+        else if (type == "ogg")
+        {
+            aType = AudioType.OGGVORBIS;
+        }
+        Debug.Log(aType);
+        
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(_filePath, aType))
         {
             yield return www.SendWebRequest();
-
-            if (www.result == UnityWebRequest.Result.ConnectionError)
+            if (www.result != UnityWebRequest.Result.Success)
             {
-                Debug.Log(www.error);
+                Debug.LogError(www.error);
+                yield break;
+            }
+
+
+            AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
+            if (clip.length>10)
+            {
+                errorText.text = "";
+                musicBytes = File.ReadAllBytes(_filePath);
+                localFileName.text = _filePath;
+                musicControllerMini.SetAudioClip(clip);
             }
             else
             {
-
-                musicControllerMini.SetAudioClip(DownloadHandlerAudioClip.GetContent(www));
+                errorText.text = "íŒŒì¼ì´ ì—…ë¡œë“œë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. (ê¶Œì¥ íŒŒì¼ : wav, ogg)";
+                musicBytes = new byte[0];
+                localFileName.text = "íŒŒì¼ ì—†ìŒ";
+                musicControllerMini.SetAudioClip(null);
             }
+            
+
+
+
+
         }
     }
     // Update is called once per frame

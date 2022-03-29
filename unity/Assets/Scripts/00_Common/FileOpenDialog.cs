@@ -22,6 +22,7 @@ public class FileOpenDialog : MonoBehaviour
     }
     public string FileOpen(Type type)
     {
+        string fileName=null;
         switch (type)
         {
             case Type.Music:
@@ -34,13 +35,13 @@ public class FileOpenDialog : MonoBehaviour
         
         if (OpenDialog.ShowDialog() == DialogResult.OK)
         {
-            if((openStream== OpenDialog.OpenFile()) != null)
+            if((openStream = OpenDialog.OpenFile()) != null)
             {
-
-                return OpenDialog.FileName;
+                openStream.Close();
+                fileName= OpenDialog.FileName;
             }
         }
-        return null;
+        return fileName;
     }
 
     // Update is called once per frame

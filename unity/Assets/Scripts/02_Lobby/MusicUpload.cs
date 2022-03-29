@@ -22,6 +22,7 @@ public class MusicUpload : Singleton<MusicUpload>
         formData.Add(new MultipartFormFileSection(fileName, bytes));
 
         UnityWebRequest www = UnityWebRequest.Post(url+"/media/", formData);
+        //추후 로딩 애니메이션추가 
         yield return www.SendWebRequest();
 
         if (www.result != UnityWebRequest.Result.Success)
@@ -30,6 +31,7 @@ public class MusicUpload : Singleton<MusicUpload>
         }
         else
         {
+            //로딩애니메이션 종료
             Debug.Log("Form upload complete!");
         }
     }

@@ -11,7 +11,7 @@ public class MusicControllerMini : MonoBehaviour
     public Button pauseplayBtn;
     public Scrollbar scrollbar;
 
-    private AudioClip audioClip;
+    public AudioClip audioClip;
 
 
     public void SetAudioClip(AudioClip ac)
@@ -30,16 +30,20 @@ public class MusicControllerMini : MonoBehaviour
     }
     void OnValueChange(float value)
     {
-        audioSource.time = Mathf.Max(Mathf.Min(audioClip.length * value, audioClip.length),0);
-        if (audioSource.time == audioClip.length)
+        if (audioSource.clip != null)
         {
-            if (audioSource.isPlaying == true)
+            audioSource.time = Mathf.Max(Mathf.Min(audioClip.length * value, audioClip.length), 0);
+            if (audioSource.time == audioClip.length)
             {
-                ChangeState();
-                audioSource.time = 0;
-                scrollbar.value = 0;
-            } 
+                if (audioSource.isPlaying == true)
+                {
+                    ChangeState();
+                    audioSource.time = 0;
+                    scrollbar.value = 0;
+                }
+            }
         }
+
     }
     void ChangeState()
     {
