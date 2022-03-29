@@ -24,6 +24,9 @@ const MusicSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
+    },
+    imagelocate: {
+        type: String
     }
 });
 
