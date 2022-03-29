@@ -1,0 +1,16 @@
+{
+  "name": "testwrtcsfu",
+  "version": "1.0.0",
+  "description": "test web RTC Server_SFU",
+  "main": "sfuServer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./sfuServer.js"
+  },
+  "author": "yannju",
+  "license": "ISC",
+  "dependencies": {
+    "wrtc": "^0.4.7",
+    "socket.io": "^4.4.1"
+  }
+}
