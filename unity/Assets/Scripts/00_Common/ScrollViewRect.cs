@@ -13,8 +13,8 @@ public class ScrollViewRect : MonoBehaviour
         rect = GetComponent<RectTransform>();
         SetContentSize();
     } 
-    void SetContentSize() {
-        float height = 100;
+    public void SetContentSize(float height = 100) {
+
         Debug.Log(height);
         int cnt = transform.childCount;
         for(int i=0; i<cnt; i++)

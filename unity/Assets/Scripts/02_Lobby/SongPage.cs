@@ -15,14 +15,23 @@ public class SongPage : Page
     public List<SongFolder> songFolderList;
     void Start()
     {
-        songFolderList = new List<SongFolder>(GetComponentsInChildren<SongFolder>());
-        for(int i=0; i<songFolderList.Count; i++)
+        Init();
+    }
+    override public void Init()
+    {
+        if (isAlreadyInit == false)
         {
-            songFolderList[i].OnClickButton_ += listPage.Open;
-        }
+            songFolderList = new List<SongFolder>(GetComponentsInChildren<SongFolder>());
+            for (int i = 0; i < songFolderList.Count; i++)
+            {
+                songFolderList[i].OnClickButton_ += listPage.Open;
+            }
 
-        searchBtn.onClick.AddListener(searchPage.Open);
-        addBtn.onClick.AddListener(addPage.Open);
+            searchBtn.onClick.AddListener(searchPage.Open);
+            addBtn.onClick.AddListener(addPage.Open);
+            Debug.Log(gameObject.name + "open");
+            isAlreadyInit = true;
+        }
     }
     override public void Reset()
     {
