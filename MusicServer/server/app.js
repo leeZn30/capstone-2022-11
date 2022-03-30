@@ -30,6 +30,7 @@ app.get('/upload',function(req, res){
   <body>
       <form action="/media" enctype="multipart/form-data" method="post">
           <input type="file" name="file1" multiple="multiple">
+          <input type="file" name="file2" multiple="multiple">
           <input type="submit" value="Upload file" />
       </form>
   </body>
