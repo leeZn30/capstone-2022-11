@@ -26,8 +26,7 @@ router.get('/*', (req,res)=>{
 })
 
 router.post('/',function(req, res){
-    //body 확인용
-    console.log(req.body);
+
     const form = new multiparty.Form()
     // 에러 처리
     form.on('error', function(err){
