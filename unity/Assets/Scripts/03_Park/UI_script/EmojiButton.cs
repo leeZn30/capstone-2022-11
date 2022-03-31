@@ -8,6 +8,8 @@ public class EmojiButton : MonoBehaviourPun
 {
     [SerializeField] private int emojiNum;
 
+    // mode = 0 메인 / mode = 1 서브
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +22,7 @@ public class EmojiButton : MonoBehaviourPun
         GameObject player = GameManager.instance.myPlayer;
         if (player.GetComponent<PhotonView>().IsMine)
         {
-            player.GetComponent<PlayerControl>().rpctest(emojiNum);
+            player.GetComponent<PlayerControl>().rpcEmoji(emojiNum);
         }
     }
 

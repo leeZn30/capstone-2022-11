@@ -54,12 +54,12 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
     // 버스킹 인터렉티브
     public void StartBusking()
     {
-        this.GetComponent<BuskingSpot>().isUsed = true;
+        isUsed = true;
 
         GameObject player = GameManager.instance.myPlayer;
         //player.GetComponent<PlayerControl>().OnVideoPanel();
 
-        // 카메라 및 마이크
+        // 카메라
         WebCamDevice[] devices = WebCamTexture.devices;
 
         int selectedCameraIndex = -1;

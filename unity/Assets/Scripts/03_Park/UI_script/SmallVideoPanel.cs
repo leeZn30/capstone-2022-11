@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using Photon.Pun;
 
-public class SmallVideoPanel : MonoBehaviourPun
+public class SmallVideoPanel : MonoBehaviour
 {
+    // 비디오 동기화 시도해볼까
 
     // mode = 0 시청자 mode = 1 버스커
     public int mode;
@@ -14,9 +16,8 @@ public class SmallVideoPanel : MonoBehaviourPun
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
 
-        if (mode == 1)
+        if (mode == 0)
         {
-            this.gameObject.AddComponent<PhotonView>();
         }
     }
 

@@ -5,8 +5,9 @@ using Photon.Pun;
 using TMPro;
 using UnityEngine.UI;
 
-public class PlayerControl : MonoBehaviourPun
+public class PlayerControl : MonoBehaviourPunCallbacks
 {
+
     // 플레이어 설정
     float moveSpeed = 10f;
     public bool isMoveAble = true;
@@ -20,6 +21,10 @@ public class PlayerControl : MonoBehaviourPun
     // 비디오
     public bool isVideoPanelShown = false;
     public GameObject videoPanel;
+
+    // 이모티콘 코루틴 실행여부
+    private bool isEmojiRunning = false;
+    private Coroutine runningEmojiCorutine;
 
     // Start is called before the first frame update
     void Start()
@@ -110,23 +115,31 @@ public class PlayerControl : MonoBehaviourPun
     // -------------- 이모지 동기화 관련 함수들 -------------
     public IEnumerator sendEmoji(int emojiNum)
     {
-        GameObject bubble = transform.GetChild(1).gameObject;
-        bubble.GetComponent<Canvas>().worldCamera = Camera.main;
+        GameObject bubble = transform.GetChild(0).gameObject;
         bubble.SetActive(true);
-        bubble.transform.GetChild(0).gameObject.GetComponent<TextMeshPro>().text = "<sprite=" + emojiNum + ">";
+        bubble.GetComponent<TextMeshPro>().text = "<sprite=" + emojiNum + ">";
+        isEmojiRunning = true;
 
         yield return new WaitForSeconds(1f);
 
         bubble.SetActive(false);
+        isEmojiRunning = false;
+
     }
 
     [PunRPC]
     public void callEmoji(int emojiNum)
     {
-        StartCoroutine(sendEmoji(emojiNum));
+        if (isEmojiRunning)
+        {
+            StopCoroutine(runningEmojiCorutine);
+            isEmojiRunning = false;
+        }
+
+        runningEmojiCorutine = StartCoroutine(sendEmoji(emojiNum));
     }
 
-    public void rpctest(int emojiNum)
+    public void rpcEmoji(int emojiNum)
     {
         photonView.RPC("callEmoji", RpcTarget.AllBuffered, emojiNum);
     }
