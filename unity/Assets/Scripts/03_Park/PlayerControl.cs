@@ -115,7 +115,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     // -------------- 이모지 동기화 관련 함수들 -------------
     public IEnumerator sendEmoji(int emojiNum)
     {
-        GameObject bubble = transform.GetChild(0).gameObject;
+        GameObject bubble = transform.GetChild(1).gameObject;
         bubble.SetActive(true);
         bubble.GetComponent<TextMeshPro>().text = "<sprite=" + emojiNum + ">";
         isEmojiRunning = true;

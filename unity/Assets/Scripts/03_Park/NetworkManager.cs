@@ -4,12 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Realtime;
 using Photon.Pun;
+using TMPro;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
     private string gameVersion = "1"; // 게임 버전
 
-    public Text connectionInfoText; // 네트워크 정보를 표시할 텍스트
+    public TextMeshProUGUI connectionInfoText; // 네트워크 정보를 표시할 텍스트
     public Button joinButton; // 룸 접속 버튼
 
     // Start is called before the first frame update
@@ -23,12 +24,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         this.joinButton.interactable = false;
         this.connectionInfoText.text = "마스터 서버에 접속중...";
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
 
     }
 
