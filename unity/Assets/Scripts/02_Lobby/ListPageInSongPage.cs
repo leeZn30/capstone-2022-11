@@ -23,9 +23,9 @@ public class ListPageInSongPage : Page
     {//오버로딩
         gameObject.SetActive(true);
         contentText.text = content;
-        Load(id);
+        LoadSongList(id);
     }
-    void Load(int id)
+    void LoadSongList(int id)
     {//id에 따라 알맞은 재생목록을 불러오는 함수
 
     }

@@ -1,14 +1,14 @@
-import express from 'express';
-import mongoose from "mongoose";
-import config from './config';
-import hpp from 'hpp';
-import helmet from 'helmet';
-import cors from 'cors';
-import morgan from "morgan";
+const express = require('express');
+const mongoose = require('mongoose');
+const hpp = require('hpp');
+const helmet = require('helmet');
+const cors = require('cors');
+const morgan = require('morgan');
 
-// import postsRouters from './routes/api/post';
-import usersRouters from './routes/api/user';
-import authRouters from './routes/api/auth';
+const config = require('./config/index');
+
+const usersRouters = require('./routes/api/user');
+const authRouters = require('./routes/api/auth');
 
 const app = express();
 const { MONGO_URI } = config;
@@ -30,8 +30,8 @@ mongoose.connect(MONGO_URI, {
 
 //routes
 app.get('/');
-// app.use('/api/post', postsRouters);
+
 app.use('/api/user', usersRouters);
 app.use('/api/auth', authRouters);
 
-export default app;
+module.exports = app;

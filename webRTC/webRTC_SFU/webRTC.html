@@ -1,0 +1,150 @@
+<!-- webRTC.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+  <title>WebRTC Test</title>
+</head>
+<body<html>
+  <body>
+    <input type="button" value="ROOM1" id="room1" onclick="room1Click()">
+    <input type="button" value="ROOM2" id="room2" onclick="room2Click()">
+    <div>
+      <video id="videoStream" muted></video>
+    </div>
+
+    <script>
+        let socket = io.connect("https://172.20.10.4:8080");
+        let iceServers = {
+          iceServers: [
+            { urls: "stun:stun.services.mozilla.com" },
+            { urls: "stun:stun.l.google.com:19302" },
+          ],
+        };              
+
+        var localVideo = document.getElementById('videoStream');
+        var room1 = document.getElementById('room1');
+        var room2 = document.getElementById('room2');
+
+        let sendPC, receivePC;
+        let userStream;
+        var roomNum;
+
+        socket.on("createRoom", async function(userOption) {
+          console.log("Create : " + userOption.userId + " RoomID : " + userOption.roomNum);
+        
+          //Media 만들고 출력
+          navigator.mediaDevices
+          .getUserMedia({
+            audio: true,
+            video: { width: 640, height: 360 },
+          })
+          .then(function (stream) {
+            /* use the stream */
+            userStream = stream;
+            localVideo.srcObject = stream;
+            localVideo.onloadedmetadata = function (e) {
+              localVideo.play();
+            };
+            
+            //create Sender PC
+            userOption['option'] = 1;
+            sendPC = new RTCPeerConnection(iceServers);
+            sendPC.onicecandidate = event => {
+              if (event.candidate) {
+                console.log("[CLIENT]send Candi");
+                socket.emit("getSenderCandidate", event.candidate, userOption);
+              }
+            };
+            sendPC.addTrack(userStream.getTracks()[0], userStream);
+            sendPC.addTrack(userStream.getTracks()[1], userStream);
+            
+            userOption['senderPC'] = sendPC;
+            sendPC.
+            createOffer()
+            .then((offer) => {
+              sendPC.setLocalDescription(new RTCSessionDescription(offer));
+              socket.emit("senderOffer", offer, userOption);
+            })
+          })
+        });
+  
+        socket.on("joinRoom", function(userOption) {
+          console.log("Join : " + userOption.userId + " RoomID : " + userOption.roomNum);
+          
+              //receiverPC = createReceiverPeerConnection(userOption);
+              userOption['option'] = 2;
+              receivePC = new RTCPeerConnection(iceServers);
+              receivePC.onicecandidate = event => {
+                if(event.candidate){
+                  socket.emit("getReceiverCandidate", event.candidate, userOption);
+                }
+              };
+              receivePC.ontrack = OnTrackFunction;
+              userOption['receivePC'] = receivePC;
+              socket.emit("joinRoomFromClient", userOption);
+        });
+  
+        socket.on('senderOffer', async function(offer, userOption) {
+          try {
+              console.log("[CLIENT]get Offer");
+              await receivePC.setRemoteDescription(offer);
+              receivePC
+              .createAnswer({
+                  offerToReceiveAudio: true,
+                  offerToReceiveVideo: true,
+              })
+              .then((answer) => {
+                  console.log("[CLIENT]sender Answer");
+                  receivePC.setLocalDescription(new RTCSessionDescription(answer));
+                  socket.emit("getReceiverAnswer", answer, userOption);
+              })
+          } catch (error) {
+              console.log(error);
+          }
+        });
+
+        socket.on("getReceiverAnswer", async function(answer){
+          console.log("[CLIENT]get Answer");
+          await sendPC.setRemoteDescription(answer);
+        });
+
+        socket.on("getCandidate", function(candidate, option) {
+          console.log("[CLIENT]get Candi " + option);
+          let icecandidate = new RTCIceCandidate(candidate);
+          if (option == 1) {
+            sendPC.addIceCandidate(icecandidate);
+          }
+          else {
+            receivePC.addIceCandidate(icecandidate);
+          }
+        });
+
+        function room1Click() {
+          console.log("Click Room1");
+          roomNum = 'room1';
+          let userOption = {roomNum:roomNum, userId:socket.id};
+          
+          socket.emit("joinRoom", userOption);
+        }   
+          
+        function room2Click() {
+          console.log("Click Room2");
+          roomNum = 'room2';
+          let userOption = {roomNum:roomNum, userId:socket.id};
+
+          socket.emit("joinRoom", userOption);
+        }   
+
+        function OnTrackFunction(event) {
+          console.log(event.streams[0]);
+          localVideo.srcObject = event.streams[0];
+          localVideo.onloadedmetadata = function (e) {
+              localVideo.play();
+              localVideo.muted = false;
+          }
+        }
+    </script>
+  </body>
+/<html>
