@@ -24,6 +24,7 @@ public class EmoticonButton : MonoBehaviour
         {
             if (!gameObject.GetComponent<EmoticonButton>().isPanelShown && gameObject.GetComponent<EmoticonButton>() != null)
             {
+                emojiPanel.GetComponent<EmoticonPanel>().mode = mode;
                 emojiPanel.SetActive(true);
                 gameObject.GetComponent<EmoticonButton>().isPanelShown = true;
             }

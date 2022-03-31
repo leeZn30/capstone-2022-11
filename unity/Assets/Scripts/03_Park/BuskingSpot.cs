@@ -39,6 +39,16 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         }
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        GameObject player = GameManager.instance.myPlayer;
+        if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
+        {
+            if (isUsed && !player.GetComponent<PlayerControl>().isVideoPanelShown)
+                collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
+        }
+    }
+
 
     private void OnTriggerExit2D(Collider2D collision)
     {

@@ -18366,6 +18366,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: UserData
       objectReference: {fileID: 0}
+    - target: {fileID: 4191697866416477311, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}
+      propertyPath: user.id
+      value: ayeon123
+      objectReference: {fileID: 0}
+    - target: {fileID: 4191697866416477311, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}
+      propertyPath: user.nickname
+      value: Ayeoni
+      objectReference: {fileID: 0}
+    - target: {fileID: 4191697866416477311, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}
+      propertyPath: user.character
+      value: 103
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}
 --- !u!1001 &5006567762988931589

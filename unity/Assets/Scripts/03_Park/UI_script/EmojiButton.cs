@@ -6,9 +6,9 @@ using Photon.Pun;
 
 public class EmojiButton : MonoBehaviourPun
 {
+    // 이모티콘 종류
     [SerializeField] private int emojiNum;
 
-    // mode = 0 메인 / mode = 1 서브
 
     // Start is called before the first frame update
     void Start()
@@ -20,9 +20,15 @@ public class EmojiButton : MonoBehaviourPun
     public void sendBubble()
     {
         GameObject player = GameManager.instance.myPlayer;
-        if (player.GetComponent<PhotonView>().IsMine)
+        if (player.GetComponent<PhotonView>().IsMine && this.GetComponentInParent<EmoticonPanel>().mode == 0)
         {
             player.GetComponent<PlayerControl>().rpcEmoji(emojiNum);
+        }
+        else if (player.GetComponent<PhotonView>().IsMine && this.GetComponentInParent<EmoticonPanel>().mode == 1)
+        {
+            GameObject ChatPanel = this.GetComponentInParent<EmoticonPanel>().ChatPanel;
+            ChatPanel.GetComponent<Chat>().ifSendMsg.text = "<sprite=" + emojiNum + ">";
+            ChatPanel.GetComponent<Chat>().OnSendChatMsg();
         }
     }
 

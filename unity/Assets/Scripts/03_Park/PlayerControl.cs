@@ -26,6 +26,9 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     private bool isEmojiRunning = false;
     private Coroutine runningEmojiCorutine;
 
+    // Ã¤ÆÃ
+    [SerializeField] GameObject ChatPanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +36,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         {
             InteractiveButton = FindObjectOfType<Canvas>().transform.Find("InteractiveButton").gameObject;
             videoPanel = FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject;
+            ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
         }
     }
 
@@ -107,6 +111,8 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (isVideoPanelShown)
         {
+            ChatPanel.GetComponent<Chat>().msgList.text = "";
+            ChatPanel.GetComponent<Chat>().ifSendMsg.text = "";
             videoPanel.SetActive(false);
             isVideoPanelShown = false;
         }
@@ -144,6 +150,12 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         photonView.RPC("callEmoji", RpcTarget.AllBuffered, emojiNum);
     }
     //----------------------------------------------------------------
-    
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "InteractiveObject")
+        {
+
+        }
+    }
 }
