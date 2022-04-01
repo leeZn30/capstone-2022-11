@@ -17,10 +17,10 @@ public class MusicController : MonoBehaviour
     public TextMeshProUGUI[] titleTexts;
     public TextMeshProUGUI[] artistTexts;
 
-    public Slider slider;
+    public CustomSlider slider;
 
-    public Toggle randomBtns;
-    public Button repeatBtns;
+    public Toggle randomToggle;
+    public Button repeatBtn;
     public TextMeshProUGUI contentText;
 
     private Animator animator;
@@ -33,8 +33,19 @@ public class MusicController : MonoBehaviour
     public  List<Music> musicList;
 
     private int currentMusicList;
-    private int currentMusicIndex;
+    private int currentMusicIndex = 0;
+    public ListPageInSongPage ll;
 
+    private Image[] pauseplayBtnImage;
+    private Image repeatBtnImage;
+
+    private IEnumerator enumerator;
+    private bool isCurrentSongFinish=false;
+    PlayState playState;
+    private enum PlayState
+    {
+        Play,Pause
+    }
     enum RepeatMode
     {
         None,OneRepeat,AllRepeat
@@ -49,25 +60,55 @@ public class MusicController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            MusicWebRequest.Instance.GetMusicList("테스트검색");
+            musicList = ll.musicList;
+            MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate,true);
+            //MusicWebRequest.Instance.GetMusicList("musicList",UserData.Instance.id);
         }
-
+        
         if (audioSource.clip != null)
         {
-            if (audioSource.isPlaying == true)
+            
+            if (audioSource.isPlaying == true && isCurrentSongFinish == false)
             {//재생상태일 때
-                
-                if (audioSource.time == audioClip.length)
+                if ((int)audioSource.time == (int)audioClip.length)
                 {//재생이 끝나면
+                    
                     Debug.Log("자연 재생 끝");
-                    audioSource.time = 0;
-                    slider.value = 0;
-
-                    AutoPlayNextMusic();
+                    if (RepeatMode.OneRepeat != repeatMode)
+                    {
+                        isCurrentSongFinish = true;
+                        AutoPlayNextMusic();
+                    }
 
                 }
             }
+
+            if (audioSource.isPlaying == true && playState == PlayState.Pause)
+            {
+                Debug.Log("Play");
+                playState = PlayState.Play;
+
+                StartCoroutine(enumerator);
+
+                for (int i = 0; i < 2; i++)
+                {
+                    pauseplayBtnImage[i].sprite = Resources.Load<Sprite>("Image/UI/pause");
+                }
+
+            }
+            else if(audioSource.isPlaying ==false && playState == PlayState.Play)
+            {
+                Debug.Log("Pause");
+                playState = PlayState.Pause;
+                StopCoroutine(enumerator);
+                for (int i = 0; i < 2; i++)
+                {
+                    pauseplayBtnImage[i].sprite = Resources.Load<Sprite>("Image/UI/play");
+                }
+            }
+
         }
+
         
     }
     void Init()
@@ -77,6 +118,9 @@ public class MusicController : MonoBehaviour
             isAlreadyInit = true;
             animator = GetComponent<Animator>();
             audioSource = GetComponent<AudioSource>();
+            audioSource.loop = false;
+
+            pauseplayBtnImage = new Image[2];
 
             int[] num = { 0, 1 };
             for (int i = 0; i < num.Length; i++)
@@ -86,41 +130,79 @@ public class MusicController : MonoBehaviour
                         ChangeState(!audioSource.isPlaying);
                     }
                 });
+                pauseplayBtnImage[i] = (pauseplayBtns[i].gameObject).GetComponent<Image>();
+
 
                 prevBtns[i].onClick.AddListener(ClickPrevButton);
                 nextBtns[i].onClick.AddListener(ClickNextButton);
 
             }
+            repeatBtnImage = (repeatBtn.gameObject).GetComponent<Image>();
+            repeatBtn.onClick.AddListener(SetRepeatMode);
 
-            slider.onValueChanged.AddListener(OnValueChange);//추후 버튼 뗄때만으로 수정
+
+            slider.OnPointUp += OnValueChange;
+            slider.OnPointDown += StopSlider;
+
             openBtn.onClick.AddListener(OpenCloseInfo);
             MusicWebRequest.Instance.OnGetClip += SetAudioClip;
-            MusicWebRequest.Instance.OnGetMusicList += SetMusicList;
+            MusicWebRequest.Instance.OnGetInitMusicList += SetMusicList;
+
+            playState = PlayState.Pause;
+            enumerator = MoveSlider();
         }
+    }
+
+    void SetRepeatMode()
+    {
+        repeatMode = (RepeatMode)(((int)repeatMode + 1) % 3);
+        switch (repeatMode)
+        {
+            case RepeatMode.None:
+
+                break;
+            case RepeatMode.OneRepeat:
+                audioSource.loop = true;
+                break;
+            case RepeatMode.AllRepeat:
+                audioSource.loop = false;
+                break;
+        }
+        repeatBtnImage.sprite = Resources.Load<Sprite>("Image/UI/repeat" + (int)repeatMode);
+
     }
     void ClickPrevButton()
     {
-
-        currentMusicIndex = (currentMusicIndex - 1) % musicList.Count;
+        if (randomToggle.isOn == true)
+        {
+            //랜덤 뽑기
+            currentMusicIndex = PickRandomIndex();
+        }
+        else
+        {
+            currentMusicIndex = (currentMusicIndex - 1) % musicList.Count;
+        }
+        Debug.Log("currentIndex" + currentMusicIndex);
+        MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate,true);
     }
     void ClickNextButton()
     {
-        if (isRandomMode == true)
+        if (randomToggle.isOn == true)
         {
             //랜덤 뽑기
+            currentMusicIndex = PickRandomIndex();
         }
         else
         {
             currentMusicIndex = (currentMusicIndex + 1) % musicList.Count;
         }
-        
+        Debug.Log("currentIndex" + currentMusicIndex);
         //재생
-        MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate);
+        MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate, true);
         
     }
-    void AutoPlayNextMusic()
+    int PickRandomIndex()
     {
-
         int randomIdx = currentMusicIndex;
 
         while (randomIdx == currentMusicIndex)
@@ -129,35 +211,33 @@ public class MusicController : MonoBehaviour
             randomIdx = rand.Next(0, musicList.Count);
 
         }
+        return randomIdx;
+    }
+    void AutoPlayNextMusic()
+    {
+        int nextIdx = PickRandomIndex();
 
-
-        int nextIdx = randomIdx;
-
-        if (isRandomMode ==false)
+        if (randomToggle.isOn==false)
         {//랜덤모드가 아니라면
             nextIdx = (currentMusicIndex + 1) % musicList.Count;
         }
 
+        currentMusicIndex = nextIdx;
+        Debug.Log("Autoplay" + nextIdx);
         if (repeatMode == RepeatMode.None)
         {
-            if (nextIdx == 0)
+            if (currentMusicIndex == 0)
             {
                 //재생목록의 끝에 도달하여 재생 종료하고 맨앞 음원으로 이동
                 if (musicList != null)
                 {
-                    MusicWebRequest.Instance.GetAudioClip(musicList[0].locate);
+                    MusicWebRequest.Instance.GetAudioClip(musicList[0].locate,false);
+                    return;
                 }
             }
         }
-        else if (repeatMode == RepeatMode.OneRepeat)
-        {
-            audioSource.time = 0;
-            audioSource.Play();
-        }
-        else if (repeatMode == RepeatMode.AllRepeat)
-        {
-            MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate);
-        }
+        MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate, true);
+        
     }
     void OpenCloseInfo()
     {
@@ -169,17 +249,24 @@ public class MusicController : MonoBehaviour
         musicList = _musics;
         if (musicList != null)
         {
-            MusicWebRequest.Instance.GetAudioClip(musicList[0].locate);
+            MusicWebRequest.Instance.GetAudioClip(musicList[0].locate, true);
         }
     }
 
-    public void SetAudioClip(AudioClip ac)
+    public void SetAudioClip(AudioClip ac, bool play)
     {//OnGetClip 리스너가 호출되면 함수 실행
         audioSource.Stop();
         audioSource.time = 0;
         audioClip = ac;
         audioSource.clip = audioClip;
-        ChangeState(true);
+
+        slider.value = 0;
+        isCurrentSongFinish = false;
+
+
+        ChangeState(play);
+        
+
         for(int i=0; i<2; i++)
         {
             titleTexts[i].text = musicList[currentMusicIndex].title;
@@ -189,24 +276,34 @@ public class MusicController : MonoBehaviour
 
     void OnValueChange(float value)
     {
+        if (audioSource == null) return;
+
         audioSource.time = Mathf.Max(Mathf.Min(audioClip.length *value, audioClip.length), 0);
+
+        if (audioSource.isPlaying == true)
+            StartCoroutine(enumerator);
+    }
+    void StopSlider(float value)
+    {
+        if (audioSource == null) return;
+
+        if (audioSource.isPlaying == true)
+        {
+            Debug.Log("stop!!!!!");
+            StopCoroutine(enumerator);
+        }
     }
     void ChangeState(bool isPlay)
     {
-        if (audioClip != null)
+        if (audioSource.clip != null)
         {           
             if (isPlay==false && audioSource.isPlaying ==true)
             {
-                Debug.Log("Pause");
-                StopCoroutine("MoveSlider");
                 audioSource.Pause();
-
             }
             else if(isPlay==true && audioSource.isPlaying==false)
             {
-                Debug.Log("Play");
                 audioSource.Play();
-                StartCoroutine("MoveSlider");
             }
         }
     }
