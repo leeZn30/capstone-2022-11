@@ -14,6 +14,15 @@ public class MusicControllerMini : MonoBehaviour
     public AudioClip audioClip;
 
 
+    public void Reset()
+    {
+
+        
+        audioSource.clip = null;
+        audioClip = null;
+        scrollbar.value = 0;
+
+    }
     public void SetAudioClip(AudioClip ac)
     {
         audioSource.Stop();
@@ -23,6 +32,10 @@ public class MusicControllerMini : MonoBehaviour
     
     // Start is called before the first frame update
     void Start()
+    {
+        
+    }
+    public void Init()
     {
         audioSource = GetComponent<AudioSource>();
         pauseplayBtn.onClick.AddListener(ChangeState);

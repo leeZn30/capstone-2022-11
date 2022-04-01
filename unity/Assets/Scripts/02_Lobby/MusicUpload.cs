@@ -11,16 +11,22 @@ public class MusicUpload : Singleton<MusicUpload>
     {
         
     }
-    public void FileUpload(byte[] bytes, string fileName)
+    public void FileUpload(byte[] musicBytes, byte[] imageBytes,Music music, string fileName)
     {
-        StartCoroutine(Upload(bytes, fileName));
+        StartCoroutine(Upload(musicBytes, imageBytes, music, fileName));
     }
-    IEnumerator Upload(byte[] bytes, string fileName)
+    IEnumerator Upload(byte[] musicBytes, byte[] imageBytes, Music music, string fileName)
     {
+
+        string json = JsonUtility.ToJson(music);
+
         List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
 
-        formData.Add(new MultipartFormFileSection(fileName, bytes));
+        formData.Add(new MultipartFormFileSection(fileName, musicBytes));
+        if (imageBytes != null)
+            formData.Add(new MultipartFormFileSection(music.title+".png", imageBytes));
 
+        formData.Add(new MultipartFormDataSection("json", json));
         UnityWebRequest www = UnityWebRequest.Post(url+"/media/", formData);
         //추후 로딩 애니메이션추가 
         yield return www.SendWebRequest();

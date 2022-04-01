@@ -5,7 +5,7 @@ using UnityEngine;
 public class UserData : Singleton<UserData>
 {
     public User user;
-
+    public string Token;
     public string id
     {
         get { return user.id; }    // _data ¹ÝÈ¯

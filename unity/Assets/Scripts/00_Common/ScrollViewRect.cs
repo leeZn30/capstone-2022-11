@@ -9,13 +9,14 @@ public class ScrollViewRect : MonoBehaviour
     // 스크롤 뷰와 관련된 수정을 하기 위해 가지고 있는 변수 
     RectTransform rect;
 
-    void Start () {
+    void Awake () {
+
         rect = GetComponent<RectTransform>();
         SetContentSize();
     } 
+
     public void SetContentSize(float height = 100) {
 
-        Debug.Log(height);
         int cnt = transform.childCount;
         for(int i=0; i<cnt; i++)
         {

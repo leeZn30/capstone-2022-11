@@ -36,7 +36,7 @@ public class Page : MonoBehaviour
 
     }
     public void Close()
-    {
+    { 
         //√ ±‚»≠
         Reset();
         //¥›±‚
