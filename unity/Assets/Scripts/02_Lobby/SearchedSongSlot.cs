@@ -24,7 +24,8 @@ public class SearchedSongSlot : MonoBehaviour
     {
         music = _music;
         titleText.text = music.title;
-        artistText.text = music.userID;
+ 
+        artistText.text = music.nickname + "(" + music.userID + ")";
         LoadImage(music.imagelocate);
         toggle.isOn = false;
     }
@@ -37,7 +38,7 @@ public class SearchedSongSlot : MonoBehaviour
         }
         else
         {
-            StartCoroutine(GetTexture("http://localhost:8080/" + filePath));
+            StartCoroutine(GetTexture("http://localhost:8080" + filePath));
         }
     }
 

@@ -60,6 +60,7 @@ public class MusicController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            //테스트용 코드
             musicList = ll.musicList;
             MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate,true);
             //MusicWebRequest.Instance.GetMusicList("musicList",UserData.Instance.id);
@@ -73,9 +74,10 @@ public class MusicController : MonoBehaviour
                 if ((int)audioSource.time == (int)audioClip.length)
                 {//재생이 끝나면
                     
-                    Debug.Log("자연 재생 끝");
+                    
                     if (RepeatMode.OneRepeat != repeatMode)
                     {
+                        Debug.Log("자연 재생 끝");
                         isCurrentSongFinish = true;
                         AutoPlayNextMusic();
                     }
@@ -270,7 +272,7 @@ public class MusicController : MonoBehaviour
         for(int i=0; i<2; i++)
         {
             titleTexts[i].text = musicList[currentMusicIndex].title;
-            artistTexts[i].text = musicList[currentMusicIndex].userID;
+            artistTexts[i].text = musicList[currentMusicIndex].nickname+ "("+musicList[currentMusicIndex].userID+")";
         }
     }
 
