@@ -124,13 +124,17 @@
         });
 
         socket.on("Error", function(errormsg){
+            console.log(errormsg);
           if (errormsg == "roomErr") {
             alert("[ERROR -!] 이미 방이 생성되었습니다.");
             location.reload();
           }
-          if (errormsg == "leaveUserSender") {
+          else if (errormsg == "leaveUserSender") {
             alert("[ERROR -!] 방송이 종료되었습니다.");
-            location.reload();
+            localVideo.srcObject = null;
+          }
+          else {
+          location.reload();
           }
         });
 

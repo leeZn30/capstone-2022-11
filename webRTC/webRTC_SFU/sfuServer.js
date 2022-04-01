@@ -39,10 +39,10 @@ let iceServers = {
 
 io.on('connection', function(socket) {
     console.log("User Connected :" + socket.id);
-    // socket.on('disconnect', function(reason){
-    //     console.log(`${socket.id}님이 ${reason}의 이유로 퇴장하셨습니다. `)
-    //     leaveUser(socket);
-    // });
+    socket.on('disconnect', function(reason){
+        console.log(`${socket.id}님이 ${reason}의 이유로 퇴장하셨습니다. `)
+        leaveUser(socket);
+    });
 
     socket.on('joinRoom', function(userOption) {
         let userId = userOption.userId;
@@ -69,10 +69,6 @@ io.on('connection', function(socket) {
                 console.log("[SERVER ERROR-!] already create Room!")
                 throw "roomErr";
             }
-            // if ('senderPC' in serverReceiverPCs[userOption.roomNum]) {
-            //     console.log("[SERVER ERROR-!] already create Room!")
-            //     throw "roomErr";
-            // }
             serverReceiverPCs[userOption.roomNum] = {
                 'senderPC':userOption.senderPC, 
                 'senderId':userOption.userId,
@@ -133,11 +129,17 @@ io.on('connection', function(socket) {
     });
 
     socket.on("getSenderCandidate", async function(candidate, userOption){
-        console.log("[SERVER] get Sender Candi");
-        let icecandidate = new wrtc.RTCIceCandidate(candidate);
-        let rtcPC = serverReceiverPCs[userOption.roomNum].receivePC;
-        await rtcPC.addIceCandidate(icecandidate);
-        console.log("ServerCandi Perfect");
+        try{
+            console.log("[SERVER] get Sender Candi");
+            let icecandidate = new wrtc.RTCIceCandidate(candidate);
+            let rtcPC = serverReceiverPCs[userOption.roomNum].receivePC;
+            await rtcPC.addIceCandidate(icecandidate);
+            console.log("ServerCandi Perfect");
+        }
+        catch(err) {
+            console.log(err);
+            socket.emit('Error', err);
+        }
     });
     
     socket.on("getReceiverCandidate", async function(candidate, userOption){
@@ -196,33 +198,34 @@ function createReceiverPeerConnection(senderOption) {
     }
 }
 
-// function leaveUser(socket) {
-//     let Keys = Object.keys(rooms);
-//     for (let i = 0; i < Keys.length; i++) { //room 탐색
-//         let tmpRoom = rooms[Keys[i]] //ex tmpRoom == room1
-//         for (let j = 0; j < tmpRoom.length; j++) {
-//             if (tmpRoom[j].userId == socket.id) { //leave user를 찾았을ㄸㅐ
-//                 if (serverReceiverPCs[tmpRoom].senderId == socket.id) { //leave user가 버스커인 경우
-//                     delete rooms[tmpRoom];
-//                     delete serverReceiverPCs[tmpRoom]
-//                     for (let k = 0; k < serverSenderPCs.length; k++) {
-//                         if (serverSenderPCs[k].roomNum == tmpRoom){ //버스킹을 보는 유저에게 알림
-//                             socket.to(serverSenderPCs[k].id).emit("Error", "leaveUserSender")
-//                         }
-//                     }
-//                     serverSenderPCs = serverSenderPCs.filter(function(data) { //해당 룸을 다 지움
-//                         return data.roomNum != tmpRoom;
-//                     });
-//                     break;
-//                 }
-//                 else { //leave user가 버스킹을 보는 유저일 때
-//                     delete rooms[tmpRoom][userId];
-//                     serverSenderPCs = serverSenderPCs.filter(function(data) { //해당 룸을 다 지움
-//                         return data.id != socket.id;
-//                     });
-//                     break;
-//                 }
-//             }
-//         }
-//     }
-// }
+function leaveUser(socket) {
+    let Keys = Object.keys(rooms);
+    for (let i = 0; i < Keys.length; i++) { //room 탐색
+        let tmpRoom = rooms[Keys[i]] //ex tmpRoom == rooms[room1]
+        for (let j = 0; j < tmpRoom.length; j++) {
+            if (tmpRoom[j].userId == socket.id) { //leave user를 찾았을ㄸㅐ
+                if (serverReceiverPCs[Keys[i]].senderId == socket.id) { //leave user가 버스커인 경우
+                    delete rooms[Keys[i]];
+                    delete serverReceiverPCs[Keys[i]];
+
+                    for (let k = 0; k < serverSenderPCs.length; k++) {
+                        if (serverSenderPCs[k].roomNum == Keys[i]){ //버스킹을 보는 유저에게 알림
+                            socket.to(serverSenderPCs[k].id).emit("Error", "leaveUserSender");
+                        }
+                    }
+                    serverSenderPCs = serverSenderPCs.filter(function(data) { //해당 룸을 다 지움
+                        return data.roomNum != Keys[i];
+                    });
+                    break;
+                }
+                else { //leave user가 버스킹을 보는 유저일 때
+                    delete rooms[tmpRoom][userId];
+                    serverSenderPCs = serverSenderPCs.filter(function(data) { //해당 룸을 다 지움
+                        return data.id != socket.id;
+                    });
+                    break;
+                }
+            }
+        }
+    }
+}
