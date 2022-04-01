@@ -43,10 +43,6 @@
           .then(function (stream) {
             /* use the stream */
             userStream = stream;
-            localVideo.srcObject = stream;
-            localVideo.onloadedmetadata = function (e) {
-              localVideo.play();
-            };
             
             //create Sender PC
             userOption['option'] = 1;
@@ -64,6 +60,7 @@
             sendPC.
             createOffer()
             .then((offer) => {
+              console.log("[CLIENT]send Offer");
               sendPC.setLocalDescription(new RTCSessionDescription(offer));
               socket.emit("senderOffer", offer, userOption);
             })
@@ -115,9 +112,25 @@
           let icecandidate = new RTCIceCandidate(candidate);
           if (option == 1) {
             sendPC.addIceCandidate(icecandidate);
+            
+            localVideo.srcObject = userStream;
+            localVideo.onloadedmetadata = function (e) {
+              localVideo.play();
+            };
           }
           else {
             receivePC.addIceCandidate(icecandidate);
+          }
+        });
+
+        socket.on("Error", function(errormsg){
+          if (errormsg == "roomErr") {
+            alert("[ERROR -!] 이미 방이 생성되었습니다.");
+            location.reload();
+          }
+          if (errormsg == "leaveUserSender") {
+            alert("[ERROR -!] 방송이 종료되었습니다.");
+            location.reload();
           }
         });
 

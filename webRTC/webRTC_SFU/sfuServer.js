@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
 });
 
 let io = socket(httpsServer);
-let serverReceiverPCs = {};
+let serverReceiverPCs = {'room1':{'senderPC':'yannju'}};
 let serverSenderPCs = [];
 let userStreams = {};
 let rooms = {};
@@ -39,6 +39,10 @@ let iceServers = {
 
 io.on('connection', function(socket) {
     console.log("User Connected :" + socket.id);
+    // socket.on('disconnect', function(reason){
+    //     console.log(`${socket.id}님이 ${reason}의 이유로 퇴장하셨습니다. `)
+    //     leaveUser(socket);
+    // });
 
     socket.on('joinRoom', function(userOption) {
         let userId = userOption.userId;
@@ -47,13 +51,11 @@ io.on('connection', function(socket) {
         if (roomNum in rooms) {
             rooms[roomNum].push({'userId':userId});
             roomOption = {'roomNum':roomNum, 'userId':userId};
-            socket.join(roomNum);
             socket.emit("joinRoom", roomOption);
         }
         else {
             rooms[roomNum] = [{'userId':userId}];
             roomOption = {'roomNum':roomNum, 'userId':userId};
-            socket.join(roomNum);
             socket.emit('createRoom', roomOption);
         }
         console.log(rooms);
@@ -63,7 +65,19 @@ io.on('connection', function(socket) {
         console.log("[SERVER]get Offer");
         try {
             socket.join(userOption.roomNum);
-            serverReceiverPCs[userOption.roomNum] = {'senderPC':userOption.senderPC};
+            if (userOption.roomNum in serverReceiverPCs) {
+                console.log("[SERVER ERROR-!] already create Room!")
+                throw "roomErr";
+            }
+            // if ('senderPC' in serverReceiverPCs[userOption.roomNum]) {
+            //     console.log("[SERVER ERROR-!] already create Room!")
+            //     throw "roomErr";
+            // }
+            serverReceiverPCs[userOption.roomNum] = {
+                'senderPC':userOption.senderPC, 
+                'senderId':userOption.userId,
+                'receiverId':socket.id
+            };
             let receiverPC = createReceiverPeerConnection(userOption);
             receiverPC.onicecandidate = event => {
                 if (event.candidate) {
@@ -85,6 +99,9 @@ io.on('connection', function(socket) {
             })
         } catch (error) {
             console.log(error);
+            if (error == "roomErr") {
+                socket.emit("Error", error);
+            }
         }
     });
 
@@ -98,8 +115,9 @@ io.on('connection', function(socket) {
             socket.emit("getCandidate", event.candidate, userOption.option);
         };
         serverSenderPCs.push({
-                'receivePC':userOption.receivePC, 
+                'roomNum':userOption.roomNum,
                 'senderPC':sendPC, 
+                'receivePC':userOption.receivePC, 
                 'id':userOption.userId
         });
         sendPC
@@ -177,3 +195,34 @@ function createReceiverPeerConnection(senderOption) {
         console.log(e);
     }
 }
+
+// function leaveUser(socket) {
+//     let Keys = Object.keys(rooms);
+//     for (let i = 0; i < Keys.length; i++) { //room 탐색
+//         let tmpRoom = rooms[Keys[i]] //ex tmpRoom == room1
+//         for (let j = 0; j < tmpRoom.length; j++) {
+//             if (tmpRoom[j].userId == socket.id) { //leave user를 찾았을ㄸㅐ
+//                 if (serverReceiverPCs[tmpRoom].senderId == socket.id) { //leave user가 버스커인 경우
+//                     delete rooms[tmpRoom];
+//                     delete serverReceiverPCs[tmpRoom]
+//                     for (let k = 0; k < serverSenderPCs.length; k++) {
+//                         if (serverSenderPCs[k].roomNum == tmpRoom){ //버스킹을 보는 유저에게 알림
+//                             socket.to(serverSenderPCs[k].id).emit("Error", "leaveUserSender")
+//                         }
+//                     }
+//                     serverSenderPCs = serverSenderPCs.filter(function(data) { //해당 룸을 다 지움
+//                         return data.roomNum != tmpRoom;
+//                     });
+//                     break;
+//                 }
+//                 else { //leave user가 버스킹을 보는 유저일 때
+//                     delete rooms[tmpRoom][userId];
+//                     serverSenderPCs = serverSenderPCs.filter(function(data) { //해당 룸을 다 지움
+//                         return data.id != socket.id;
+//                     });
+//                     break;
+//                 }
+//             }
+//         }
+//     }
+// }
