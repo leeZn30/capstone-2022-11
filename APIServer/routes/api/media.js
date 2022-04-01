@@ -16,8 +16,8 @@ const {AWS_BUCKET_ACCESS_KEY} = config
 
 AWS.config.update({
     region:         'ap-northeast-2',
-  accessKeyId:    AWS_BUCKET_ACCESS_ID,
-  secretAccessKey: AWS_BUCKET_ACCESS_KEY
+    accessKeyId:    AWS_BUCKET_ACCESS_ID,
+    secretAccessKey: AWS_BUCKET_ACCESS_KEY
 })
 
 router.get('/*', (req,res)=>{
@@ -66,7 +66,7 @@ router.post('/',function(req, res){
         res.end()
     })
     form.parse(req)
-    
+
 })
 
 module.exports = router

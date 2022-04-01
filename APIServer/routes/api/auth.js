@@ -44,8 +44,10 @@ router.post('/logout', (req, res)=> {
 })
 
 router.post('/modifiedChar', auth, async(req, res) => {
-    const {id} = req.user.id;
+    const id = req.user.id;
     const {value} = req.body;
+
+    console.log(id)
 
     User.findOne({id: id}).then((user)=> {
         console.log(user);
@@ -70,7 +72,7 @@ router.get('/user', auth, async(req, res)=>{
 })
 
 router.get('/musicList', auth, async(req,res) => {
-    const {id} = req.user.id;
+    const id = req.user.id;
 
     User.findOne({id:id}).then((user) => {
         res.status(200).json({musicList:user.musicList})
@@ -78,7 +80,7 @@ router.get('/musicList', auth, async(req,res) => {
 })
 
 router.get('/myList', auth, async(req,res) => {
-    const {id} = req.user.id;
+    const id = req.user.id;
 
     User.findOne({id:id}).then((user) => {
         res.status(200).json({myList:user.myList})

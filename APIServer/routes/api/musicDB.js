@@ -22,7 +22,10 @@ router.get('/', async(req, res) =>{
 router.post('/', async(req, res) => {
     const {locate, title, userID, category} = req.body;
 
+    console.log(userID);
+
     User.findOne({id: userID}).then((user)=> {
+        console.log(user);
         const id = userID + user.totalNum;
         console.log(id)
 
