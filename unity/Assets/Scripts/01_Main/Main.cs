@@ -5,8 +5,14 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;	// UnityWebRequest사용을 위해서 적어준다.
-[System.Serializable]
 
+[System.Serializable]
+public class IdEmail
+{
+    public string id;
+    public string email;
+}
+[System.Serializable]
 public class User
 {
     public string id;
@@ -36,7 +42,7 @@ public class Main : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         animator = GetComponent<Animator>();
         joinBtn.onClick.AddListener(delegate { join.OpenJoinPanel(); });
@@ -129,11 +135,13 @@ public class Main : MonoBehaviour
             {
 
                 Debug.Log(request.error.ToString());
+                join.FailJoin();
             }
         }
 
 
     }
+    
     // Update is called once per frame
     void Update()
     {

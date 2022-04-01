@@ -136,8 +136,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   folderName: 
+  content: 
   id: 0
   img: {fileID: 0}
+  name_text: {fileID: 0}
 --- !u!1 &9157759203666654109
 GameObject:
   m_ObjectHideFlags: 0
@@ -206,8 +208,7 @@ MonoBehaviour:
   m_text: "\uB0B4\uAC00 \uC62C\uB9B0 \uC74C\uC545"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: faea1a52d3a19314dba5366fc86d707e, type: 2}
-  m_sharedMaterial: {fileID: 3210449089590111057, guid: faea1a52d3a19314dba5366fc86d707e,
-    type: 2}
+  m_sharedMaterial: {fileID: 3210449089590111057, guid: faea1a52d3a19314dba5366fc86d707e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -338,7 +339,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 688c7c47cf939c048ada149a7cd0367d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
