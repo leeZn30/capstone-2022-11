@@ -219,10 +219,13 @@ function leaveUser(socket) {
                     break;
                 }
                 else { //leave user가 버스킹을 보는 유저일 때
-                    delete rooms[tmpRoom][userId];
+                    rooms[Keys[i]] = rooms[Keys[i]].filter(function(data) { //해당 룸을 다 지움
+                        return data.userId != socket.id;
+                    });
                     serverSenderPCs = serverSenderPCs.filter(function(data) { //해당 룸을 다 지움
                         return data.id != socket.id;
                     });
+                    socket.to(socket.id).emit("Error", "leaveUserReceiver");
                     break;
                 }
             }

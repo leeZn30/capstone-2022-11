@@ -30,6 +30,8 @@
         let sendPC, receivePC;
         let userStream;
         var roomNum;
+        let isJoin = false;
+        let isCreate = false;
 
         socket.on("createRoom", async function(userOption) {
           console.log("Create : " + userOption.userId + " RoomID : " + userOption.roomNum);
@@ -133,8 +135,11 @@
             alert("[ERROR -!] 방송이 종료되었습니다.");
             localVideo.srcObject = null;
           }
+          else if (errormsg == "leaveUserReceiver") {
+            localVideo.srcObject = null;
+          }
           else {
-          location.reload();
+            location.reload();
           }
         });
 
