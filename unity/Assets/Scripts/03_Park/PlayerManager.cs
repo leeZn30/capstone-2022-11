@@ -2,28 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Photon.Pun;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : MonoBehaviourPunCallbacks
 {
-
-    // SingleTon
-    public static PlayerManager instance = null;
-
-    void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            if (instance != null)
-            {
-                Destroy(this);
-            }
-        }
-
-    }
 
     // Player 객체 받아오기
     [SerializeField] private GameObject player;
@@ -42,10 +24,13 @@ public class PlayerManager : MonoBehaviour
     void Start()
     {
         player = GameManager.instance.myPlayer;
-        character = player.transform.GetChild(0).GetComponent<Character>();
-        character.ChangeSprite(UserData.Instance.user.character);
-        player.transform.GetChild(2).GetComponent<TextMeshPro>().text = UserData.Instance.user.nickname;
-        Debug.Log("Character setting");
+
+        if (player.GetPhotonView().IsMine)
+        {
+            character = player.transform.GetChild(0).GetComponent<Character>();
+            character.ChangeSprite(UserData.Instance.user.character);
+            player.transform.GetChild(2).GetComponent<TextMeshPro>().text = UserData.Instance.user.nickname;
+        }
     }
 
     // Update is called once per frame

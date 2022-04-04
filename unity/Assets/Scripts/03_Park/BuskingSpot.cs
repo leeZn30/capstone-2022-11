@@ -67,7 +67,6 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         isUsed = true;
 
         GameObject player = GameManager.instance.myPlayer;
-        //player.GetComponent<PlayerControl>().OnVideoPanel();
 
         // Ä«¸Þ¶ó
         WebCamDevice[] devices = WebCamTexture.devices;
