@@ -18870,6 +18870,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1740768939}
   m_CullTransparentMesh: 1
+--- !u!1 &1741898546
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1741898548}
+  - component: {fileID: 1741898547}
+  m_Layer: 0
+  m_Name: NetworkManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1741898547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1741898546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ede342c58257d254a835008a16f6c569, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  connectionInfoText: {fileID: 1196953706}
+  joinButton: {fileID: 1802217960}
+--- !u!4 &1741898548
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1741898546}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.7831554, y: -0.55945617, z: 503.24213}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1742030666
 GameObject:
   m_ObjectHideFlags: 0
@@ -19879,7 +19924,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1802217961}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741898547}
+        m_TargetAssemblyTypeName: NetworkManager, Assembly-CSharp
+        m_MethodName: Connect
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1802217961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23620,6 +23677,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
+
   m_SourcePrefab: {fileID: 100100000, guid: eb831a09cd1465345b67b9a90743e246, type: 3}
 --- !u!224 &1777222312227744945 stripped
 RectTransform:
@@ -23627,6 +23685,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 1777222312227744944}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4191697866918534854
+
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
