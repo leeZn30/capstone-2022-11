@@ -35,15 +35,17 @@ public class AddPageInSongPage : Page
     {
         if (isAlreadyInit == false)
         {
+            isAlreadyInit = true;
+            musicControllerMini.Init();
             infoInputs = GetComponentsInChildren<TMP_InputField>();
             imageUploadBtn.onClick.AddListener(delegate
             {
-                string filePath2 = fileOpenDialog.FileOpen(FileOpenDialog.Type.Image);
-                if (!string.IsNullOrEmpty(filePath2))
+                string filePath = fileOpenDialog.FileOpen(FileOpenDialog.Type.Image);
+                if (!string.IsNullOrEmpty(filePath))
                 {
-                    imageBytes = File.ReadAllBytes(filePath2);
-                    LoadImage(imageBytes);
-                    Debug.Log(filePath2);
+                    
+                    LoadImage(filePath);
+                    Debug.Log(filePath);
                 }
             });
             musicUploadBtn.onClick.AddListener(delegate
@@ -55,14 +57,18 @@ public class AddPageInSongPage : Page
                 }
             });
             okayBtn.onClick.AddListener(UploadAndFinish);
-            isAlreadyInit = true;
+
         }
     }
     void UploadAndFinish()
     {
         if (musicControllerMini.audioClip != null && infoInputs[0].text.Length>0)
         {
-            MusicUpload.Instance.FileUpload(musicBytes, localFileName.text);
+            Music music = new Music();
+            music.title = infoInputs[0].text;
+            music.userID = UserData.Instance.id;
+            music.nickname = UserData.Instance.user.nickname;
+            MusicUpload.Instance.FileUpload(musicBytes,imageBytes, music,localFileName.text);
             Close();
         }
         else
@@ -73,18 +79,21 @@ public class AddPageInSongPage : Page
     }
     override public void Reset()
     {
+        Init();
+
         errorText.text = "";
-        musicBytes = new byte[0];
-        imageBytes = new byte[0];
+        musicBytes = null;
+        imageBytes = null;
         infos = new string[0];
         localFileName.text = "파일 없음";
+        musicControllerMini.Reset();
     }
-    private void LoadImage(byte[] byteTexture)
+    private void LoadImage(string filePath)
     {
-
+        imageBytes = File.ReadAllBytes(filePath);
         Texture2D texture = new Texture2D(0, 0);
 
-        texture.LoadImage(byteTexture);
+        texture.LoadImage(imageBytes);
         Rect rect = new Rect(0, 0, texture.width, texture.height);
         songImage.sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
         songImage.color = new Color(255, 255, 255, 1);
