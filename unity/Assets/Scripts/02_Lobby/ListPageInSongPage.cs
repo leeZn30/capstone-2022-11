@@ -129,7 +129,7 @@ public class ListPageInSongPage : Page
 
         if (musicList != null)//테스트용 코드
         {
-            GetMusicList(_listName, UserData.Instance.id);
+            StartCoroutine(GET_MusicList(_listName, UserData.Instance.id));
         }
         
     }

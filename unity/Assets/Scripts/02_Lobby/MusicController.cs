@@ -80,7 +80,7 @@ public class MusicController : MusicWebRequest
             //테스트용 코드
             //musicList = ll.musicList;
             //MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate,true);
-            GetMusicList("musicList", UserData.Instance.id, false); 
+            StartCoroutine(GET_MusicList("musicList", UserData.Instance.id, false));
         }
         
         if (audioSource.clip != null)
@@ -176,8 +176,7 @@ public class MusicController : MusicWebRequest
                 currentSongSlotList.Add(ss);
             }
             scrollViewRect.SetContentSize(100);
-
-            GetAudioClip(currentSongSlotList[currentSongIndex].GetMusic().locate, play);
+            StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, play));
         }
     }
 
@@ -267,9 +266,9 @@ public class MusicController : MusicWebRequest
         {
             currentSongIndex = (currentSongIndex - 1) % currentSongSlotList.Count;
         }
-        Debug.Log("currentIndex" + currentSongIndex);
 
-        GetAudioClip(currentSongSlotList[currentSongIndex].GetMusic().locate,true);
+        Debug.Log("currentIndex" + currentSongIndex);
+        StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, true));
     }
     void ClickNextButton()
     {
@@ -285,8 +284,8 @@ public class MusicController : MusicWebRequest
         }
         Debug.Log("currentIndex" + currentSongIndex);
         //재생
-        GetAudioClip(currentSongSlotList[currentSongIndex].GetMusic().locate, true);
-        
+        StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, true));
+
     }
     int PickRandomIndex()
     {
@@ -319,13 +318,13 @@ public class MusicController : MusicWebRequest
                 //재생목록의 끝에 도달하여 재생 종료하고 맨앞 음원으로 이동
                 if (currentSongSlotList != null)
                 {
-                    GetAudioClip(currentSongSlotList[0].GetMusic().locate,false);
+                    StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[0].GetMusic().locate, false));
                     return;
                 }
             }
         }
-       GetAudioClip(currentSongSlotList[currentSongIndex].GetMusic().locate, true);
-        
+        StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, true));
+
     }
     void OpenCloseInfo()
     {

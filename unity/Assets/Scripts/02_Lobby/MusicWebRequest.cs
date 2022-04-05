@@ -7,6 +7,12 @@ using UnityEngine.Networking;
 using LitJson;
 using NAudio;
 using NAudio.Wave;
+
+public class ModifiedChar
+{
+    public string id;
+    public int value;
+}
 public class MusicTitle
 {
     public string title;
@@ -38,30 +44,78 @@ public class MusicWebRequest : MonoBehaviour
     protected delegate void MusicHandler(AudioClip audioClip, bool play);//play- 바로 재생할것인지
     protected event MusicHandler OnGetClip;
 
-    // Start is called before the first frame update
-    void Start()
+
+    protected delegate void CharacterHandler(int character);//play- 바로 재생할것인지
+    protected event CharacterHandler ModifyCharacter;
+
+    protected IEnumerator POST_ModifiedChar(string _id, int _character)
+    {
+        ModifiedChar mo = new ModifiedChar//현재 inputfield에 작성된 값 클래스로 변환
+        {
+            id = _id,
+            value = _character
+        };
+     
+
+
+        string json = JsonUtility.ToJson(mo);
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/auth/modifiedChar", json))
+        {// 보낼 주소와 데이터 입력
+
+            byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            request.SetRequestHeader("token", UserData.Instance.Token);
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
+
+
+            if (request.error == null)
+            {
+
+                Debug.Log(request.downloadHandler.text);
+
+                ModifyCharacter(_character);
+
+            }
+            else
+            {
+                Debug.Log(request.error.ToString());
+
+            }
+        }
+    }
+
+    protected IEnumerator Upload(byte[] musicBytes, byte[] imageBytes, Music music, string fileName)
     {
 
-    }
+        string json = JsonUtility.ToJson(music);
 
-    // Update is called once per frame
-    void Update()
-    {
+        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
 
+        formData.Add(new MultipartFormFileSection(fileName, musicBytes));
+        if (imageBytes != null)
+            formData.Add(new MultipartFormFileSection(music.title + ".png", imageBytes));
+
+        formData.Add(new MultipartFormDataSection("json", json));
+        UnityWebRequest www = UnityWebRequest.Post(url + "/media/", formData);
+
+        //추후 로딩 애니메이션추가 
+        yield return www.SendWebRequest();
+
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            //로딩애니메이션 종료
+            Debug.Log("Form upload complete!");
+        }
     }
-    public void GetMusicList(string listName, string _userid, bool play=false)
-    {
-        StartCoroutine(GET_MusicList(listName, _userid, play));
-    }
-    public void SearchTitle(string _title)
-    {
-        StartCoroutine(GET_SearchMusicTitle(_title));
-    }
-    public void GetAudioClip(string filePath, bool play)
-    {
-        StartCoroutine(GetAudioCilpUsingWebRequest(filePath,play));
-    }
-    IEnumerator GET_MusicList(string listName, string _userid, bool play=false)
+    protected IEnumerator GET_MusicList(string listName, string _userid, bool play=false)
     {
         UserID userID= new UserID();
         userID.id = _userid;
@@ -118,7 +172,7 @@ public class MusicWebRequest : MonoBehaviour
 
 
     }
-    IEnumerator GetAudioCilpUsingWebRequest(string _filePath, bool play)
+    protected IEnumerator GetAudioCilpUsingWebRequest(string _filePath, bool play)
     {
         AudioType audioType = AudioType.MPEG;
 
@@ -151,7 +205,7 @@ public class MusicWebRequest : MonoBehaviour
             }
         }
     }
-    IEnumerator GET_SearchMusicTitle(string _title)
+    protected IEnumerator GET_SearchMusicTitle(string _title)
     {
         MusicTitle musicTitle = new MusicTitle();
         musicTitle.title = _title;

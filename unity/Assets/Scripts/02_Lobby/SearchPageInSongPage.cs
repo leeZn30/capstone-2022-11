@@ -69,7 +69,8 @@ public class SearchPageInSongPage : Page
     {
         string searchText = searchField.text;
         Reset();
-        SearchTitle(searchText);
+        searchField.text = searchText;
+        StartCoroutine(GET_SearchMusicTitle(searchText));
     }
     override public  void Reset()
     {//오버라이딩

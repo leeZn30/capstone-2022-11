@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;	// UnityWebRequest사용을 위해서 적어준다.
+using LitJson;
 
 [System.Serializable]
 public class IdEmail
@@ -13,14 +14,6 @@ public class IdEmail
     public string email;
 }
 [System.Serializable]
-public class User
-{
-    public string id;
-    public string password;
-    public string email;
-    public string nickname;
-    public int character;
-}
 public class Auth
 {
     public string id;
@@ -92,11 +85,26 @@ public class Main : MonoBehaviour
 
             if (request.error == null)//로그인 성공
             {
+                if (request.isDone)
+                {
+                    string jsonResult = System.Text.Encoding.UTF8.GetString(request.downloadHandler.data);
 
+
+                    JsonData jsonData = JsonToObject(jsonResult);
+                    Debug.Log("결과 " + jsonData[1]);
+                    User user = new User();
+             
+                    user.SetUser((string)(jsonData[1]["id"]),
+                            (string)(jsonData[1]["email"]),
+                            (string)(jsonData[1]["nickname"]),
+                            (int)(jsonData[1]["character"])
+                            );
+
+                    UserData.Instance.Token = (string)jsonData[0];                    
+                    UserData.Instance.user = user;
+                }
                 Debug.Log(request.downloadHandler.text);
 
-                //아이디 저장
-                UserData.Instance.id = auth.id;
                 SceneManager.LoadScene("02_Lobby");
             }
             else//로그인 실패
@@ -141,10 +149,9 @@ public class Main : MonoBehaviour
 
 
     }
-    
-    // Update is called once per frame
-    void Update()
+    JsonData JsonToObject(string json)
     {
-        
+        return JsonMapper.ToObject(json);
     }
+
 }

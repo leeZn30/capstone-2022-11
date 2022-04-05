@@ -16,8 +16,8 @@ public class CharacterSetPage : Page
     private List<CharacterPartsSlot> characterPartsSlots;
 
 
-    public delegate void CharacterHandler();
-    public event CharacterHandler OnChangeCharacter;
+    public delegate void CharacterChangeHandler();
+    public event CharacterChangeHandler OnChangeCharacter;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,14 +31,19 @@ public class CharacterSetPage : Page
         {
              tmp += partsIdxs[i] * (int)Mathf.Pow(10, (i) * 2);
         }
-        UserData.Instance.user.character = tmp;
-        OnChangeCharacter();
+        
+        
+
         //DB에 바뀐 char 값 업로드
-        //
-        //
-
+        StartCoroutine(POST_ModifiedChar(UserData.Instance.id, tmp));
+      
+        
+    }
+    void SetUserDataCharacter(int num)
+    {
+        UserData.Instance.user.character = num;
+        OnChangeCharacter();
         Close();
-
     }
     public override void Init()
     {
@@ -60,6 +65,8 @@ public class CharacterSetPage : Page
                 characterPartsSlots[i].OnChangeSlotImage += LoadParts;
             }
             setBtn.onClick.AddListener(SetCharacter);
+
+            ModifyCharacter += SetUserDataCharacter;
             isAlreadyInit = true;
         }
     }

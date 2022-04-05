@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class MusicUpload : Singleton<MusicUpload>
-{
+public class MusicUpload : MonoBehaviour
+{ 
     string url = "http://localhost:8080/api";
     void Start()
     {
