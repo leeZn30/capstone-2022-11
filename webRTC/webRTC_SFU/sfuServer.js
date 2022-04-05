@@ -1,5 +1,5 @@
 const express = require("express");
-const https = require("https");
+const https = require("http");
 const socket = require("socket.io");
 const app = express();
 const fs = require('fs');
@@ -16,6 +16,7 @@ const httpsServer = https.createServer(option, app);
 httpsServer.listen(port, function () {
     console.log("HTTPS server listening on port " + port);
 });
+
 // 정적 파일 불러오기
 app.use(express.static(__dirname + "/public"));
 

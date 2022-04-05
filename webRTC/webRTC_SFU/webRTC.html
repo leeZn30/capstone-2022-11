@@ -15,7 +15,7 @@
     </div>
 
     <script>
-        let socket = io.connect("https://172.20.10.4:8080");
+        let socket = io.connect("http://localhost:8080");
         let iceServers = {
           iceServers: [
             { urls: "stun:stun.services.mozilla.com" },
@@ -126,7 +126,8 @@
           roomNum = 'room1';
           let userOption = {roomNum:roomNum, userId:socket.id};
           
-          socket.emit("joinRoom", userOption);
+          //socket.emit("joinRoom", userOption);
+          socket.emit("Test", "hello");
         }   
           
         function room2Click() {

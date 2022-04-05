@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
+using System;
+using KyleDulce.SocketIo;
 
 public class BuskingSpot : MonoBehaviourPun, IPunObservable
 {
@@ -26,6 +28,8 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
     [SerializeField] private AudioSource micAudioSource;
 
     public bool isUsed = false;
+
+    Socket socket;
 
     private void Update()
     {
@@ -115,18 +119,37 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
                 while (!(Microphone.GetPosition(mic) > 0)) { } // Wait until the recording has started
                 micAudioSource.Play(); // Play the audio source!
                 player.GetComponent<PlayerControl>().OffInteractiveButton();
+                webRTCConnect();
             }
             catch
             {
+                webRTCConnect();
                 Debug.Log("No mic");
             }
 
         }
         else // 카메라 텍스쳐 없음
         {
+            webRTCConnect();
             Debug.Log("No Camera Texture");
         }
 
+    }
+
+    void webRTCConnect()
+    {
+        try
+        {
+            socket = SocketIo.establishSocketConnection("http://localhost:8080");
+            socket.connect();
+
+            Debug.Log(socket);
+            Debug.Log("Connect Success!");
+        }
+        catch (Exception ex)
+        {
+            Debug.Log(ex);
+        }
 
     }
 
