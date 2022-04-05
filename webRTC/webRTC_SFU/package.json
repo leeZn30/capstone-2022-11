@@ -11,6 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "wrtc": "^0.4.7",
-    "socket.io": "^4.4.1"
+    "socket.io": "2.3.0"
   }
 }

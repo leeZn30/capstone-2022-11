@@ -6,6 +6,7 @@ const fs = require('fs');
 const { join } = require("path");
 const port = 8080;
 const wrtc = require("wrtc");
+const { type } = require("express/lib/response");
 
 const option = {
     key: fs.readFileSync('privkey.pem', 'utf8'), 
@@ -35,7 +36,7 @@ let iceServers = {
       { urls: "stun:stun.services.mozilla.com" },
       { urls: "stun:stun.l.google.com:19302" },
     ],
-};              
+};         
 
 io.on('connection', function(socket) {
     console.log("User Connected :" + socket.id);
@@ -43,7 +44,6 @@ io.on('connection', function(socket) {
         console.log(`${socket.id}님이 ${reason}의 이유로 퇴장하셨습니다. `)
         leaveUser(socket);
     });
-
     socket.on('joinRoom', function(userOption) {
         let userId = userOption.userId;
         let roomNum = userOption.roomNum;
