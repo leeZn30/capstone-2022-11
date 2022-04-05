@@ -230,5 +230,6 @@ function leaveUser(socket) {
                 }
             }
         }
+        break;
     }
 }
