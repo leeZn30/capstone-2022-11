@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class MusicUpload : Singleton<MusicUpload>
-{
-    string url = "http://localhost:8080";
+public class MusicUpload : MonoBehaviour
+{ 
+    string url = "http://localhost:8080/api";
     void Start()
     {
         
@@ -28,8 +28,10 @@ public class MusicUpload : Singleton<MusicUpload>
 
         formData.Add(new MultipartFormDataSection("json", json));
         UnityWebRequest www = UnityWebRequest.Post(url+"/media/", formData);
+
         //추후 로딩 애니메이션추가 
         yield return www.SendWebRequest();
+
 
         if (www.result != UnityWebRequest.Result.Success)
         {

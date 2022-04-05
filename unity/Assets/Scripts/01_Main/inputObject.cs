@@ -6,7 +6,6 @@ using TMPro;
 using System.Text.RegularExpressions;//정규표현식
 using LitJson;
 using UnityEngine.Networking;
-
 public class inputObject : MonoBehaviour
 {
     string url = "http://localhost:8080";
