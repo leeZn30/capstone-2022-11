@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 public class SongSlot : SearchedSongSlot
 {
-    private Image backImage;
     private bool select = false;
     public bool isSelected
     {
@@ -14,19 +13,15 @@ public class SongSlot : SearchedSongSlot
             select = value;
             if (select)
             {
-                backImage.color = new Color(1.0f,0.7f, 0.7f);
+                SetImage( new Color(1.0f,0.7f, 0.7f));
             }
             else
             {
-                backImage.color = new Color(1,1, 1);
+                SetImage(new Color(1,1, 1));
             }
             
             
         }
-    }
-    private void Awake()
-    {
-        backImage = GetComponent<Image>();
     }
 
 

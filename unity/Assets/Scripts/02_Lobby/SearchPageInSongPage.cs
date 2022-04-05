@@ -35,7 +35,8 @@ public class SearchPageInSongPage : Page
             currentMusics = new List<Music>();
             searchedSlots = new List<SearchedSongSlot>();
             searchBtn.onClick.AddListener(Search);
-            MusicWebRequest.Instance.OnSearched += LoadSongs;
+
+            OnGetSongList += LoadSongs;
         }
     }
     override public void Load()
@@ -43,7 +44,7 @@ public class SearchPageInSongPage : Page
         LoadSongs();
         Debug.Log("search Page Load");
     }
-    void LoadSongs(List<Music> _musics = null)
+    void LoadSongs(List<Music> _musics = null,bool play=false)
     {
         if (_musics != null)
         {
@@ -55,7 +56,7 @@ public class SearchPageInSongPage : Page
             for (int i=0; i < currentMusics.Count; i++)
             {
                 Debug.Log(currentMusics[i].id);
-                _obj = Instantiate(Resources.Load("Prefabs/searchedSlot") as GameObject,scrollViewObject.transform);
+                _obj = Instantiate(Resources.Load("Prefabs/SearchedSlot") as GameObject,scrollViewObject.transform);
                 _searchedSlot = _obj.GetComponent<SearchedSongSlot>();
                 _searchedSlot.SetMusic(currentMusics[i]);
                 searchedSlots.Add(_searchedSlot);
@@ -68,7 +69,7 @@ public class SearchPageInSongPage : Page
     {
         string searchText = searchField.text;
         Reset();
-        MusicWebRequest.Instance.SearchTitle(searchText);
+        SearchTitle(searchText);
     }
     override public  void Reset()
     {//오버라이딩

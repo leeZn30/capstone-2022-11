@@ -28,7 +28,7 @@ public class Auth
 }
 public class Main : MonoBehaviour
 {
-    string url = "http://localhost:8080";
+    string url = "http://localhost:8080/api";
 
     public Button joinBtn;
     public Button loginBtn;
@@ -79,7 +79,7 @@ public class Main : MonoBehaviour
 
 
         string json = JsonUtility.ToJson(auth);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/auth", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/auth", json))
         {// 보낼 주소와 데이터 입력
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -114,7 +114,7 @@ public class Main : MonoBehaviour
         join.LoadingJoin();
 
         string json = JsonUtility.ToJson(user);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/user", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user", json))
         {// 보낼 주소와 데이터 입력
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);

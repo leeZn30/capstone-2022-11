@@ -13,12 +13,20 @@ public class SearchedSongSlot : MonoBehaviour
     public TextMeshProUGUI titleText;
     public TextMeshProUGUI artistText;
     public Toggle toggle;
+    private Image backImage;
 
-
-    // Start is called before the first frame update
+    private void Awake()
+    {
+        backImage = GetComponent<Image>();
+    }
     void Start()
     {
-        toggle.isOn = false;
+        if(toggle!=null)
+            toggle.isOn = false;
+    }
+    public Music GetMusic()
+    {
+        return music;
     }
     public void SetMusic(Music _music)
     {
@@ -27,26 +35,29 @@ public class SearchedSongSlot : MonoBehaviour
  
         artistText.text = music.nickname + "(" + music.userID + ")";
         LoadImage(music.imagelocate);
-        toggle.isOn = false;
+        if (toggle != null)
+            toggle.isOn = false;
     }
     private void LoadImage(string filePath)
     {
-        if (filePath == "")
+        if (filePath == null || filePath == "")
         {
-            Debug.Log("ddd");
             image.sprite = Resources.Load<Sprite>("Image/none"); 
         }
         else
         {
-            StartCoroutine(GetTexture("http://localhost:8080" + filePath));
+            StartCoroutine(GetTexture("http://localhost:8080/api" + filePath));
         }
     }
-
-    IEnumerator GetTexture(string path)
+    public void SetImage(Color color)
     {
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture(path);
+        backImage.color = color;
+    }
+    IEnumerator GetTexture(string _path)
+    {
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(_path);
         yield return www.SendWebRequest();
-
+        
         if (www.result != UnityWebRequest.Result.Success)
         {
             Debug.Log(www.error);

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class Page : MonoBehaviour
+public class Page : MusicWebRequest
 {//상속용 클래스
     public Button exitBtn; 
     protected bool isAlreadyInit = false;
