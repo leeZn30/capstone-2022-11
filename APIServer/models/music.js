@@ -3,30 +3,43 @@ const mongoose = require('mongoose');
 const MusicSchema = new mongoose.Schema({
     locate: {
         type: String,
-        required: true,
+        required: true
+    },
+    imageLocate: {
+        type: String,
+        default: ""
     },
     title: {
         type: String,
-        required: true,
+        required: true
     },
     id: {
         type: String,
-        required: true,
+        required: true
     },
     userID: {
         type: String,
-        required: true,
+        required: true
     },
-    created: {
-        type:Date,
-        default:Date.now,
+    userNickname: {
+        type: String,
+        required: true
     },
     category: {
         type: String,
-        required: true,
+        required: true
     },
-    imagelocate: {
-        type: String
+    lyrics: {
+        type: String,
+        default: ""
+    },
+    info: {
+        type: String,
+        default: ""
+    },
+    created: {
+        type:Date,
+        default:Date.now
     }
 });
 
