@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    musicList: {
+    uploadList: {
         type: Array,
         default: []
     },

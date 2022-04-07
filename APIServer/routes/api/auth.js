@@ -35,9 +35,10 @@ router.post('/', (req, res)=> {
     })
 })
 
-router.post('/logout', (req, res)=> {
-    res.json("로그아웃 했습니다.")
-})
+// client에서 처리해주는 방식
+// router.post('/logout', (req, res)=> {
+//     res.json("로그아웃 했습니다.")
+// })
 
 router.post('/modifiedChar', auth, async(req, res) => {
     const id = req.user.id;
@@ -54,18 +55,6 @@ router.post('/modifiedChar', auth, async(req, res) => {
             character : user.character
         })
     })
-})
-
-router.get('/user', auth, async(req, res)=>{
-    try{
-        let id = req.user.id;
-        const user = await User.findOne({id}).select("-password");
-        if (!user) throw Error("유저가 존재하지 않습니다.");
-        res.json(user);
-    } catch (e) {
-        console.log(e);
-        res.status(400).json({msg: e.message})
-    }
 })
 
 router.get('/musicList', auth, async(req,res) => {

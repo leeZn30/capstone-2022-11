@@ -33,10 +33,10 @@ router.post('/', async(req, res) => {
             locate, title, id, userID, category
         });
 
-        newMusic.save().then(()=> console.log("save success!!"));
+        newMusic.save().then(()=> console.log("music save success!!"));
 
         user.totalNum += 1;
-        user.musicList.push({title:title, id:id})
+        user.musicList.push({musicID:id});
 
         user.save();
 
