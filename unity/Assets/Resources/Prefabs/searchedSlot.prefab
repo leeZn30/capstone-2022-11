@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 15992833547808481}
   - component: {fileID: 8446591747457994633}
   m_Layer: 5
-  m_Name: searchedSlot
+  m_Name: SearchedSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

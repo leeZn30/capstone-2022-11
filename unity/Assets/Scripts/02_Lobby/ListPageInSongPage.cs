@@ -72,7 +72,7 @@ public class ListPageInSongPage : Page
             editText = editBtn.gameObject.GetComponentInChildren<TextMeshProUGUI>();
             editObject = editBtn.gameObject.transform.GetChild(1).gameObject;
 
-            MusicWebRequest.Instance.OnGetMusicList += LoadSongList;
+           OnGetSongList += LoadSongList;
         }
 
     }
@@ -120,27 +120,24 @@ public class ListPageInSongPage : Page
         contentText.text = content;
 
 
-        GetMusicList(listName);
+        GetSongList(listName);
 
     }
-    void GetMusicList(string _listName)
+
+    void GetSongList(string _listName)
     {//id에 따라 알맞은 재생목록을 불러오는 함수
 
         if (musicList != null)//테스트용 코드
         {
-            LoadSongList(musicList);
-        }
-        else
-        {
-            MusicWebRequest.Instance.GetMusicList(_listName, UserData.Instance.id);
+            StartCoroutine(GET_MusicList(_listName, UserData.Instance.id));
         }
         
     }
 
 
-    void LoadSongList(List<Music> _musicList=null)
+    void LoadSongList(List<Music> _musicList=null,bool play=false)
     {
-        if (_musicList != null)
+        if (_musicList != null || _musicList.Count==0)
         {
             musicList = _musicList;
 

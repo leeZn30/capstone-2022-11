@@ -1,4 +1,5 @@
 ### 1. 프로젝트 소개
+![image](https://user-images.githubusercontent.com/55120146/161776532-34365bf3-3abd-4532-b56f-bec2b07f6c4d.png)
 신개념 메타버스 버스킹 플랫폼 <메타 버스킹>은 오프라인 버스킹의 공간적/시간적 한계를 벗어나 온라인으로 버스킹 문화를 확장하고자 한다.
 메타 버스킹은 가상공간에서 나의 음악을 공유하고, 공연할 수 있으며 다양한 아티스트의 음악을 감상하고 소통할 수 있다. 또한 음원 플레이 리스트를 제공해서 온라인 음원 유통 플랫폼의 역할을 겸한다.
 이러한 새로운 버스킹 플랫폼은 자신을 알리고 싶은 아티스트들의 새로운 홍보 시장이 될 수 있으며, 더 나아가 온라인 버스킹 문화를 주도하는 발판이 되고자 한다.
@@ -56,7 +57,7 @@ github: https://github.com/leeZn30/capstone-2022-11
 ```
 이연주 ⭐⭐⭐⭐1644
 역할: 영상 라이브 스트리밍 서버 구축 담당
-github: https://github.com/yannJu/capstone-2022-11github:
+github: https://github.com/yannJu/capstone-2022-11
 ```
 ---------------------------------------------------------------------------------------------------------------
 
@@ -67,5 +68,11 @@ github: https://github.com/yannJu/capstone-2022-11github:
 ---------------------------------------------------------------------------------------------------------------
 
 ### 6. 기타
-
-추가적인 내용은 자유롭게 작성하세요.
+#### Communication Tool
+ Notion - [Notion](https://holly-punishment-32b.notion.site/2022-23b3832ba4234a7385d3fb7682a90bb1)<br>
+ Figma - [Figma](https://www.figma.com/file/0LDKCL7QrKHWbvc2wObYl7/%ED%8E%98%EC%9D%B4%EC%A7%80%EB%B3%84-%EC%99%80%EC%9D%B4%EC%96%B4%ED%94%84%EB%A0%88%EC%9E%84(2%EC%B0%A8)?node-id=0%3A1)<br>
+ Slack - Slack
+ 
+ 
+#### Software Architecture
+![소프트웨어 아키텍처](https://user-images.githubusercontent.com/55120146/162163938-247107b2-5950-474f-87b5-ff95324ac976.png)

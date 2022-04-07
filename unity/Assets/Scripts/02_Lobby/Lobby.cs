@@ -20,7 +20,7 @@ public class Lobby : MonoBehaviour
     {
         
         //버튼 이벤트 등록
-        settingBtn.onClick.AddListener(delegate { lobbySetting.Init(); });
+        settingBtn.onClick.AddListener(delegate { lobbySetting.Open(); });
         loadSquareSceneBtn.onClick.AddListener(LoadSquareScene);
         openSongPageBtn.onClick.AddListener(delegate { songPage.Open(); });
         characterSetBtn.onClick.AddListener(delegate { characterSetPage.Open(); });
@@ -29,10 +29,6 @@ public class Lobby : MonoBehaviour
         songPage.Close();
 
         characterSetPage.OnChangeCharacter += ChangeCharacter;
-        //user 데이더 서버에서 받아와서 UserData.Instance에 저장
-        //여기 쓰기(함수 호출)
-        //
-
 
         ChangeCharacter();
     }

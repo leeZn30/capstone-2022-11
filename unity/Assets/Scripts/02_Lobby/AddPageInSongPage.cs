@@ -68,7 +68,7 @@ public class AddPageInSongPage : Page
             music.title = infoInputs[0].text;
             music.userID = UserData.Instance.id;
             music.nickname = UserData.Instance.user.nickname;
-            MusicUpload.Instance.FileUpload(musicBytes,imageBytes, music,localFileName.text);
+            StartCoroutine(Upload(musicBytes, imageBytes, music, localFileName.text));
             Close();
         }
         else
