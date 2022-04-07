@@ -7,7 +7,7 @@ const MusicSchema = new mongoose.Schema({
     },
     imageLocate: {
         type: String,
-        default: null
+        default: ""
     },
     title: {
         type: String,
@@ -30,10 +30,12 @@ const MusicSchema = new mongoose.Schema({
         required: true
     },
     lyrics: {
-        type: String
+        type: String,
+        default: ""
     },
     info: {
-        type: String
+        type: String,
+        default: ""
     },
     created: {
         type:Date,
