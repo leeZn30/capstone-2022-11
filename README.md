@@ -70,4 +70,11 @@ github: https://github.com/yannJu/capstone-2022-11
 
 ### 6. 기타
 
-추가적인 내용은 자유롭게 작성하세요.
+#### Communication Tool
+ Notion - [Notion](https://holly-punishment-32b.notion.site/2022-23b3832ba4234a7385d3fb7682a90bb1)<br>
+ Figma - [Figma](https://www.figma.com/file/0LDKCL7QrKHWbvc2wObYl7/%ED%8E%98%EC%9D%B4%EC%A7%80%EB%B3%84-%EC%99%80%EC%9D%B4%EC%96%B4%ED%94%84%EB%A0%88%EC%9E%84(2%EC%B0%A8)?node-id=0%3A1)
+ Slack - Slack
+ 
+ 
+#### Software Architecture
+![소프트웨어 아키텍처](https://user-images.githubusercontent.com/55120146/162163938-247107b2-5950-474f-87b5-ff95324ac976.png)
