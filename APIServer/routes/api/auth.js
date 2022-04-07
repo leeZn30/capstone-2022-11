@@ -14,10 +14,6 @@ const router = express.Router();
 router.post('/', (req, res)=> {
     const {id, password} = req.body;
 
-    if (!id || !password){
-        return res.status(400).json({msg: "모든 필드를 채워주세요."})
-    }
-
     User.findOne({id}).then((user)=> {
         if(!user) return res.status(400).json({msg: "유저가 존재하지 않습니다."})
 
@@ -48,6 +44,7 @@ router.post('/modifiedChar', auth, async(req, res) => {
     const {value} = req.body;
 
     console.log(id)
+    console.log(req.user.character);
 
     User.findOne({id: id}).then((user)=> {
         console.log(user);
