@@ -57,7 +57,7 @@ github: https://github.com/leeZn30/capstone-2022-11
 ```
 이연주 ⭐⭐⭐⭐1644
 역할: 영상 라이브 스트리밍 서버 구축 담당
-github: https://github.com/yannJu/capstone-2022-11github:
+github: https://github.com/yannJu/capstone-2022-11
 ```
 ---------------------------------------------------------------------------------------------------------------
 
