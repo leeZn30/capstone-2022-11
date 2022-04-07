@@ -20,7 +20,7 @@ public class AddPageInSongPage : Page
 
     byte[] musicBytes;
     byte[] imageBytes;
-    string[] infos;//�������� �迭 (������ enum�� ����(�ϵ��ڵ�))
+    string[] infos;
     private TMP_InputField[] infoInputs;
 
     enum MusicInfo
@@ -58,6 +58,19 @@ public class AddPageInSongPage : Page
             });
             okayBtn.onClick.AddListener(UploadAndFinish);
 
+            OnUploaded += AfterUpload;
+
+        }
+    }
+    void AfterUpload(bool success)
+    {
+        if (success)
+        {
+            Close();
+        }
+        else
+        {
+
         }
     }
     void UploadAndFinish()
@@ -69,7 +82,7 @@ public class AddPageInSongPage : Page
             music.userID = UserData.Instance.id;
             music.nickname = UserData.Instance.user.nickname;
             StartCoroutine(Upload(musicBytes, imageBytes, music, localFileName.text));
-            Close();
+            //Close();
         }
         else
         {
@@ -85,7 +98,15 @@ public class AddPageInSongPage : Page
         musicBytes = null;
         imageBytes = null;
         infos = new string[0];
+        for (int i = 0; i < infoInputs.Length; i++)
+        {
+            infoInputs[i].text = "";
+        }
         localFileName.text = "파일 없음";
+
+        songImage.sprite = null;
+        songImage.color = new Color(255, 255, 255, 0);
+
         musicControllerMini.Reset();
     }
     private void LoadImage(string filePath)

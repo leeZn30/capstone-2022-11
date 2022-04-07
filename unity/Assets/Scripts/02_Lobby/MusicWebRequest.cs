@@ -48,6 +48,9 @@ public class MusicWebRequest : MonoBehaviour
     protected delegate void CharacterHandler(int character);//play- 바로 재생할것인지
     protected event CharacterHandler ModifyCharacter;
 
+    protected delegate void UploadHandler(bool success);
+    protected event UploadHandler OnUploaded;
+
     protected IEnumerator POST_ModifiedChar(string _id, int _character)
     {
         ModifiedChar mo = new ModifiedChar//현재 inputfield에 작성된 값 클래스로 변환
@@ -70,7 +73,7 @@ public class MusicWebRequest : MonoBehaviour
 
             yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
 
-
+            
             if (request.error == null)
             {
 
@@ -90,29 +93,37 @@ public class MusicWebRequest : MonoBehaviour
     protected IEnumerator Upload(byte[] musicBytes, byte[] imageBytes, Music music, string fileName)
     {
 
-        string json = JsonUtility.ToJson(music);
+           List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
 
-        List<IMultipartFormSection> formData = new List<IMultipartFormSection>();
-
-        formData.Add(new MultipartFormFileSection(fileName, musicBytes));
-        if (imageBytes != null)
-            formData.Add(new MultipartFormFileSection(music.title + ".png", imageBytes));
-
-        formData.Add(new MultipartFormDataSection("json", json));
-        UnityWebRequest www = UnityWebRequest.Post(url + "/media/", formData);
-
-        //추후 로딩 애니메이션추가 
-        yield return www.SendWebRequest();
+           formData.Add(new MultipartFormFileSection(fileName, musicBytes));
+           if (imageBytes != null)
+               formData.Add(new MultipartFormFileSection(music.title + ".png", imageBytes));
 
 
-        if (www.result != UnityWebRequest.Result.Success)
-        {
-            Debug.Log(www.error);
-        }
-        else
-        {
-            //로딩애니메이션 종료
-            Debug.Log("Form upload complete!");
+           using (UnityWebRequest request = UnityWebRequest.Post(url + "/media", formData))
+           {// 보낼 주소와 데이터 입력
+
+                request.SetRequestHeader("token", UserData.Instance.Token);
+                
+            
+            Debug.Log("업로드 전달 !"); 
+
+            yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
+         
+            Debug.Log(request.responseCode);
+            if (request.error != null)
+            {
+                Debug.Log(request.error);
+                OnUploaded(false);
+            }
+            else
+            {
+                Debug.Log(request.downloadHandler.text);
+                //로딩애니메이션 종료
+                Debug.Log("Form upload complete!");
+                OnUploaded(true);
+            }
+            
         }
     }
     protected IEnumerator GET_MusicList(string listName, string _userid, bool play=false)

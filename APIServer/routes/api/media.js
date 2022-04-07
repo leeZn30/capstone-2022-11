@@ -54,12 +54,12 @@ router.post('/', auth, function(req, res){
         var params = {}
         //파일 확장자 확인
         if(extension === '.mp3' || extension === '.wav') {
-            const musicKey = 'Music/' + filename + extension;
+            const musicKey = 'Music/' + filename;
             params = {Bucket: BUCKET_NAME, Key: musicKey, Body: part, ContentType: 'audio/mpeg'};
             musicLocate = AWS_BUCKET_URL + "/" + musicKey;
         }
         else if(extension === '.jpg' || extension === '.png') {
-            const imageKey = 'Image/' + filename + extension;
+            const imageKey = 'Image/' + filename ;
             params = {Bucket: BUCKET_NAME, Key: imageKey, Body: part, ContentType: 'image'};
             imageLocate = AWS_BUCKET_URL + "/" + imageKey;
         }
@@ -79,6 +79,7 @@ router.post('/', auth, function(req, res){
     // form 종료
     form.on('close', function(){
         // 모든 파일 업로드 후 실행할 추가 코드
+
         res.status(200).json({locate: musicLocate, imageLocate: imageLocate});
     })
     form.parse(req)
