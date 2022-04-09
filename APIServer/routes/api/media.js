@@ -60,6 +60,7 @@ router.post('/', auth, function(req, res){
         }
         else if(extension === '.jpg' || extension === '.png') {
             const imageKey = 'Image/' + filename;
+
             params = {Bucket: BUCKET_NAME, Key: imageKey, Body: part, ContentType: 'image'};
             imageLocate = AWS_BUCKET_URL + "/" + imageKey;
         }
@@ -79,6 +80,7 @@ router.post('/', auth, function(req, res){
     // form 종료
     form.on('close', function(){
         // 모든 파일 업로드 후 실행할 추가 코드
+
         res.status(200).json({locate: musicLocate, imageLocate: imageLocate});
     })
     form.parse(req)

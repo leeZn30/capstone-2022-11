@@ -81,12 +81,14 @@ public class Main : MonoBehaviour
 
             yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
 
+
+
             animator.SetBool("isLoading", false);
 
             if (request.error == null)//로그인 성공
             {
                 if (request.isDone)
-                {
+                {   
                     string jsonResult = System.Text.Encoding.UTF8.GetString(request.downloadHandler.data);
 
 
@@ -109,6 +111,7 @@ public class Main : MonoBehaviour
             }
             else//로그인 실패
             {
+                Debug.Log(request.result);
                 Debug.Log(request.error.ToString());
                 wrong_obj.SetActive(true);
             }
