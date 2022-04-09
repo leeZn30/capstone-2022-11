@@ -59,7 +59,8 @@ router.post('/', auth, function(req, res){
             musicLocate = AWS_BUCKET_URL + "/" + musicKey;
         }
         else if(extension === '.jpg' || extension === '.png') {
-            const imageKey = 'Image/' + filename ;
+            const imageKey = 'Image/' + filename;
+
             params = {Bucket: BUCKET_NAME, Key: imageKey, Body: part, ContentType: 'image'};
             imageLocate = AWS_BUCKET_URL + "/" + imageKey;
         }
