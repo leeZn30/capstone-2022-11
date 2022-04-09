@@ -5,6 +5,7 @@ using System.IO;
 using TMPro;
 using UnityEngine.Networking;
 using System;
+
 public class AddPageInSongPage : Page
 {
     public Button imageUploadBtn;
@@ -23,10 +24,9 @@ public class AddPageInSongPage : Page
     string[] infos;
     private TMP_InputField[] infoInputs;
 
-    enum MusicInfo
-    {
-        Title,Artist,Content
-    }
+
+    public ToggleGroup toggleGroup;
+
     void Start()
     {
         Init();
@@ -38,6 +38,14 @@ public class AddPageInSongPage : Page
             isAlreadyInit = true;
             musicControllerMini.Init();
             infoInputs = GetComponentsInChildren<TMP_InputField>();
+            TextMeshProUGUI[] tmps = toggleGroup.GetComponentsInChildren<TextMeshProUGUI>();
+            for (int i=0; i<tmps.Length; i++)
+            {
+                tmps[i].text = GlobalData.Genre[i];
+
+            }
+            
+
             imageUploadBtn.onClick.AddListener(delegate
             {
                 string filePath = fileOpenDialog.FileOpen(FileOpenDialog.Type.Image);
@@ -80,7 +88,16 @@ public class AddPageInSongPage : Page
             Music music = new Music();
             music.title = infoInputs[0].text;
             music.userID = UserData.Instance.id;
-            music.nickname = UserData.Instance.user.nickname;
+            music.userNickname = UserData.Instance.user.nickname;
+            music.lyrics= infoInputs[1].text;
+            music.info = infoInputs[2].text;
+
+            foreach(Toggle tg in toggleGroup.ActiveToggles())
+            {
+                music.category = tg.GetComponentInChildren<TextMeshProUGUI>().text;
+            }
+
+            Debug.Log(music.ToString());
             StartCoroutine(Upload(musicBytes, imageBytes, music, localFileName.text));
             //Close();
         }
@@ -104,6 +121,7 @@ public class AddPageInSongPage : Page
         }
         localFileName.text = "파일 없음";
 
+        toggleGroup.transform.GetChild(0).GetComponent<Toggle>().isOn=true;
         songImage.sprite = null;
         songImage.color = new Color(255, 255, 255, 0);
 

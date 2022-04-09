@@ -74,16 +74,14 @@ public class MusicController : MusicWebRequest
         Init();
     }
 
+    public void Stop()
+    {
+        if (audioSource.clip != null)
+            audioSource.Pause();
+    }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            //테스트용 코드
-            //musicList = ll.musicList;
-            //MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate,true);
-            StartCoroutine(GET_MusicList("myList", UserData.Instance.id, false));
-        }
-        
+
         if (audioSource.clip != null)
         {
             
@@ -234,6 +232,8 @@ public class MusicController : MusicWebRequest
             OnGetClip += SetAudioClip;
             OnGetSongList += SetSongList;
 
+
+            StartCoroutine(GET_MusicList("myList", UserData.Instance.id, false));
         }
     }
 
@@ -361,7 +361,7 @@ public class MusicController : MusicWebRequest
         for (int i=0; i<2; i++)
         {
             titleTexts[i].text = music.title;
-            artistTexts[i].text = music.nickname+ "("+ music.userID+")";
+            artistTexts[i].text = music.GetArtistName();
         }
     }
 

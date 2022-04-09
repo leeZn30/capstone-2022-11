@@ -32,8 +32,8 @@ public class SearchedSongSlot : MonoBehaviour
     {
         music = _music;
         titleText.text = music.title;
- 
-        artistText.text = music.nickname + "(" + music.userID + ")";
+
+        artistText.text = music.GetArtistName();
         LoadImage(music.imagelocate);
         if (toggle != null)
             toggle.isOn = false;
@@ -46,7 +46,7 @@ public class SearchedSongSlot : MonoBehaviour
         }
         else
         {
-            StartCoroutine(GetTexture("http://localhost:8080/api" + filePath));
+            StartCoroutine(GetTexture(GlobalData.url + filePath));
         }
     }
     public void SetImage(Color color)
