@@ -28,7 +28,7 @@ router.post('/', auth, async(req, res) => {
 
     User.findOne({id: userID}).then((user)=> {
         console.log(user);
-        const id = userID + user.totalNum;
+        const id = userID + "_" + user.totalNum;
         const userNickname = user.nickname;
         console.log(id)
 
