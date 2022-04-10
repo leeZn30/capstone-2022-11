@@ -77,4 +77,41 @@ router.post('/', async(req, res) => {
     })
 })
 
+router.post('/addMyList', auth, async(req, res)=>{
+    const {musicList} = req.body;
+    const id = req.user.id;
+
+    for (let i = 0; i < musicList.length; i++){
+        await User.update({id: id}, {$push: { myList: {musicID: musicList[i]}}});
+    }
+
+    User.findOne({id:id}).then((user) => {
+        console.log(user.myList)
+        res.status(200).json(user.myList);
+    })
+})
+
+router.post('/deleteUploadList', auth, async(req, res)=> {
+    const {musicId} = req.body;
+    const id = req.user.id;
+
+    await User.update({id: id}, {$pull: { uploadList: {musicID: musicId}}});
+    User.findOne({id:id}).then((user) => {
+        console.log(user.uploadList)
+        res.status(200).json(user.uploadList);
+    })
+
+})
+
+router.post('/deletemyList', auth, async(req, res)=> {
+    const {musicId} = req.body;
+    const id = req.user.id;
+
+    await User.update({id: id}, {$pull: { myList: {musicID: musicId}}});
+    User.findOne({id:id}).then((user) => {
+        console.log(user.myList)
+        res.status(200).json(user.myList);
+    })
+})
+
 module.exports = router;
