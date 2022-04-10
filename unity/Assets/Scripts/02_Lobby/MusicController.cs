@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Networking;
 
 public class MusicController : MusicWebRequest
 {
@@ -80,7 +81,7 @@ public class MusicController : MusicWebRequest
             //테스트용 코드
             //musicList = ll.musicList;
             //MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate,true);
-            StartCoroutine(GET_MusicList("musicList", UserData.Instance.id, false));
+            StartCoroutine(GET_MusicList("myList", UserData.Instance.id, false));
         }
         
         if (audioSource.clip != null)
@@ -354,6 +355,9 @@ public class MusicController : MusicWebRequest
         currentSongSlotList[pastSongIndex].SetImage(new Color(1f, 1f, 1f));
         currentSongSlotList[currentSongIndex].SetImage(new Color(0.8f, 0.8f, 0.8f));
         Music music = currentSongSlotList[currentSongIndex].GetMusic();
+
+        LoadImage(music.imagelocate);
+
         for (int i=0; i<2; i++)
         {
             titleTexts[i].text = music.title;
@@ -402,5 +406,35 @@ public class MusicController : MusicWebRequest
             yield return new WaitForSeconds(0.1f);
         }
 
+    }
+    private void LoadImage( string filePath)
+    {
+        if (filePath == null || filePath == "")
+        {
+            for(int i=0; i<images.Length; i++)
+                images[i].sprite = Resources.Load<Sprite>("Image/none");
+        }
+        else
+        {
+            StartCoroutine(GetTexture(url + filePath));
+        }
+    }
+
+    IEnumerator GetTexture(string _path)
+    {
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(_path);
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            Rect rect = new Rect(0, 0, texture.width, texture.height);
+            for (int i = 0; i < images.Length; i++)
+                images[i].sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
+        }
     }
 }
