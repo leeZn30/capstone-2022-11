@@ -1,10 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-
+const auth = require('../../middleware/auth');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/index');
 const { JWT_SECRET } = config;
 
+const Music = require('../../models/music');
 const User = require('../../models/user');
 
 const router = express.Router();
@@ -42,10 +43,10 @@ router.get('/check', async(req, res) =>{
 })
 
 router.post('/', async(req, res) => {
-    const {id, email, password, nickname, character} = req.body;
+    const {id, email, password, nickname, character, preferredGenres} = req.body;
 
     const newUser = new User({
-        id, email, password, nickname, character
+        id, email, password, nickname, character, preferredGenres
     })
 
     bcrypt.genSalt(10, (err, salt) => {
@@ -66,6 +67,7 @@ router.post('/', async(req, res) => {
                                 name: user.name,
                                 email: user.email,
                                 character: user.character,
+                                preferredGenres: user.preferredGenres
                             }
                         })
                     }

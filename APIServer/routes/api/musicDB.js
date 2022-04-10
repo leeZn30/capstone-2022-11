@@ -1,6 +1,7 @@
 const express = require('express');
 const Music = require('../../models/music');
 const User = require('../../models/user');
+const auth = require('../../middleware/auth');
 
 const router = express.Router();
 
@@ -19,18 +20,20 @@ router.get('/', async(req, res) =>{
     }
 })
 
-router.post('/', async(req, res) => {
-    const {locate, title, userID, category} = req.body;
+router.post('/', auth, async(req, res) => {
+    const {locate ,imageLocate, title, category, lyrics, info} = req.body;
 
+    const userID = req.user.id;
     console.log(userID);
 
     User.findOne({id: userID}).then((user)=> {
         console.log(user);
         const id = userID + user.totalNum;
+        const userNickname = user.nickname;
         console.log(id)
 
         const newMusic = new Music({
-            locate, title, id, userID, category
+            locate, imageLocate, title, id, userID, userNickname, lyrics, category, info
         });
 
         newMusic.save().then(()=> console.log("music save success!!"));
