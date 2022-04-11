@@ -1,0 +1,117 @@
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const auth = require('../../middleware/auth');
+const jwt = require('jsonwebtoken');
+const config = require('../../config/index');
+const { JWT_SECRET } = config;
+
+const Music = require('../../models/music');
+const User = require('../../models/user');
+
+const router = express.Router();
+
+router.get('/check', async(req, res) =>{
+    const {id, email} = req.body;
+
+    if (id){
+        try{
+            User.findOne({id:id}).then((userExist) => {
+                if (userExist)
+                    res.status(400).json({idExist: true});
+                else
+                    res.status(200).json({idExist: false});
+            })
+        } catch (e) {
+            console.log(e);
+            res.status(400).json({msg:e.message});
+        }
+    }
+    else if (email){
+        try{
+            User.findOne({email:email}).then((emailExist)=> {
+                if (emailExist)
+                    return res.status(400).json({emailExist: true});
+
+                else
+                    res.status(200).json({emailExist: false});
+            })
+        } catch(e) {
+            console.log(e);
+            res.status(400).json({msg: e.message});
+        }
+    }
+})
+
+router.post('/', async(req, res) => {
+    const {id, email, password, nickname, character, preferredGenres} = req.body;
+
+    const newUser = new User({
+        id, email, password, nickname, character, preferredGenres
+    })
+
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+            if (err) throw err;
+            newUser.password = hash;
+            newUser.save().then((user) => {
+                jwt.sign(
+                    {id: user.id},
+                    JWT_SECRET,
+                    {expiresIn: 3600},
+                    (err, token) => {
+                        if (err) throw err;
+                        res.json({
+                            token,
+                            user: {
+                                id: user.id,
+                                name: user.name,
+                                email: user.email,
+                                character: user.character,
+                                preferredGenres: user.preferredGenres
+                            }
+                        })
+                    }
+                )
+            })
+        })
+    })
+})
+
+router.post('/addMyList', auth, async(req, res)=>{
+    const {musicList} = req.body;
+    const id = req.user.id;
+
+    for (let i = 0; i < musicList.length; i++){
+        await User.update({id: id}, {$push: { myList: {musicID: musicList[i]}}});
+    }
+
+    User.findOne({id:id}).then((user) => {
+        console.log(user.myList)
+        res.status(200).json(user.myList);
+    })
+})
+
+router.post('/deleteUploadList', auth, async(req, res)=> {
+    const {musicId} = req.body;
+    const id = req.user.id;
+
+    await User.update({id: id}, {$pull: { uploadList: {musicID: musicId}}});
+    User.findOne({id:id}).then((user) => {
+        console.log(user.uploadList)
+        res.status(200).json(user.uploadList);
+    })
+
+})
+
+router.post('/deletemyList', auth, async(req, res)=> {
+    const {musicId} = req.body;
+    const id = req.user.id;
+
+    await User.update({id: id}, {$pull: { myList: {musicID: musicId}}});
+    User.findOne({id:id}).then((user) => {
+        console.log(user.myList)
+        res.status(200).json(user.myList);
+    })
+})
+
+module.exports = router;

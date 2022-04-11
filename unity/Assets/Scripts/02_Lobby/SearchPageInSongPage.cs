@@ -9,7 +9,7 @@ public class SearchPageInSongPage : Page
     public Button searchBtn;
     public TMP_InputField searchField;
     public GameObject scrollViewObject;
-    private List<SearchedSlot> searchedSlots;
+    private List<SearchedSongSlot> searchedSlots;
     private List<Music> currentMusics;
 
     private ScrollViewRect scrollViewRect;
@@ -33,9 +33,10 @@ public class SearchPageInSongPage : Page
             isAlreadyInit = true;
             scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
             currentMusics = new List<Music>();
-            searchedSlots = new List<SearchedSlot>();
+            searchedSlots = new List<SearchedSongSlot>();
             searchBtn.onClick.AddListener(Search);
-            MusicWebRequest.Instance.OnSearched += LoadSongs;
+
+            OnGetSongList += LoadSongs;
         }
     }
     override public void Load()
@@ -43,7 +44,7 @@ public class SearchPageInSongPage : Page
         LoadSongs();
         Debug.Log("search Page Load");
     }
-    void LoadSongs(List<Music> _musics = null)
+    void LoadSongs(List<Music> _musics = null,bool play=false)
     {
         if (_musics != null)
         {
@@ -51,12 +52,12 @@ public class SearchPageInSongPage : Page
             
 
             GameObject _obj = null;
-            SearchedSlot _searchedSlot;
+            SearchedSongSlot _searchedSlot;
             for (int i=0; i < currentMusics.Count; i++)
             {
                 Debug.Log(currentMusics[i].id);
-                _obj = Instantiate(Resources.Load("Prefabs/searchedSlot") as GameObject,scrollViewObject.transform);
-                _searchedSlot = _obj.GetComponent<SearchedSlot>();
+                _obj = Instantiate(Resources.Load("Prefabs/SearchedSlot") as GameObject,scrollViewObject.transform);
+                _searchedSlot = _obj.GetComponent<SearchedSongSlot>();
                 _searchedSlot.SetMusic(currentMusics[i]);
                 searchedSlots.Add(_searchedSlot);
                 
@@ -68,7 +69,8 @@ public class SearchPageInSongPage : Page
     {
         string searchText = searchField.text;
         Reset();
-        MusicWebRequest.Instance.SearchTitle(searchText);
+        searchField.text = searchText;
+        StartCoroutine(GET_SearchMusicTitle(searchText));
     }
     override public  void Reset()
     {//오버라이딩

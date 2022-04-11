@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Networking;
 
-public class MusicController : MonoBehaviour
+public class MusicController : MusicWebRequest
 {
     private AudioSource audioSource;
 
@@ -17,10 +18,10 @@ public class MusicController : MonoBehaviour
     public TextMeshProUGUI[] titleTexts;
     public TextMeshProUGUI[] artistTexts;
 
-    public Slider slider;
+    public CustomSlider slider;
 
-    public Toggle randomBtns;
-    public Button repeatBtns;
+    public Toggle randomToggle;
+    public Button repeatBtn;
     public TextMeshProUGUI contentText;
 
     private Animator animator;
@@ -30,11 +31,39 @@ public class MusicController : MonoBehaviour
     private bool isRandomMode = false;
     private RepeatMode repeatMode;
     
-    public  List<Music> musicList;
+    //public  List<Music> musicList;
 
-    private int currentMusicList;
-    private int currentMusicIndex;
+    
+    private int currentSongListIndex;
+    private int currentSongIndex = 0;
+    private int pastSongIndex = 0;
 
+    private Image[] pauseplayBtnImage;
+    private Image repeatBtnImage;
+
+    private IEnumerator enumerator;
+    private bool isCurrentSongFinish=false;
+    PlayState playState;
+
+    //
+    //
+    //
+    //
+    //
+    //
+
+    public Button listBtn;
+    public Button lyricsBtn;
+    public Button contentBtn;
+
+    public string currentListName;
+    private List<SearchedSongSlot> currentSongSlotList;
+    public GameObject scrollViewObject;
+    private ScrollViewRect scrollViewRect;
+    private enum PlayState
+    {
+        Play,Pause
+    }
     enum RepeatMode
     {
         None,OneRepeat,AllRepeat
@@ -49,34 +78,126 @@ public class MusicController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            MusicWebRequest.Instance.GetMusicList("테스트검색");
+            //테스트용 코드
+            //musicList = ll.musicList;
+            //MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate,true);
+            StartCoroutine(GET_MusicList("myList", UserData.Instance.id, false));
         }
-
+        
         if (audioSource.clip != null)
         {
-            if (audioSource.isPlaying == true)
+            
+            if (audioSource.isPlaying == true && isCurrentSongFinish == false)
             {//재생상태일 때
-                
-                if (audioSource.time == audioClip.length)
+                if ((int)audioSource.time == (int)audioClip.length)
                 {//재생이 끝나면
-                    Debug.Log("자연 재생 끝");
-                    audioSource.time = 0;
-                    slider.value = 0;
-
-                    AutoPlayNextMusic();
+                    
+                    
+                    if (RepeatMode.OneRepeat != repeatMode)
+                    {
+                        Debug.Log("자연 재생 끝");
+                        isCurrentSongFinish = true;
+                        AutoPlayNextMusic();
+                    }
 
                 }
             }
+
+            if (audioSource.isPlaying == true && playState == PlayState.Pause)
+            {
+                Debug.Log("Play");
+                playState = PlayState.Play;
+
+                StartCoroutine(enumerator);
+
+                for (int i = 0; i < 2; i++)
+                {
+                    pauseplayBtnImage[i].sprite = Resources.Load<Sprite>("Image/UI/pause");
+                }
+
+            }
+            else if(audioSource.isPlaying ==false && playState == PlayState.Play)
+            {
+                Debug.Log("Pause");
+                playState = PlayState.Pause;
+                StopCoroutine(enumerator);
+                for (int i = 0; i < 2; i++)
+                {
+                    pauseplayBtnImage[i].sprite = Resources.Load<Sprite>("Image/UI/play");
+                }
+            }
+
         }
+
         
     }
+    private void LoadInfo(string type)
+    {
+        if (type == "lyrics")
+        {
+            animator.SetBool("isContentOpen", true);
+            animator.SetTrigger("OpenContent");
+            contentText.text = "가사~";
+        }
+        else if(type == "content")
+        {
+            animator.SetBool("isContentOpen", true);
+            animator.SetTrigger("OpenContent");
+            contentText.text = "상세 정보~";
+        }
+    }
+    public void SetSongList(List<Music> _musics = null,bool play=false)
+    {
+
+        Transform[] childList = scrollViewObject.GetComponentsInChildren<Transform>();
+        if (childList != null)
+        {
+            for (int i = 1; i < childList.Length; i++)
+            {
+                if (childList[i] != transform)
+                {
+                    Destroy(childList[i].gameObject);
+                }
+            }
+        }
+        currentSongSlotList.Clear();
+
+
+        if (_musics != null)
+        {
+            SearchedSongSlot ss;
+            GameObject _obj = null;
+            for (int i=0; i< _musics.Count; i++)
+            {
+
+                _obj = Instantiate(Resources.Load("Prefabs/SongSlot2") as GameObject, scrollViewObject.transform);
+                ss = _obj.GetComponent<SearchedSongSlot>();
+                ss.SetMusic(_musics[i]);
+
+                currentSongSlotList.Add(ss);
+            }
+            scrollViewRect.SetContentSize(100);
+            StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, play));
+        }
+    }
+
     void Init()
     {
         if (isAlreadyInit == false)
         {
             isAlreadyInit = true;
+
+            //info 오른쪽 오브젝트
+            scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
+            currentSongSlotList = new List<SearchedSongSlot>();
+
+
+            //겉
             animator = GetComponent<Animator>();
             audioSource = GetComponent<AudioSource>();
+            audioSource.loop = false;
+
+            pauseplayBtnImage = new Image[2];
 
             int[] num = { 0, 1 };
             for (int i = 0; i < num.Length; i++)
@@ -86,127 +207,194 @@ public class MusicController : MonoBehaviour
                         ChangeState(!audioSource.isPlaying);
                     }
                 });
+                pauseplayBtnImage[i] = (pauseplayBtns[i].gameObject).GetComponent<Image>();
+
 
                 prevBtns[i].onClick.AddListener(ClickPrevButton);
                 nextBtns[i].onClick.AddListener(ClickNextButton);
 
             }
+            repeatBtnImage = (repeatBtn.gameObject).GetComponent<Image>();
+            repeatBtn.onClick.AddListener(SetRepeatMode);
 
-            slider.onValueChanged.AddListener(OnValueChange);//추후 버튼 뗄때만으로 수정
+
+            slider.OnPointUp += OnValueChange;
+            slider.OnPointDown += StopSlider;
+
             openBtn.onClick.AddListener(OpenCloseInfo);
-            MusicWebRequest.Instance.OnGetClip += SetAudioClip;
-            MusicWebRequest.Instance.OnGetMusicList += SetMusicList;
+
+            lyricsBtn.onClick.AddListener(delegate { LoadInfo("lyrics"); });
+            contentBtn.onClick.AddListener(delegate { LoadInfo("content"); });
+            listBtn.onClick.AddListener(delegate { animator.SetBool("isContentOpen",false); });
+
+            playState = PlayState.Pause;
+            enumerator = MoveSlider();
+
+            //리스너
+            OnGetClip += SetAudioClip;
+            OnGetSongList += SetSongList;
+
         }
+    }
+
+    void SetRepeatMode()
+    {
+        repeatMode = (RepeatMode)(((int)repeatMode + 1) % 3);
+        switch (repeatMode)
+        {
+            case RepeatMode.None:
+
+                break;
+            case RepeatMode.OneRepeat:
+                audioSource.loop = true;
+                break;
+            case RepeatMode.AllRepeat:
+                audioSource.loop = false;
+                break;
+        }
+        repeatBtnImage.sprite = Resources.Load<Sprite>("Image/UI/repeat" + (int)repeatMode);
+
     }
     void ClickPrevButton()
     {
-
-        currentMusicIndex = (currentMusicIndex - 1) % musicList.Count;
-    }
-    void ClickNextButton()
-    {
-        if (isRandomMode == true)
+        pastSongIndex = currentSongIndex;
+        if (randomToggle.isOn == true)
         {
             //랜덤 뽑기
+            currentSongIndex = PickRandomIndex();
         }
         else
         {
-            currentMusicIndex = (currentMusicIndex + 1) % musicList.Count;
+            currentSongIndex = (currentSongIndex - 1) % currentSongSlotList.Count;
         }
-        
+
+        Debug.Log("currentIndex" + currentSongIndex);
+        StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, true));
+    }
+    void ClickNextButton()
+    {
+        pastSongIndex = currentSongIndex;
+        if (randomToggle.isOn == true)
+        {
+            //랜덤 뽑기
+            currentSongIndex = PickRandomIndex();
+        }
+        else
+        {
+            currentSongIndex = (currentSongIndex + 1) % currentSongSlotList.Count;
+        }
+        Debug.Log("currentIndex" + currentSongIndex);
         //재생
-        MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate);
-        
+        StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, true));
+
+    }
+    int PickRandomIndex()
+    {
+        int randomIdx = currentSongIndex;
+
+        while (randomIdx == currentSongIndex)
+        {
+            System.Random rand = new System.Random();
+            randomIdx = rand.Next(0, currentSongSlotList.Count);
+
+        }
+        return randomIdx;
     }
     void AutoPlayNextMusic()
     {
+        int nextIdx = PickRandomIndex();
 
-        int randomIdx = currentMusicIndex;
-
-        while (randomIdx == currentMusicIndex)
-        {
-            System.Random rand = new System.Random();
-            randomIdx = rand.Next(0, musicList.Count);
-
-        }
-
-
-        int nextIdx = randomIdx;
-
-        if (isRandomMode ==false)
+        if (randomToggle.isOn==false)
         {//랜덤모드가 아니라면
-            nextIdx = (currentMusicIndex + 1) % musicList.Count;
+            nextIdx = (currentSongIndex + 1) % currentSongSlotList.Count;
         }
 
+        pastSongIndex = currentSongIndex;
+        currentSongIndex = nextIdx;
+        Debug.Log("Autoplay" + nextIdx);
         if (repeatMode == RepeatMode.None)
         {
-            if (nextIdx == 0)
+            if (currentSongIndex == 0)
             {
                 //재생목록의 끝에 도달하여 재생 종료하고 맨앞 음원으로 이동
-                if (musicList != null)
+                if (currentSongSlotList != null)
                 {
-                    MusicWebRequest.Instance.GetAudioClip(musicList[0].locate);
+                    StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[0].GetMusic().locate, false));
+                    return;
                 }
             }
         }
-        else if (repeatMode == RepeatMode.OneRepeat)
-        {
-            audioSource.time = 0;
-            audioSource.Play();
-        }
-        else if (repeatMode == RepeatMode.AllRepeat)
-        {
-            MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate);
-        }
+        StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, true));
+
     }
     void OpenCloseInfo()
     {
-
         animator.SetBool("isOpen", !animator.GetBool("isOpen"));
-    }
-    public void SetMusicList(List<Music> _musics = null)
-    {
-        musicList = _musics;
-        if (musicList != null)
+        if (animator.GetBool("isOpen")==false)
         {
-            MusicWebRequest.Instance.GetAudioClip(musicList[0].locate);
+            animator.SetBool("isContentOpen", false);
         }
+
     }
 
-    public void SetAudioClip(AudioClip ac)
+
+    public void SetAudioClip(AudioClip ac, bool play)
     {//OnGetClip 리스너가 호출되면 함수 실행
         audioSource.Stop();
         audioSource.time = 0;
         audioClip = ac;
         audioSource.clip = audioClip;
-        ChangeState(true);
-        for(int i=0; i<2; i++)
+
+        slider.value = 0;
+        isCurrentSongFinish = false;
+
+
+        ChangeState(play);
+
+
+        currentSongSlotList[pastSongIndex].SetImage(new Color(1f, 1f, 1f));
+        currentSongSlotList[currentSongIndex].SetImage(new Color(0.8f, 0.8f, 0.8f));
+        Music music = currentSongSlotList[currentSongIndex].GetMusic();
+
+        LoadImage(music.imagelocate);
+
+        for (int i=0; i<2; i++)
         {
-            titleTexts[i].text = musicList[currentMusicIndex].title;
-            artistTexts[i].text = musicList[currentMusicIndex].userID;
+            titleTexts[i].text = music.title;
+            artistTexts[i].text = music.nickname+ "("+ music.userID+")";
         }
     }
 
     void OnValueChange(float value)
     {
+        if (audioSource == null) return;
+
         audioSource.time = Mathf.Max(Mathf.Min(audioClip.length *value, audioClip.length), 0);
+
+        if (audioSource.isPlaying == true)
+            StartCoroutine(enumerator);
+    }
+    void StopSlider(float value)
+    {
+        if (audioSource == null) return;
+
+        if (audioSource.isPlaying == true)
+        {
+            Debug.Log("stop!!!!!");
+            StopCoroutine(enumerator);
+        }
     }
     void ChangeState(bool isPlay)
     {
-        if (audioClip != null)
+        if (audioSource.clip != null)
         {           
             if (isPlay==false && audioSource.isPlaying ==true)
             {
-                Debug.Log("Pause");
-                StopCoroutine("MoveSlider");
                 audioSource.Pause();
-
             }
             else if(isPlay==true && audioSource.isPlaying==false)
             {
-                Debug.Log("Play");
                 audioSource.Play();
-                StartCoroutine("MoveSlider");
             }
         }
     }
@@ -218,5 +406,35 @@ public class MusicController : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
         }
 
+    }
+    private void LoadImage( string filePath)
+    {
+        if (filePath == null || filePath == "")
+        {
+            for(int i=0; i<images.Length; i++)
+                images[i].sprite = Resources.Load<Sprite>("Image/none");
+        }
+        else
+        {
+            StartCoroutine(GetTexture(url + filePath));
+        }
+    }
+
+    IEnumerator GetTexture(string _path)
+    {
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(_path);
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            Rect rect = new Rect(0, 0, texture.width, texture.height);
+            for (int i = 0; i < images.Length; i++)
+                images[i].sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
+        }
     }
 }

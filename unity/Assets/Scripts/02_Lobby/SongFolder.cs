@@ -7,12 +7,12 @@ public class SongFolder : MonoBehaviour
 {
     public string folderName;
     public string content;
-    public int id;
+    public string listName;
     public Image img;
     public TextMeshProUGUI name_text;
     private Button btn;
 
-    public delegate void LoadSongListHandler(int id,string str);
+    public delegate void LoadSongListHandler(string listName,string str);
     public event LoadSongListHandler OnClickButton_;
     void Start()
     {
@@ -23,7 +23,7 @@ public class SongFolder : MonoBehaviour
     }
     void OnClickButton()
     {
-        OnClickButton_(id, content);
+        OnClickButton_(listName, content);
     }
 
         // Update is called once per frame

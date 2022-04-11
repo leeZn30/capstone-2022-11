@@ -16,7 +16,7 @@ public class Join : MonoBehaviour
     public delegate void JoinHandler(User user);
     public event JoinHandler OnClickJoinButton_;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         animator = GetComponent<Animator>();
         joinBtn.onClick.AddListener(OnClickJoinButton);
@@ -28,12 +28,12 @@ public class Join : MonoBehaviour
     }
     public void OpenJoinPanel()
     {
+
         for (int i = 0; i < inputObjects.Length; i++)
         {
             inputObjects[i].reset();
         }
-        
-       gameObject.SetActive(true);
+        animator.SetBool("isOpen", true);
         
 
 
@@ -73,17 +73,24 @@ public class Join : MonoBehaviour
     }
     public void LoadingJoin()
     {//로딩 애니메이션을 띄움
-        
+        animator.SetTrigger("Join");
     }
     public void SuccessJoin()     
     {//로딩 애니메이션을 끝내고
+        animator.SetTrigger("Success");
         //가입 완료 애니메이션을 띄움
-        gameObject.SetActive(false);
+        animator.SetBool("isOpen", false);
+    }
+    public void FailJoin()
+    {//로딩 애니메이션을 끝내고
+        animator.SetTrigger("Fail");
+
     }
 
     void OnClickExitButton()
     {
-        gameObject.SetActive(false);
+        animator.SetBool("isOpen", false);
+
     }
     void playAppearResultPopup(string str)
     {

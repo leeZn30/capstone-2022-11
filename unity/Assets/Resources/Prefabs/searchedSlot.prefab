@@ -222,7 +222,7 @@ GameObject:
   - component: {fileID: 15992833547808481}
   - component: {fileID: 8446591747457994633}
   m_Layer: 5
-  m_Name: searchedSlot
+  m_Name: SearchedSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -272,7 +272,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.83647794, b: 0.83647794, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -303,9 +303,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   music:
     locate: 
+    imagelocate: 
     title: 
     id: 
     userID: 
+    nickname: 
     category: 
   image: {fileID: 15992834190782591}
   titleText: {fileID: 15992833693497482}
@@ -597,7 +599,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 688c7c47cf939c048ada149a7cd0367d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
