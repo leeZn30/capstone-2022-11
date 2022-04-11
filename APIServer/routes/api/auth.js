@@ -57,11 +57,11 @@ router.post('/modifiedChar', auth, async(req, res) => {
     })
 })
 
-router.get('/musicList', auth, async(req,res) => {
+router.get('/uploadList', auth, async(req,res) => {
     const id = req.user.id;
 
     User.findOne({id:id}).then((user) => {
-        res.status(200).json({musicList:user.musicList})
+        res.status(200).json({uploadList:user.uploadList})
     })
 })
 
