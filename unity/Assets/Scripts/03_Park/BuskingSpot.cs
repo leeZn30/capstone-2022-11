@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 using System;
+using SocketIOClient;
 
 public class BuskingSpot : MonoBehaviourPun, IPunObservable
 {
@@ -28,6 +29,9 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
 
     public bool isUsed = false;
 
+    //Socket io
+    SocketIO socket;
+
     private void Update()
     {
         if (isUsed)
@@ -37,6 +41,11 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         else
         {
             this.GetComponent<SpriteRenderer>().color = new Color32(202, 162, 48, 250);
+        }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            test("hi");
         }
     }
 
@@ -137,6 +146,12 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
     {
         try
         {
+            socket = new SocketIO("http://localhost:8080");
+
+            socket.ConnectAsync();
+
+
+
             Debug.Log("Connect Success!");
         }
         catch (Exception ex)
@@ -144,6 +159,11 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
             Debug.Log(ex);
         }
 
+    }
+
+    void test(string msg)
+    {
+        socket.EmitAsync("Test", msg);
     }
 
 }

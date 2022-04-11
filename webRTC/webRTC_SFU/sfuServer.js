@@ -41,6 +41,10 @@ let iceServers = {
 io.on('connection', function(socket) {
     console.log("User Connected :" + socket.id);
 
+    socket.on('Test', function(msg){
+        console.log(msg);
+    });
+
     socket.on('joinRoom', function(userOption) {
         let userId = userOption.userId;
         let roomNum = userOption.roomNum;
