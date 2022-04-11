@@ -4,7 +4,6 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 using System;
-using KyleDulce.SocketIo;
 
 public class BuskingSpot : MonoBehaviourPun, IPunObservable
 {
@@ -28,8 +27,6 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
     [SerializeField] private AudioSource micAudioSource;
 
     public bool isUsed = false;
-
-    Socket socket;
 
     private void Update()
     {
@@ -140,10 +137,6 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
     {
         try
         {
-            socket = SocketIo.establishSocketConnection("http://localhost:8080");
-            socket.connect();
-
-            Debug.Log(socket);
             Debug.Log("Connect Success!");
         }
         catch (Exception ex)
