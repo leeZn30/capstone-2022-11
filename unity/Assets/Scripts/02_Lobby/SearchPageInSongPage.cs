@@ -10,15 +10,21 @@ public class SearchPageInSongPage : Page
 
     public GameObject searchObj;
     public GameObject searchedObj;
+    public GameObject btnsObj;
+
+    public Button putBtn;
+    public Button cancelBtn;
 
     public Button clearBtn;
     public TMP_InputField searchField;
     public GameObject scrollViewObject;
-    private List<SongSlot> searchedSlots;
+    private List<PlaySongSlot> searchedSlots;
     private List<Music> currentMusics;
 
     private ScrollViewRect scrollViewRect;
     private GraphicRaycaster gr;
+
+    private List<PlaySongSlot> selectedSlots;
     // Start is called before the first frame update
     void Start()
     {
@@ -28,6 +34,37 @@ public class SearchPageInSongPage : Page
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            var ped = new PointerEventData(null);
+            ped.position = Input.mousePosition;
+            List<RaycastResult> results = new List<RaycastResult>();
+            gr.Raycast(ped, results);
+
+            if (results.Count <= 0) return;
+            // 이벤트 처리부분
+            if (results[0].gameObject.name != "SearchedSlot(Clone)") return;
+
+            PlaySongSlot ss = results[0].gameObject.GetComponent<PlaySongSlot>();
+            ss.isSelected = !ss.isSelected;
+
+            if (ss.isSelected == true)
+            {
+                selectedSlots.Add(ss);
+            }
+            else
+            {
+                selectedSlots.Remove(ss);
+            }
+            if (selectedSlots.Count > 0)
+            {
+                btnsObj.SetActive(true);
+            }
+            else
+            {
+                btnsObj.SetActive(false);
+            }
+        }
     }
 
 
@@ -36,12 +73,19 @@ public class SearchPageInSongPage : Page
         if(isAlreadyInit==false)
         {
             isAlreadyInit = true;
+
+            gr = GetComponent<GraphicRaycaster>();
+            selectedSlots = new List<PlaySongSlot>();
             scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
             currentMusics = new List<Music>();
-            searchedSlots = new List<SongSlot>();
+            searchedSlots = new List<PlaySongSlot>();
             clearBtn.onClick.AddListener(delegate { searchField.text = ""; });
-            clearBtn.gameObject.SetActive(false);
+            putBtn.onClick.AddListener(PutSelect);
+            cancelBtn.onClick.AddListener(CancelSelect);
 
+
+
+            clearBtn.gameObject.SetActive(false);
             searchField.text = "";
             searchField.onValueChanged.AddListener(delegate {
                 if (searchField.text.Length <= 0)
@@ -56,6 +100,28 @@ public class SearchPageInSongPage : Page
             searchField.onSubmit.AddListener(delegate { Search(); });
             OnGetSongList += LoadSongs;
         }
+    }
+    private void PutSelect()
+    {
+        MusicIDList iDList = new MusicIDList();
+        iDList.musicList = new List<string>();
+        for (int i = 0; i < selectedSlots.Count; i++)
+        {
+            selectedSlots[i].isSelected = false;
+            iDList.musicList.Add(selectedSlots[i].GetMusic().id);
+        }
+        selectedSlots.Clear();
+        btnsObj.SetActive(false);
+        StartCoroutine(POST_AddMyList(iDList));
+    }
+    private void CancelSelect()
+    {
+        for(int i=0; i<selectedSlots.Count; i++)
+        {
+            selectedSlots[i].isSelected=false;
+        }
+        selectedSlots.Clear();
+        btnsObj.SetActive(false);
     }
     public void OpenSearchObject()
     {
@@ -76,12 +142,12 @@ public class SearchPageInSongPage : Page
             
 
             GameObject _obj = null;
-            SongSlot _searchedSlot;
+            PlaySongSlot _searchedSlot;
             for (int i=0; i < currentMusics.Count; i++)
             {
                 Debug.Log(currentMusics[i].id);
                 _obj = Instantiate(Resources.Load("Prefabs/SongSlot/SearchedSlot") as GameObject,scrollViewObject.transform);
-                _searchedSlot = _obj.GetComponent<SongSlot>();
+                _searchedSlot = _obj.GetComponent<PlaySongSlot>();
                 _searchedSlot.SetMusic(currentMusics[i]);
                 searchedSlots.Add(_searchedSlot);
                 
@@ -101,7 +167,7 @@ public class SearchPageInSongPage : Page
     {
         currentMusics.Clear();
         searchedSlots.Clear();
-
+        selectedSlots.Clear();
 
         Transform[] childList = scrollViewObject.GetComponentsInChildren<Transform>();
         if (childList != null)

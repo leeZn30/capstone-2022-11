@@ -32,6 +32,7 @@ public class AddPageInSongPage : Page
     {
         Init();
     }
+
     public override void Init()
     {
         if (isAlreadyInit == false)

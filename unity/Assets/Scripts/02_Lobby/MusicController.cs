@@ -127,7 +127,7 @@ public class MusicController : MusicWebRequest
 
             if (audioSource.isPlaying == true && playState == PlayState.Pause)
             {
-                Debug.Log("Play");
+                //Debug.Log("Play");
                 playState = PlayState.Play;
 
                 StartCoroutine(enumerator);
@@ -140,7 +140,7 @@ public class MusicController : MusicWebRequest
             }
             else if(audioSource.isPlaying ==false && playState == PlayState.Play)
             {
-                Debug.Log("Pause");
+                //Debug.Log("Pause");
                 playState = PlayState.Pause;
                 StopCoroutine(enumerator);
                 for (int i = 0; i < 2; i++)

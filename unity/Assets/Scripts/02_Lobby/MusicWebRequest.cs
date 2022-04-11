@@ -8,6 +8,10 @@ using LitJson;
 using NAudio;
 using NAudio.Wave;
 
+public class MusicIDList
+{
+    public List<string> musicList;
+}
 public class ModifiedChar
 {
     public string id;
@@ -60,7 +64,33 @@ public class MusicWebRequest : MonoBehaviour
 
     protected delegate void UploadHandler(bool success);
     protected event UploadHandler OnUploaded;
+    protected IEnumerator POST_AddMyList(MusicIDList idList, string listName="myList")
+    {
 
+        string json = JsonUtility.ToJson(idList);
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/addMyList", json))
+        {// 보낼 주소와 데이터 입력
+
+            byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            request.SetRequestHeader("token", UserData.Instance.Token);
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
+
+
+            if (request.error == null)
+            { 
+
+
+            }
+            else
+            {
+                Debug.Log(request.error);
+            }
+        }
+    }
     private IEnumerator POST_MusicDB(Music _music)
     {
 
