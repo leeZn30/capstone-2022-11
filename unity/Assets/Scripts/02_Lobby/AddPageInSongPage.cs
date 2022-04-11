@@ -11,6 +11,7 @@ public class AddPageInSongPage : Page
     public Button imageUploadBtn;
     public Button musicUploadBtn;
     public Button okayBtn;
+    public Button removeImageBtn;
     public FileOpenDialog fileOpenDialog;
     
     public Image songImage;
@@ -65,7 +66,7 @@ public class AddPageInSongPage : Page
                 }
             });
             okayBtn.onClick.AddListener(UploadAndFinish);
-
+            removeImageBtn.onClick.AddListener(RemoveImage);
             OnUploaded += AfterUpload;
 
         }
@@ -188,6 +189,12 @@ public class AddPageInSongPage : Page
 
 
         }
+    }
+    void RemoveImage()
+    {
+        imageBytes = null;
+        songImage.sprite = null;
+        songImage.color = new Color(255, 255, 255, 0);
     }
     // Update is called once per frame
     void Update()

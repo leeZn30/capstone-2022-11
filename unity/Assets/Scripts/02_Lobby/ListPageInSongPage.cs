@@ -121,7 +121,7 @@ public class ListPageInSongPage : Page
 
 
         GetSongList(listName);
-
+        MusicController.Instance.SubMusicController.Reset();
     }
 
     void GetSongList(string _listName)
@@ -146,7 +146,7 @@ public class ListPageInSongPage : Page
             SongSlot songSlot;
             for (int i = 0; i < musicList.Count; i++)
             {
-                _obj = Instantiate(Resources.Load("Prefabs/SongSlot") as GameObject, scrollViewObject.transform);
+                _obj = Instantiate(Resources.Load("Prefabs/SongSlot/SongSlot") as GameObject, scrollViewObject.transform);
                 songSlot = _obj.GetComponent<SongSlot>();
                 songSlot.SetMusic(musicList[i]);
                 songSlots.Add(songSlot);

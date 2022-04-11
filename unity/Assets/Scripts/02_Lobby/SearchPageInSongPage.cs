@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class SearchPageInSongPage : Page
 {
-    public Button searchBtn;
+
+    public GameObject searchObj;
+    public GameObject searchedObj;
+
+    public Button clearBtn;
     public TMP_InputField searchField;
     public GameObject scrollViewObject;
-    private List<SearchedSongSlot> searchedSlots;
+    private List<SongSlot> searchedSlots;
     private List<Music> currentMusics;
 
     private ScrollViewRect scrollViewRect;
+    private GraphicRaycaster gr;
     // Start is called before the first frame update
     void Start()
     {
@@ -22,7 +28,6 @@ public class SearchPageInSongPage : Page
     // Update is called once per frame
     void Update()
     {
-
     }
 
 
@@ -33,14 +38,33 @@ public class SearchPageInSongPage : Page
             isAlreadyInit = true;
             scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
             currentMusics = new List<Music>();
-            searchedSlots = new List<SearchedSongSlot>();
-            searchBtn.onClick.AddListener(Search);
+            searchedSlots = new List<SongSlot>();
+            clearBtn.onClick.AddListener(delegate { searchField.text = ""; });
+            clearBtn.gameObject.SetActive(false);
 
+            searchField.text = "";
+            searchField.onValueChanged.AddListener(delegate {
+                if (searchField.text.Length <= 0)
+                {
+                    clearBtn.gameObject.SetActive(false);
+                }
+                else
+                {
+                    clearBtn.gameObject.SetActive(true);
+                }
+                    });
+            searchField.onSubmit.AddListener(delegate { Search(); });
             OnGetSongList += LoadSongs;
         }
     }
+    public void OpenSearchObject()
+    {
+        Open();
+        searchObj.SetActive(true);
+    }
     override public void Load()
     {//오버라이딩
+        searchField.text = "";
         LoadSongs();
         Debug.Log("search Page Load");
     }
@@ -52,12 +76,12 @@ public class SearchPageInSongPage : Page
             
 
             GameObject _obj = null;
-            SearchedSongSlot _searchedSlot;
+            SongSlot _searchedSlot;
             for (int i=0; i < currentMusics.Count; i++)
             {
                 Debug.Log(currentMusics[i].id);
-                _obj = Instantiate(Resources.Load("Prefabs/SearchedSlot") as GameObject,scrollViewObject.transform);
-                _searchedSlot = _obj.GetComponent<SearchedSongSlot>();
+                _obj = Instantiate(Resources.Load("Prefabs/SongSlot/SearchedSlot") as GameObject,scrollViewObject.transform);
+                _searchedSlot = _obj.GetComponent<SongSlot>();
                 _searchedSlot.SetMusic(currentMusics[i]);
                 searchedSlots.Add(_searchedSlot);
                 
@@ -67,31 +91,40 @@ public class SearchPageInSongPage : Page
     }
     public void Search()
     {
-        string searchText = searchField.text;
-        Reset();
-        searchField.text = searchText;
-        StartCoroutine(GET_SearchMusicTitle(searchText));
+
+        Remove();
+        searchedObj.SetActive(true);
+        StartCoroutine(GET_SearchMusicTitle(searchField.text));
     }
-    override public  void Reset()
-    {//오버라이딩
-        Debug.Log("search Page Reset");
-
-        Init();
-
+  
+    void Remove()
+    {
         currentMusics.Clear();
         searchedSlots.Clear();
-        searchField.text = "";
+
 
         Transform[] childList = scrollViewObject.GetComponentsInChildren<Transform>();
         if (childList != null)
         {
-            for(int i=1; i<childList.Length; i++)
+            for (int i = 1; i < childList.Length; i++)
             {
-               if(childList[i] != transform)
+                if (childList[i] != transform)
                 {
                     Destroy(childList[i].gameObject);
                 }
             }
         }
     }
+    override public  void Reset()
+    {//오버라이딩
+        Debug.Log("search Page Reset");
+
+        Init();
+        Remove();
+        searchedObj.SetActive(false);
+        searchObj.SetActive(false);
+
+
+    }
+
 }

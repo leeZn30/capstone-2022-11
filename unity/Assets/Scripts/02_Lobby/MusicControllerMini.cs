@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 public class MusicControllerMini : MonoBehaviour
 {
-    public MusicController musicController;
 
     private AudioSource audioSource;
 
@@ -81,7 +80,7 @@ public class MusicControllerMini : MonoBehaviour
                 audioSource.Play(); 
                 StartCoroutine("MoveScrollBar");
                 pauseplayImage.sprite = Resources.Load<Sprite>("Image/UI/play");
-                musicController.Stop();
+                MusicController.Instance.Stop();
             }
         }
     }

@@ -25,7 +25,7 @@ public class UserID
 public class Music
 {
     public string locate;
-    public string imagelocate;
+    public string imageLocate;
     public string title;
     public string id;
     public string userID;
@@ -39,7 +39,7 @@ public class Music
     }
     override public string ToString()
     {
-        return locate + " " + imagelocate + " " + title + " " + id + " " + userID + " " + userNickname + " " + category + " " + lyrics + " " + info;
+        return locate + " " + imageLocate + " " + title + " " + id + " " + userID + " " + userNickname + " " + category + " " + lyrics + " " + info;
     }
 }
 public class MusicWebRequest : MonoBehaviour
@@ -80,7 +80,7 @@ public class MusicWebRequest : MonoBehaviour
             if (request.error == null)
             {
                 OnUploaded(true);
-                Debug.Log("업로드 !" + _music.title+_music.locate+_music.imagelocate) ;
+                Debug.Log("업로드 !" + _music.title+_music.locate+_music.imageLocate) ;
 
 
             }
@@ -163,7 +163,7 @@ public class MusicWebRequest : MonoBehaviour
                 Debug.Log(request.downloadHandler.text);
                 //로딩애니메이션 종료
                 music.locate = (string)jsonData["locate"];
-                music.imagelocate= (string)jsonData["imageLocate"];
+                music.imageLocate= (string)jsonData["imageLocate"];
 
                 StartCoroutine(POST_MusicDB(music));
             }
@@ -207,7 +207,7 @@ public class MusicWebRequest : MonoBehaviour
                         music.locate = (string)jsonData[i]["locate"];
                         music.userID = (string)jsonData[i]["userID"];
                         music.category = (string)jsonData[i]["category"];
-                        music.imagelocate = (string)jsonData[i]["imagelocate"];
+                        music.imageLocate = (string)jsonData[i]["imagelocate"];
                         music.userNickname = (string)jsonData[i]["nickname"];
 
                         musics.Add(music);
@@ -246,7 +246,7 @@ public class MusicWebRequest : MonoBehaviour
             audioType = AudioType.OGGVORBIS;
         }
         Debug.Log("get audio " +_filePath+audioType.ToString());
-        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(url + _filePath, audioType))
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("https://" + _filePath, audioType))
         {
             yield return www.SendWebRequest();
 
@@ -294,8 +294,11 @@ public class MusicWebRequest : MonoBehaviour
                         music.title = (string)jsonData[i]["title"];
                         music.id = (string)jsonData[i]["id"];
                         music.locate = (string)jsonData[i]["locate"];
+                        music.imageLocate = (string)jsonData[i]["imageLocate"];
                         music.userID = (string)jsonData[i]["userID"];
                         music.category = (string)jsonData[i]["category"];
+                        music.lyrics = (string)jsonData[i]["lyrics"];
+                        music.info = (string)jsonData[i]["info"];
 
                         musics.Add(music);
 

@@ -9,7 +9,8 @@ public class Page : MusicWebRequest
     // Start is called before the first frame update
     void Awake()
     {
-        exitBtn.onClick.AddListener(Close);
+        if(exitBtn!=null)
+            exitBtn.onClick.AddListener(Close);
     }
 
     // Update is called once per frame
@@ -19,12 +20,13 @@ public class Page : MusicWebRequest
     }
     public void Open()
     {
+        if (gameObject.activeSelf == true) return;
         Init();
 
         gameObject.SetActive(true);
 
         Load();
-
+        MusicController.Instance.SubMusicController.Reset();
     }
 
     virtual public void Init()
@@ -40,6 +42,7 @@ public class Page : MusicWebRequest
         //√ ±‚»≠
         Reset();
         //¥›±‚
+        MusicController.Instance.SubMusicController.Reset();
         gameObject.SetActive(false);
     }
     virtual public void Reset()

@@ -8,6 +8,7 @@ using TMPro;
 public class Lobby : MonoBehaviour
 {
     public Button settingBtn;
+
     public Button openSongPageBtn;
     public Button loadSquareSceneBtn;
     public Button characterSetBtn;
@@ -26,7 +27,7 @@ public class Lobby : MonoBehaviour
         settingBtn.onClick.AddListener(delegate { lobbySetting.Open(); });
         openSongPageBtn.onClick.AddListener(delegate { songPage.Open(); });
         characterSetBtn.onClick.AddListener(delegate { characterSetPage.Open(); });
-
+        
         characterSetPage.Close();
         songPage.Close();
 
