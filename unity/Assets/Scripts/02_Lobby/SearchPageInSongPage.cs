@@ -56,14 +56,8 @@ public class SearchPageInSongPage : Page
             {
                 selectedSlots.Remove(ss);
             }
-            if (selectedSlots.Count > 0)
-            {
-                btnsObj.SetActive(true);
-            }
-            else
-            {
-                btnsObj.SetActive(false);
-            }
+            OnOffBtnObject();
+
         }
     }
 
@@ -83,7 +77,7 @@ public class SearchPageInSongPage : Page
             putBtn.onClick.AddListener(PutSelect);
             cancelBtn.onClick.AddListener(CancelSelect);
 
-
+            OnOffBtnObject();
 
             clearBtn.gameObject.SetActive(false);
             searchField.text = "";
@@ -101,6 +95,18 @@ public class SearchPageInSongPage : Page
             OnGetSongList += LoadSongs;
         }
     }
+    private void OnOffBtnObject()
+    {
+        if (selectedSlots.Count > 0)
+        {
+            btnsObj.SetActive(true);
+        }
+        else
+        {
+            btnsObj.SetActive(false);
+        }
+    
+    }
     private void PutSelect()
     {
         MusicIDList iDList = new MusicIDList();
@@ -111,7 +117,7 @@ public class SearchPageInSongPage : Page
             iDList.musicList.Add(selectedSlots[i].GetMusic().id);
         }
         selectedSlots.Clear();
-        btnsObj.SetActive(false);
+        OnOffBtnObject();
         StartCoroutine(POST_AddMyList(iDList));
     }
     private void CancelSelect()
@@ -121,7 +127,7 @@ public class SearchPageInSongPage : Page
             selectedSlots[i].isSelected=false;
         }
         selectedSlots.Clear();
-        btnsObj.SetActive(false);
+        OnOffBtnObject();
     }
     public void OpenSearchObject()
     {
