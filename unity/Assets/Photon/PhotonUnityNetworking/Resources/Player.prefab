@@ -187,11 +187,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b14027f00d9ee24b8b821d86ec5cc97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  head: 0
-  body: 0
-  nickName: {fileID: 0}
-  character: {fileID: 0}
+  cloth: 0
+  Name: 
 --- !u!114 &8480671304642129222
 MonoBehaviour:
   m_ObjectHideFlags: 0

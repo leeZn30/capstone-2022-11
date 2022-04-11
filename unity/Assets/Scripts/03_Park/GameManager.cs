@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         PhotonNetwork.AutomaticallySyncScene = true;
         Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, -10f);
 
+
         myPlayer = PhotonNetwork.Instantiate(character.name, new Vector3(0, 0, 0), Quaternion.identity);
 
         if (instance == null)
@@ -35,9 +36,4 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
