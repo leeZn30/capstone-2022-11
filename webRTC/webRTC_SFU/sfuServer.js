@@ -40,9 +40,6 @@ let iceServers = {
 
 io.on('connection', function(socket) {
     console.log("User Connected :" + socket.id);
-    socket.on('hi', function(str) {
-        console.log(str);
-    });
     socket.on('disconnect', function(reason){
         console.log(`${socket.id}님이 ${reason}의 이유로 퇴장하셨습니다. `)
         leaveUser(socket);
