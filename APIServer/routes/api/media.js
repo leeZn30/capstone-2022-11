@@ -29,12 +29,13 @@ router.get('/*', (req,res)=>{
 
 router.post('/', auth, function(req, res){
     const userid = req.user.id;
+    let totalNum = 0;
     let musicLocate = "";
     let imageLocate = "";
 
 
     User.findOne({id: userid}).then((user)=> {
-        const totalNum = user.totalNum;
+        totalNum = user.totalNum;
     });
 
     const form = new multiparty.Form()
@@ -47,19 +48,20 @@ router.post('/', auth, function(req, res){
         //파일 아니면 res.error
         if(!part.filename)
             return res.status(400).json({msg: "올바르지 않은 파일입니다."});
-        //filename -> id+totalNum
-        const filename = part.filename
+        //filename -> id+_+totalNum
+        const filename = userid+"_"+totalNum
         //음악, 이미지 파일 다른 폴더로 업로드
         const extension = path.extname(part.filename);
         var params = {}
         //파일 확장자 확인
         if(extension === '.mp3' || extension === '.wav') {
-            const musicKey = 'Music/' + filename;
+            const musicKey = 'Music/' + filename + extension;
             params = {Bucket: BUCKET_NAME, Key: musicKey, Body: part, ContentType: 'audio/mpeg'};
             musicLocate = AWS_BUCKET_URL + "/" + musicKey;
         }
         else if(extension === '.jpg' || extension === '.png') {
-            const imageKey = 'Image/' + filename;
+
+            const imageKey = 'Image/' + filename + extension;
 
             params = {Bucket: BUCKET_NAME, Key: imageKey, Body: part, ContentType: 'image'};
             imageLocate = AWS_BUCKET_URL + "/" + imageKey;

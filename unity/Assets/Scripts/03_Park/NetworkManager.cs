@@ -59,7 +59,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            this.connectionInfoText.text = "오프라인 : 마스터 서버와 연결 끊킴 \n 다시 접속 시도합니다.";
+            this.connectionInfoText.text = "오프라인 : 마스터 서버와 연결 끊김 \n 다시 접속 시도합니다.";
             //설정한 정보로 마스터 서버 접속 시도
             PhotonNetwork.ConnectUsingSettings();
         }

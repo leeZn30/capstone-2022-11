@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SongPage : Page
 {
@@ -10,6 +11,7 @@ public class SongPage : Page
     public SearchPageInSongPage searchPage;
     public AddPageInSongPage addPage;
     public Button searchBtn;
+
     public Button addBtn;
 
     public List<SongFolder> songFolderList;
@@ -26,8 +28,8 @@ public class SongPage : Page
             {
                 songFolderList[i].OnClickButton_ += listPage.Open;
             }
-
-            searchBtn.onClick.AddListener(searchPage.Open);
+            searchBtn.onClick.AddListener(searchPage.OpenSearchObject);
+       
             addBtn.onClick.AddListener(addPage.Open);
             Debug.Log(gameObject.name + "open");
             isAlreadyInit = true;
