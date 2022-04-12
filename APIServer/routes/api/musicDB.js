@@ -52,10 +52,14 @@ router.post('/', auth, async(req, res) => {
         res.status(200).json({
             music: {
                 locate : newMusic.locate,
+                imageLocate: newMusic.imageLocate,
                 title :newMusic.title,
                 id :newMusic.id,
                 userID :newMusic.userID,
-                category :newMusic.category
+                userNickName : newMusic.userNickname,
+                category :newMusic.category,
+                lyrics : newMusic.lyrics,
+                info : newMusic.info
             },
             user: {
                 totalNum: user.totalNum,
