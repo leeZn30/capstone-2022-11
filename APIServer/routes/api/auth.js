@@ -57,20 +57,4 @@ router.post('/modifiedChar', auth, async(req, res) => {
     })
 })
 
-router.get('/uploadList', auth, async(req,res) => {
-    const id = req.user.id;
-
-    User.findOne({id:id}).then((user) => {
-        res.status(200).json({uploadList:user.uploadList})
-    })
-})
-
-router.get('/myList', auth, async(req,res) => {
-    const id = req.user.id;
-
-    User.findOne({id:id}).then((user) => {
-        res.status(200).json({myList:user.myList})
-    })
-})
-
 module.exports = router;
