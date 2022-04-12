@@ -7,9 +7,9 @@ const router = express.Router();
 
 router.get('/', async(req, res) =>{
     const {title} = req.body;
-    console.log(title)
+
     try{
-        Music.find({title : title}).then((music) => {
+        Music.find({title : {$regex: title}}).then((music) => {
             console.log(music)
             res.status(200).json(music);
         });
@@ -18,6 +18,12 @@ router.get('/', async(req, res) =>{
         console.log(e);
         res.status(400).json({msg: e.message});
     }
+})
+
+router.get('/recent', async(req, res)=> {
+    const recent = await Music.find().sort({"created" : -1}).limit(10)
+    console.log(recent);
+    res.status(200).json({recent: recent});
 })
 
 router.post('/', auth, async(req, res) => {
