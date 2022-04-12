@@ -4,10 +4,31 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;
-
+using UnityEngine.EventSystems;
 public class MusicController : MusicWebRequest
 {
+    private static MusicController instance;
+    public static MusicController Instance
+    {
+        get
+        {
+            return GetInstance();
+        }
+    }
+    public static MusicController GetInstance()
+    {
+        if (instance == null)
+        {
+            instance = (MusicController)FindObjectOfType(typeof(MusicController));
+
+        }
+        return instance;
+    }
+
     private AudioSource audioSource;
+    public SubMusicController SubMusicController;
+
+
 
     public Button openBtn;
     public Image[] images;
@@ -57,9 +78,12 @@ public class MusicController : MusicWebRequest
     public Button contentBtn;
 
     public string currentListName;
-    private List<SearchedSongSlot> currentSongSlotList;
+    private List<SongSlot> currentSongSlotList;
     public GameObject scrollViewObject;
     private ScrollViewRect scrollViewRect;
+
+    private GraphicRaycaster gr;
+
     private enum PlayState
     {
         Play,Pause
@@ -74,16 +98,14 @@ public class MusicController : MusicWebRequest
         Init();
     }
 
+    public void Stop()
+    {
+        if (audioSource.clip != null)
+            audioSource.Pause();
+    }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            //테스트용 코드
-            //musicList = ll.musicList;
-            //MusicWebRequest.Instance.GetAudioClip(musicList[currentMusicIndex].locate,true);
-            StartCoroutine(GET_MusicList("myList", UserData.Instance.id, false));
-        }
-        
+
         if (audioSource.clip != null)
         {
             
@@ -105,7 +127,7 @@ public class MusicController : MusicWebRequest
 
             if (audioSource.isPlaying == true && playState == PlayState.Pause)
             {
-                Debug.Log("Play");
+                //Debug.Log("Play");
                 playState = PlayState.Play;
 
                 StartCoroutine(enumerator);
@@ -118,13 +140,41 @@ public class MusicController : MusicWebRequest
             }
             else if(audioSource.isPlaying ==false && playState == PlayState.Play)
             {
-                Debug.Log("Pause");
+                //Debug.Log("Pause");
                 playState = PlayState.Pause;
                 StopCoroutine(enumerator);
                 for (int i = 0; i < 2; i++)
                 {
                     pauseplayBtnImage[i].sprite = Resources.Load<Sprite>("Image/UI/play");
                 }
+            }
+
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                
+                var ped = new PointerEventData(null);
+                ped.position = Input.mousePosition;
+                List<RaycastResult> results = new List<RaycastResult>();
+                gr.Raycast(ped, results);
+
+                if (results.Count <= 0) return;
+                // 이벤트 처리부분
+                if (results[0].gameObject.name != "SongSlot2(Clone)") return;
+                
+                SongSlot ss = results[0].gameObject.GetComponent<SongSlot>();
+
+                int newIndex = currentSongSlotList.IndexOf(ss);
+
+                if (newIndex == currentSongIndex) return;//현재 재생중인 음원이면 패스
+
+                pastSongIndex = currentSongIndex;
+                currentSongIndex = newIndex;
+
+                currentSongSlotList[pastSongIndex].SetImage(new Color(1f, 1f, 1f));
+                currentSongSlotList[currentSongIndex].SetImage(new Color(0.8f, 0.8f, 0.8f));
+                StartCoroutine(GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, true));
+
             }
 
         }
@@ -165,13 +215,13 @@ public class MusicController : MusicWebRequest
 
         if (_musics != null)
         {
-            SearchedSongSlot ss;
+            SongSlot ss;
             GameObject _obj = null;
             for (int i=0; i< _musics.Count; i++)
             {
 
-                _obj = Instantiate(Resources.Load("Prefabs/SongSlot2") as GameObject, scrollViewObject.transform);
-                ss = _obj.GetComponent<SearchedSongSlot>();
+                _obj = Instantiate(Resources.Load("Prefabs/SongSlot/SongSlot2") as GameObject, scrollViewObject.transform);
+                ss = _obj.GetComponent<SongSlot>();
                 ss.SetMusic(_musics[i]);
 
                 currentSongSlotList.Add(ss);
@@ -189,8 +239,8 @@ public class MusicController : MusicWebRequest
 
             //info 오른쪽 오브젝트
             scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
-            currentSongSlotList = new List<SearchedSongSlot>();
-
+            currentSongSlotList = new List<SongSlot>();
+            gr = GetComponent<GraphicRaycaster>();
 
             //겉
             animator = GetComponent<Animator>();
@@ -234,6 +284,8 @@ public class MusicController : MusicWebRequest
             OnGetClip += SetAudioClip;
             OnGetSongList += SetSongList;
 
+
+            StartCoroutine(GET_MusicList("myList", UserData.Instance.id, false));
         }
     }
 
@@ -356,12 +408,12 @@ public class MusicController : MusicWebRequest
         currentSongSlotList[currentSongIndex].SetImage(new Color(0.8f, 0.8f, 0.8f));
         Music music = currentSongSlotList[currentSongIndex].GetMusic();
 
-        LoadImage(music.imagelocate);
+        LoadImage(music.imageLocate);
 
         for (int i=0; i<2; i++)
         {
             titleTexts[i].text = music.title;
-            artistTexts[i].text = music.nickname+ "("+ music.userID+")";
+            artistTexts[i].text = music.GetArtistName();
         }
     }
 
@@ -437,4 +489,6 @@ public class MusicController : MusicWebRequest
                 images[i].sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
         }
     }
+
+    
 }

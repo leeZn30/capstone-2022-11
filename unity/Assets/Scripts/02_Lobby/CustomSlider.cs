@@ -11,12 +11,10 @@ public class CustomSlider : Slider, IPointerUpHandler,IPointerDownHandler
     public event PointerUpHandler OnPointDown;
     override public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("Up slider");
         OnPointUp(value);
     }
     override public  void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("Down slider");
         OnPointDown(value);
     }
     // Start is called before the first frame update

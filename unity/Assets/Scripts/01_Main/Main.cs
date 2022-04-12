@@ -21,7 +21,7 @@ public class Auth
 }
 public class Main : MonoBehaviour
 {
-    string url = "http://localhost:8080/api";
+    private string url = GlobalData.url;
 
     public Button joinBtn;
     public Button loginBtn;
@@ -32,7 +32,7 @@ public class Main : MonoBehaviour
     public GameObject wrong_obj;
 
     private Animator animator;
-
+    private TextMeshProUGUI wrongText;
 
     // Start is called before the first frame update
     void Awake()
@@ -41,7 +41,7 @@ public class Main : MonoBehaviour
         joinBtn.onClick.AddListener(delegate { join.OpenJoinPanel(); });
         loginBtn.onClick.AddListener(OnClickLoginButton);
         wrong_obj.SetActive(false);
-
+        wrongText = wrong_obj.GetComponentInChildren<TextMeshProUGUI>();
         join.OnClickJoinButton_ += PostJoin;
     }
     void PostJoin(User user)
@@ -50,14 +50,9 @@ public class Main : MonoBehaviour
     }
     void OnClickLoginButton()
     {//로그인 버튼이 눌렸을 때 
-        if (id_input.text.Length <= 0 || password_input.text.Length <= 0)
-        {
-            //ㅠㅠ
-        }
-        else
-        {
-            StartCoroutine(Login_UnityWebRequestPOST());
-        }
+
+        StartCoroutine(Login_UnityWebRequestPOST());
+        
         
     }
     IEnumerator Login_UnityWebRequestPOST()
@@ -111,9 +106,17 @@ public class Main : MonoBehaviour
             }
             else//로그인 실패
             {
-                Debug.Log(request.result);
-                Debug.Log(request.error.ToString());
-                wrong_obj.SetActive(true);
+                if (request.responseCode == 400)
+                {
+                    string jsonResult = System.Text.Encoding.UTF8.GetString(request.downloadHandler.data);
+                    JsonData jsonData = JsonToObject(jsonResult);
+                    if (jsonData["msg"] != null)
+                    {
+                        wrongText.text = (string)jsonData["msg"];
+                    }
+                    wrong_obj.SetActive(true);
+                }
+                Debug.Log(request.error);
             }
         }
 

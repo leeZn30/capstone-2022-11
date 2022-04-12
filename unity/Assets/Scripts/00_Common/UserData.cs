@@ -10,13 +10,15 @@ public class User
     public string email;
     public string nickname;
     public int character;
+    public List<string> preferredGenres;
 
-    public void SetUser(string id,string email,string nickname,int character)
+    public void SetUser(string id,string email,string nickname,int character, List<string> preferredGenres=null)
     {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.character = character;
+        this.preferredGenres = preferredGenres;
     }
     public void Clear()
     {
@@ -24,10 +26,16 @@ public class User
         this.email = "";
         this.nickname = "";
         this.character = 0;
+        this.preferredGenres = null;
+    }
+    public string GetName()
+    {
+        return nickname+"("+id+")";
     }
 }
 public class UserData : Singleton<UserData>
 {
+
     public User user;
     public string Token;
     public string id

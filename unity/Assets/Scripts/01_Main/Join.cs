@@ -34,8 +34,6 @@ public class Join : MonoBehaviour
             inputObjects[i].reset();
         }
         animator.SetBool("isOpen", true);
-        
-
 
     }
     void OnClickJoinButton()
@@ -62,6 +60,9 @@ public class Join : MonoBehaviour
                     break;
                 case "email":
                     user.email = inputObjects[i].GetText();
+                    break;
+                case "fav":
+                    user.preferredGenres = inputObjects[i].GetPreferredGenres();
                     break;
             }
         }
