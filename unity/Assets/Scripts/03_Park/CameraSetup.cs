@@ -16,6 +16,10 @@ public class CameraSetup : MonoBehaviourPun
             followcam.LookAt = this.gameObject.transform;
 
         }
+        else
+        {
+            GetComponent<SpriteRenderer>().color = Color.red;
+        }
         
     }
 

@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using Photon.Realtime;
 using Photon.Pun;
 using TMPro;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
@@ -71,6 +70,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         this.connectionInfoText.text = "빈 방 없음, 새로운방 생성...";
         //최대 인원을 4명으로 설정 + 방을 만듦
+        //방이름 , 4명 설정
         PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 100 });
 
     }
@@ -82,18 +82,5 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         //모든 룸 참가자가 Main 씬을 로드하게 함
         PhotonNetwork.LoadLevel("03_Park");
-
-        PhotonNetwork.LocalPlayer.NickName = UserData.Instance.user.nickname;
-        Hashtable playerData = new Hashtable();
-
-        playerData.Add("character", UserData.Instance.user.character);
-        
-        // 직접 전달로 해야함, setcustomproperties 안됨
-        // 이건 내거 전달 (진짜 뭐임???)
-        PhotonNetwork.LocalPlayer.CustomProperties = playerData;
-
-        // 이걸로 하면 남의 것 들어옴
-        playerData["character"] = UserData.Instance.user.character;
-        PhotonNetwork.LocalPlayer.SetCustomProperties(playerData);
     }
 }
