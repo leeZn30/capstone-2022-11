@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;
+
+[System.Serializable]
 public class SongSlot : MonoBehaviour
 {
     

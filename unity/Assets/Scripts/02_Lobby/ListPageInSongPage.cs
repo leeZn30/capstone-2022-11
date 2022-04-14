@@ -15,11 +15,8 @@ public class ListPageInSongPage : Page
     public Button putBtn;
     public GameObject scrollViewObject;
 
-    
-    private List<SongSlot> songSlots;
     [SerializeField]
-    public List<Music> musicList;
-
+    private List<SongSlot> songSlots;
     private ScrollViewRect scrollViewRect;
 
     private bool isEditMode=false;
@@ -28,7 +25,7 @@ public class ListPageInSongPage : Page
     private TextMeshProUGUI editText;
     private GameObject editObject;
 
-
+    private string listName;
     private void Update()
     {
         if (isEditMode)
@@ -79,17 +76,31 @@ public class ListPageInSongPage : Page
 
     void DeleteMusic()
     {
+
         if (isEditMode == true)
         {
-            isEditMode = false;
-            for (int i=0; i< songSlots.Count; i++)
+            MusicIDList idList = new MusicIDList();
+            idList.musicList = new List<string>();
+
+            SongSlot[] childList = scrollViewObject.GetComponentsInChildren<SongSlot>();
+            for (int i= songSlots.Count-1; i>=0; i--)
             {
                 if (songSlots[i].isSelected == true)
                 {
-
+                    Debug.Log(i);
+                    idList.musicList.Add(songSlots[i].GetMusic().id);
+                    songSlots.RemoveAt(i);
+                    Destroy(childList[i+1].gameObject);
                 }
             }
+
+            if (idList.musicList.Count > 0)
+            {
+                StartCoroutine(POST_Delete(idList, listName));
+            }
         }
+
+        OnEditMode();
     }
     void OnEditMode()
     {
@@ -127,8 +138,9 @@ public class ListPageInSongPage : Page
     void GetSongList(string _listName)
     {//id에 따라 알맞은 재생목록을 불러오는 함수
 
-        if (musicList != null)//테스트용 코드
+        if (songSlots != null)//테스트용 코드
         {
+            listName = _listName;
             StartCoroutine(GET_MusicList(_listName, UserData.Instance.id));
         }
         
@@ -139,16 +151,16 @@ public class ListPageInSongPage : Page
     {
         if (_musicList != null || _musicList.Count==0)
         {
-            musicList = _musicList;
 
+            songSlots.Clear();
 
             GameObject _obj = null;
             SongSlot songSlot;
-            for (int i = 0; i < musicList.Count; i++)
+            for (int i = 0; i < _musicList.Count; i++)
             {
                 _obj = Instantiate(Resources.Load("Prefabs/SongSlot/SongSlot") as GameObject, scrollViewObject.transform);
                 songSlot = _obj.GetComponent<SongSlot>();
-                songSlot.SetMusic(musicList[i]);
+                songSlot.SetMusic(_musicList[i]);
                 songSlots.Add(songSlot);
 
             }
@@ -166,10 +178,10 @@ public class ListPageInSongPage : Page
         //musicList.Clear();
         songSlots.Clear();
 
-        Transform[] childList = scrollViewObject.GetComponentsInChildren<Transform>();
+        SongSlot[] childList = scrollViewObject.GetComponentsInChildren<SongSlot>();
         if (childList != null)
         {
-            for (int i = 1; i < childList.Length; i++)
+            for (int i = 0; i < childList.Length; i++)
             {
                 if (childList[i] != transform)
                 {

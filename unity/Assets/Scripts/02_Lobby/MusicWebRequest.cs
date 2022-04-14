@@ -64,6 +64,37 @@ public class MusicWebRequest : MonoBehaviour
 
     protected delegate void UploadHandler(bool success);
     protected event UploadHandler OnUploaded;
+
+    protected IEnumerator POST_Delete(MusicIDList idList, string listName)
+    {
+
+
+        string json = JsonUtility.ToJson(idList);
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/delete"+"MyList", json))
+        {// 보낼 주소와 데이터 입력
+
+            byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            request.SetRequestHeader("token", UserData.Instance.Token);
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
+
+
+            if (request.error == null)
+            {
+
+                Debug.Log(request.downloadHandler.text);
+
+            }
+            else
+            {
+                Debug.Log(request.error.ToString());
+
+            }
+        }
+    }
     protected IEnumerator POST_AddMyList(MusicIDList idList, string listName="myList")
     {
 
@@ -208,7 +239,7 @@ public class MusicWebRequest : MonoBehaviour
         string json = JsonUtility.ToJson(userID);
         Debug.Log(listName+" 리스트: " + json);
 
-        using (UnityWebRequest www = UnityWebRequest.Get(url + "/auth/"+listName))
+        using (UnityWebRequest www = UnityWebRequest.Get(url + "/user/"+listName))
         {
             www.SetRequestHeader("token",  UserData.Instance.Token);
             www.SetRequestHeader("Content-Type", "application/json");
@@ -225,7 +256,7 @@ public class MusicWebRequest : MonoBehaviour
                     string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
                     Debug.Log("결과 " + jsonResult);
                     
-                    JsonData jsonData2 = JsonToObject(jsonResult);
+                    JsonData jsonData2 = JsonToObject(jsonResult);                  
                     JsonData jsonData = jsonData2[listName];
 
                     for (int i = 0; i < jsonData.Count; i++)
@@ -235,11 +266,12 @@ public class MusicWebRequest : MonoBehaviour
                         music.title = (string)jsonData[i]["title"];
                         music.id = (string)jsonData[i]["id"];
                         music.locate = (string)jsonData[i]["locate"];
+                        music.imageLocate = (string)jsonData[i]["imageLocate"];
                         music.userID = (string)jsonData[i]["userID"];
+                        music.userNickname = (string)jsonData[i]["userNickname"];
                         music.category = (string)jsonData[i]["category"];
-                        music.imageLocate = (string)jsonData[i]["imagelocate"];
-                        music.userNickname = (string)jsonData[i]["nickname"];
-
+                        music.lyrics = (string)jsonData[i]["lyrics"];
+                        music.info = (string)jsonData[i]["info"];
                         musics.Add(music);
 
                     }
@@ -279,7 +311,7 @@ public class MusicWebRequest : MonoBehaviour
         using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("https://" + _filePath, audioType))
         {
             yield return www.SendWebRequest();
-
+            Debug.Log("get audio 끝" + _filePath + audioType.ToString());
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
                 Debug.Log(www.error);
@@ -326,6 +358,7 @@ public class MusicWebRequest : MonoBehaviour
                         music.locate = (string)jsonData[i]["locate"];
                         music.imageLocate = (string)jsonData[i]["imageLocate"];
                         music.userID = (string)jsonData[i]["userID"];
+                        music.userNickname = (string)jsonData[i]["userNickname"];
                         music.category = (string)jsonData[i]["category"];
                         music.lyrics = (string)jsonData[i]["lyrics"];
                         music.info = (string)jsonData[i]["info"];
