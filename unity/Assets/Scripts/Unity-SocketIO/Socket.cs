@@ -48,20 +48,23 @@ namespace KyleDulce.SocketIo {
             }
         }
 
-        private event Action<string> Action_AnyEvents;
-        private Dictionary<string, List<Action<string>>> ActionEvents = new Dictionary<string, List<Action<string>>>();
+        //private event Action<string> Action_AnyEvents;
+        private event Action<Dictionary<string, dynamic>> Action_AnyEvents;
+        private Dictionary<string, List<Action<Dictionary<string, dynamic>>>> ActionEvents = 
+            new Dictionary<string, List<Action<Dictionary<string, dynamic>>>>();
 
-        #if UNITY_WEBGL
+#if UNITY_WEBGL
             protected internal Socket(int id) {
                 this.id = id;
             }
-        #else
-            private SocketIOClient.SocketIO client;
+#else
+        private SocketIOClient.SocketIO client;
             protected internal Socket(int id, SocketIOClient.SocketIO client) {
                 this.id = id;
                 this.client = client;
                 client.OnAny((string eventname,SocketIOClient.SocketIOResponse res) => {
-                    InvokeEvent(eventname, res.GetValue<string>());
+                    //InvokeEvent(eventname, res.GetValue<string>());
+                    InvokeEvent(eventname, res.GetValue<Dictionary<string, dynamic>>());
                 }); 
             }
         #endif
@@ -102,7 +105,7 @@ namespace KyleDulce.SocketIo {
         //     return this;
         // }
 
-        public Socket emit(string ev, string data) {
+        public Socket emit(string ev, object data) {
             #if UNITY_WEBGL
                 if(data == null)
                     Socket_Emit(id, ev, null);
@@ -114,32 +117,33 @@ namespace KyleDulce.SocketIo {
             return this;
         }
 
-        public Socket on(string ev, Action<string> callback) {
+        public Socket on(string ev, Action<Dictionary<string, dynamic>> callback) {
                 if(!ActionEvents.ContainsKey(ev)) {
-                    ActionEvents.Add(ev, new List<Action<string>>());
-                }
-                ActionEvents[ev].Add(callback);
+                ActionEvents.Add(ev, new List<Action<Dictionary<string, dynamic>>>());
+            }
+            ActionEvents[ev].Add(callback);
             
             return this;
         }
 
-        public Socket off(string ev, Action<string> callback = null) {
+        // Action<string> => Action<object> / on도 바꿔둠
+        public Socket off(string ev, Action<Dictionary<string, dynamic>> callback = null) {
                 if(callback != null) {
-                    if(ActionEvents.TryGetValue(ev, out List<Action<string>> value)) {
+                    if(ActionEvents.TryGetValue(ev, out List<Action<Dictionary<string, dynamic>>> value)) {
                         value.Remove(callback);
                     }
                 } else {
-                    ActionEvents = new Dictionary<string, List<Action<string>>>();
+                    ActionEvents = new Dictionary<string, List<Action<Dictionary<string, dynamic>>>>();
                 }           
             return this;
         }
 
-        public Socket onAny(Action<string> callback) {
+        public Socket onAny(Action<Dictionary<string, dynamic>> callback) {
             Action_AnyEvents += callback;
             return this;
         }
 
-        public Socket offAny(Action<string> callback = null) {
+        public Socket offAny(Action<Dictionary<string, dynamic>> callback = null) {
             if(callback == null) {
                 Action_AnyEvents = null;
             } else {
@@ -153,12 +157,13 @@ namespace KyleDulce.SocketIo {
             disabled = true;
         }
 
-        public void InvokeEvent(string ev, string data) {
+        public void InvokeEvent(string ev, Dictionary<string, dynamic> data) {
             Action_AnyEvents?.Invoke(data);
 
             //invoke event specific events
-            if(ActionEvents.TryGetValue(ev, out List<Action<string>> value)) {
-                foreach(Action<string> act in value) {
+            // list<Action<string>>이 표준
+            if(ActionEvents.TryGetValue(ev, out List<Action<Dictionary<string, dynamic>>> value)) {
+                foreach(Action< Dictionary<string, dynamic>> act in value) {
                     act.Invoke(data);
                 }
             }

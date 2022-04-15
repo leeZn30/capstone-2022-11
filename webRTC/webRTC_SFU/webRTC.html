@@ -54,7 +54,9 @@
             sendPC.onicecandidate = event => {
               if (event.candidate) {
                 console.log("[CLIENT]send Candi");
-                socket.emit("getSenderCandidate", event.candidate, userOption);
+                userOption['candidate'] = event.candidate;
+                //socket.emit("getSenderCandidate", event.candidate, userOption);
+                socket.emit("getSenderCandidate", userOption);
               }
             };
             sendPC.addTrack(userStream.getTracks()[0], userStream);

@@ -6,6 +6,7 @@ const fs = require('fs');
 const { join } = require("path");
 const port = 8080;
 const wrtc = require("wrtc");
+const { Console } = require("console");
 
 const option = {
     key: fs.readFileSync('privkey.pem', 'utf8'), 
@@ -49,13 +50,11 @@ io.on('connection', function(socket) {
 
         console.log("joinRoom working!");
 
-        userOption = userOption.split(" ");
+        let userId = userOption.userId;
+        let roomNum = userOption.roomNum;
 
-        //let userId = userOption.userId;
-        //let roomNum = userOption.roomNum;
-
-        let userId = userOption[0];
-        let roomNum = userOption[1];
+        // let userId = userOption[0];
+        // let roomNum = userOption[1];
 
         if (roomNum in rooms) {
             rooms[roomNum].push({'userId':userId});
@@ -67,12 +66,13 @@ io.on('connection', function(socket) {
             rooms[roomNum] = [{'userId':userId}];
             roomOption = {'roomNum':roomNum, 'userId':userId};
             socket.join(roomNum);
-            socket.emit('createRoom', roomOption);
+
+            socket.emit("createRoom", roomOption);
         }
         console.log(rooms);
     });
 
-    socket.on('senderOffer', async function(offer, userOption) {
+    socket.on('senderOffer', async function(userOption) {
         console.log("[SERVER]get Offer");
         try {
             socket.join(userOption.roomNum);
@@ -85,7 +85,7 @@ io.on('connection', function(socket) {
                 }
             }
             serverReceiverPCs[userOption.roomNum]['receivePC'] = receiverPC;
-            receiverPC.setRemoteDescription(offer);
+            receiverPC.setRemoteDescription(userOption['offer']);
             receiverPC
             .createAnswer({
                 offerToReceiveAudio: true,
