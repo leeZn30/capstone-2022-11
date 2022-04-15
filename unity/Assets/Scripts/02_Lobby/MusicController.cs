@@ -187,13 +187,13 @@ public class MusicController : MusicWebRequest
         {
             animator.SetBool("isContentOpen", true);
             animator.SetTrigger("OpenContent");
-            contentText.text = "가사~";
+            contentText.text = currentSongSlotList[currentSongIndex].GetMusic().lyrics;
         }
-        else if(type == "content")
+        else if(type == "info")
         {
             animator.SetBool("isContentOpen", true);
             animator.SetTrigger("OpenContent");
-            contentText.text = "상세 정보~";
+            contentText.text = currentSongSlotList[currentSongIndex].GetMusic().info;
         }
     }
     public void SetSongList(List<Music> _musics = null,bool play=false)
@@ -274,7 +274,7 @@ public class MusicController : MusicWebRequest
             openBtn.onClick.AddListener(OpenCloseInfo);
 
             lyricsBtn.onClick.AddListener(delegate { LoadInfo("lyrics"); });
-            contentBtn.onClick.AddListener(delegate { LoadInfo("content"); });
+            contentBtn.onClick.AddListener(delegate { LoadInfo("info"); });
             listBtn.onClick.AddListener(delegate { animator.SetBool("isContentOpen",false); });
 
             playState = PlayState.Pause;
@@ -392,6 +392,7 @@ public class MusicController : MusicWebRequest
 
     public void SetAudioClip(AudioClip ac, bool play)
     {//OnGetClip 리스너가 호출되면 함수 실행
+        Debug.Log("오디오 교체");
         audioSource.Stop();
         audioSource.time = 0;
         audioClip = ac;
@@ -468,18 +469,20 @@ public class MusicController : MusicWebRequest
         }
         else
         {
-            StartCoroutine(GetTexture(url + filePath));
+            StartCoroutine(GetTexture(filePath));
         }
     }
 
     IEnumerator GetTexture(string _path)
     {
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture(_path);
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture("https://"+_path);
         yield return www.SendWebRequest();
 
         if (www.result != UnityWebRequest.Result.Success)
         {
             Debug.Log(www.error);
+            for (int i = 0; i < images.Length; i++)
+                images[i].sprite = Resources.Load<Sprite>("Image/none");
         }
         else
         {
