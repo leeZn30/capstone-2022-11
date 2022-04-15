@@ -164,7 +164,8 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
 
     void test(string msg)
     {
-        socket.emit("Test", "hi");
+        if (socket != null)
+         socket.emit("Test", "hi");
     }
 
 }
