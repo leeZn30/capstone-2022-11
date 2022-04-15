@@ -4,7 +4,8 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 using System;
-using SocketIOClient;
+//using SocketIOClient;
+using KyleDulce.SocketIo;
 
 public class BuskingSpot : MonoBehaviourPun, IPunObservable
 {
@@ -30,7 +31,7 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
     public bool isUsed = false;
 
     //Socket io
-    SocketIO socket;
+    Socket socket;
 
     private void Update()
     {
@@ -146,9 +147,9 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
     {
         try
         {
-            socket = new SocketIO("http://localhost:8080");
+            socket = SocketIo.establishSocketConnection("http://localhost:8080");
+            socket.connect();
 
-            socket.ConnectAsync();
 
 
 
@@ -163,7 +164,7 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
 
     void test(string msg)
     {
-        socket.EmitAsync("Test", msg);
+        socket.emit("Test", "hi");
     }
 
 }
