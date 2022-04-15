@@ -175,6 +175,7 @@ MonoBehaviour:
   isVideoPanelShown: 0
   videoPanel: {fileID: 0}
   ChatPanel: {fileID: 0}
+  buskerPanel: {fileID: 0}
 --- !u!114 &6924849003541504941
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -125,9 +125,10 @@
           console.log("Click Room1");
           roomNum = 'room1';
           let userOption = {roomNum:roomNum, userId:socket.id};
+
+          var str = roomNum + " " + socket.id;
           
-          //socket.emit("joinRoom", userOption);
-          socket.emit("Test", "hello");
+          socket.emit("joinRoom", str);
         }   
           
         function room2Click() {

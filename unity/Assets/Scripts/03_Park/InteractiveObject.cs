@@ -23,11 +23,13 @@ public class InteractiveObject : MonoBehaviour
             switch (InteractiveType)
             {
                 case 0:
-                    if (!this.GetComponentInParent<BuskingSpot>().isUsed)
+                    if (!GetComponentInParent<BuskingSpot>().isUsed)
                     {
                         player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
                         player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
-                            delegate {this.GetComponentInParent<BuskingSpot>().StartBusking();});
+                            delegate { player.GetComponent<PlayerControl>().OnVideoPanel(1);});
+                        // 일단 여기다가 isused
+                        GetComponentInParent<BuskingSpot>().isUsed = true;
                     }
                     break;
 

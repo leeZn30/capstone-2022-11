@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
-using System;
-//using SocketIOClient;
-using KyleDulce.SocketIo;
 
 public class BuskingSpot : MonoBehaviourPun, IPunObservable
 {
+    // 버스킹 장소가 사용되고 있는지
+    public bool isUsed = false;
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -21,18 +21,6 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         }
     }
 
-    // 카메라 관련
-    protected WebCamTexture textureWebCam = null;
-    [SerializeField] private GameObject objectTarget;
-
-    // 마이크 관련
-    [SerializeField] private AudioSource micAudioSource;
-
-    public bool isUsed = false;
-
-    //Socket io
-    Socket socket;
-
     private void Update()
     {
         if (isUsed)
@@ -42,11 +30,6 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         else
         {
             this.GetComponent<SpriteRenderer>().color = new Color32(202, 162, 48, 250);
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            test("hi");
         }
     }
 
@@ -71,101 +54,5 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         }
     }
 
-
-    // 버스킹 인터렉티브
-    public void StartBusking()
-    {
-        isUsed = true;
-
-        GameObject player = GameManager.instance.myPlayer;
-
-        // 카메라
-        WebCamDevice[] devices = WebCamTexture.devices;
-
-        int selectedCameraIndex = -1;
-        for (int i = 0; i < devices.Length; i++)
-        {
-            // 사용 가능한 카메라 로그
-            Debug.Log("Available Webcam: " + devices[i].name + ((devices[i].isFrontFacing) ? "(Front)" : "(Back)"));
-
-            // 후면 카메라인지 체크
-            if (devices[i].isFrontFacing)
-            {
-                // 해당 카메라 선택
-                selectedCameraIndex = i;
-                break;
-            }
-        }
-
-        // WebCamTexture 생성
-        if (selectedCameraIndex >= 0)
-        {
-            // 선택된 카메라에 대한 새로운 WebCamTexture를 생성
-            textureWebCam = new WebCamTexture(devices[selectedCameraIndex].name);
-
-            // 원하는 FPS를 설정
-            if (textureWebCam != null)
-            {
-                textureWebCam.requestedFPS = 60;
-            }
-        }
-
-        // objectTarget으로 카메라가 표시되도록 설정
-        if (textureWebCam != null)
-        {
-            // 카메라
-            objectTarget.GetComponent<RawImage>().texture = textureWebCam;
-            player.GetComponent<PlayerControl>().OnVideoPanel(1);
-            textureWebCam.Play();
-
-            // 소리
-            try
-            {
-                string mic = Microphone.devices[0];
-                micAudioSource.clip = Microphone.Start(mic, true, 10, 44100);
-                while (!(Microphone.GetPosition(mic) > 0)) { } // Wait until the recording has started
-                micAudioSource.Play(); // Play the audio source!
-                player.GetComponent<PlayerControl>().OffInteractiveButton();
-                webRTCConnect();
-            }
-            catch
-            {
-                webRTCConnect();
-                Debug.Log("No mic");
-            }
-
-        }
-        else // 카메라 텍스쳐 없음
-        {
-            webRTCConnect();
-            Debug.Log("No Camera Texture");
-        }
-
-    }
-
-    void webRTCConnect()
-    {
-        try
-        {
-            socket = SocketIo.establishSocketConnection("http://localhost:8080");
-            socket.connect();
-
-
-
-
-            Debug.Log("Connect Success!");
-        }
-        catch (Exception ex)
-        {
-            Debug.Log(ex);
-        }
-
-    }
-
-    void test(string msg)
-    {
-        if (socket != null)
-         socket.emit("Test", "hi");
-    }
 
 }

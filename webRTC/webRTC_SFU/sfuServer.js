@@ -46,8 +46,16 @@ io.on('connection', function(socket) {
     });
 
     socket.on('joinRoom', function(userOption) {
-        let userId = userOption.userId;
-        let roomNum = userOption.roomNum;
+
+        console.log("joinRoom working!");
+
+        userOption = userOption.split(" ");
+
+        //let userId = userOption.userId;
+        //let roomNum = userOption.roomNum;
+
+        let userId = userOption[0];
+        let roomNum = userOption[1];
 
         if (roomNum in rooms) {
             rooms[roomNum].push({'userId':userId});
