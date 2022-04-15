@@ -67,6 +67,11 @@ io.on('connection', function(socket) {
             roomOption = {'roomNum':roomNum, 'userId':userId};
             socket.join(roomNum);
 
+            //test > peerconnection 객체를 client에서 잘 받는지 확인하려고
+            // let rtcPeerConnection = new wrtc.RTCPeerConnection(iceServers);
+            // roomOption["peerConnection"] = rtcPeerConnection;
+            // console.log(rtcPeerConnection["signalingState"]);
+            
             socket.emit("createRoom", roomOption);
         }
         console.log(rooms);

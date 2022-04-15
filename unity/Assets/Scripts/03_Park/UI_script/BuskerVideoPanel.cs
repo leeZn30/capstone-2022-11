@@ -36,22 +36,14 @@ public class BuskerVideoPanel : MonoBehaviour
     // player
     GameObject player;
 
-    //TCP
-    /**
-    TcpClient tcpsocket;
-    NetworkStream stream;
-    StreamWriter writer;
-    StreamReader reader;
-    **/
-
     // 카메라, 마이크
     [SerializeField] private RawImage cameraImage;
     [SerializeField] private AudioSource MicSource;
 
-    private RTCConfiguration config = new RTCConfiguration
-    {
-        iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.services.mozilla.com", "stun:stun.l.google.com:19302" } } }
-    };
+    // Webrtc 관련
+    //static RTCConfiguration config;
+    private RTCPeerConnection sendPC;
+    private RTCPeerConnection receivePC;
 
 
     // Start is called before the first frame update
@@ -59,11 +51,8 @@ public class BuskerVideoPanel : MonoBehaviour
     {
         player = GameManager.instance.myPlayer;
 
-    }
-
-    void test(Dictionary<string, dynamic> t)
-    {
-        Debug.Log(t["hey"]);
+        // 여기에 설정해줘야함
+        Init();
     }
 
     // Update is called once per frame
@@ -88,25 +77,10 @@ public class BuskerVideoPanel : MonoBehaviour
 
     }
 
-    /**
-    void socketConnect()
+    void Init()
     {
-
-        try
-        {
-            tcpsocket = new TcpClient("http://localhost", 8080);
-            stream = tcpsocket.GetStream();
-            writer = new StreamWriter(stream);
-            reader = new StreamReader(stream);
-            //socketReady = true;
-        }
-        catch (Exception e)
-        {
-            Debug.Log($"소켓에러 : {e.Message}");
-        }
+        Debug.Log(sendPC);
     }
-    **/
-
 
     private void cameraConnect()
     {
@@ -218,7 +192,6 @@ public class BuskerVideoPanel : MonoBehaviour
     }
 
 
-
     void joinRoom()
     {
         int roomNum = 1; // 일단 통일
@@ -237,22 +210,33 @@ public class BuskerVideoPanel : MonoBehaviour
         }
     }
 
-    void callCreateRoom()
+    private static RTCConfiguration GetSelectedSdpSemantics()
     {
-        if (socket != null)
-        {
-            socket.on("createRoom", onCreateRoom);
-        }
+        RTCConfiguration config = default;
+        config.iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.services.mozilla.com" } }, new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } };
+        return config;
     }
 
     // on을 하기 위해서는 emit안에 넣어야 하는 것 같음 why..?
     void onCreateRoom(Dictionary<string, dynamic> userOption)
     {
+        Debug.Log("client onCreateRoom ");
+        // 일단 peerconnection 객체 받아오는지 확인
+        //Debug.Log(userOption["peerConnection"]);
 
-        var sendPC = new RTCPeerConnection(ref config);
-        Debug.Log("!!!!!!!!");
-        Debug.Log(sendPC);
+        // 근데 전달이 안됨ㅋ null 에러
+        try
+        {
+            var configuration = GetSelectedSdpSemantics();
+            sendPC = new RTCPeerConnection(ref configuration);
+        }
+        catch (Exception ex)
+        {
+            Debug.Log("no rtcpeerconnection: " + ex);
 
+        }
+
+        /**
         sendPC.OnIceCandidate = candidate => sendPC.AddIceCandidate(candidate);
 
         var opOffer = sendPC.CreateOffer();
@@ -269,6 +253,7 @@ public class BuskerVideoPanel : MonoBehaviour
            
             //socket.emit("senderOffer", userOption);
         }
+        **/
 
         //user option = 1
         try
