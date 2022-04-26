@@ -105,6 +105,23 @@ router.post('/', async(req, res) => {
     })
 })
 
+router.post('/modifiedChar', auth, async(req, res) => {
+    const id = req.user.id;
+    const {value} = req.body;
+
+    console.log(id)
+    console.log(req.user.character);
+
+    User.findOne({id: id}).then((user)=> {
+        console.log(user);
+        user.character = value;
+        user.save();
+        res.status(200).json({
+            character : user.character
+        })
+    })
+})
+
 router.post('/addMyList', auth, async(req, res)=>{
     const {musicList} = req.body;
     const id = req.user.id;
