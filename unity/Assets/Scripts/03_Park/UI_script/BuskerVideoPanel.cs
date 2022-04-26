@@ -44,6 +44,7 @@ public class BuskerVideoPanel : MonoBehaviour
     //static RTCConfiguration config;
     private RTCPeerConnection sendPC;
     private RTCPeerConnection receivePC;
+    private MediaStream userStream;
 
 
     // Start is called before the first frame update
@@ -79,7 +80,6 @@ public class BuskerVideoPanel : MonoBehaviour
 
     void Init()
     {
-        Debug.Log(sendPC);
     }
 
     private void cameraConnect()
@@ -128,9 +128,7 @@ public class BuskerVideoPanel : MonoBehaviour
 
             cameraImage = objectTarget.GetComponent<RawImage>();
 
-
             //MediaStreamTrack 
-
 
         }
         else // 카메라 텍스쳐 없음
@@ -150,6 +148,8 @@ public class BuskerVideoPanel : MonoBehaviour
 
             // 마이크 켜졌다고 표시
             isMicOn = true;
+
+            // stream
         }
         catch
         {
@@ -210,14 +210,21 @@ public class BuskerVideoPanel : MonoBehaviour
         }
     }
 
+    private void OnIceCandidate(RTCPeerConnection pc, RTCIceCandidate candidate)
+    {
+        pc.AddIceCandidate(candidate);
+    }
+
     private static RTCConfiguration GetSelectedSdpSemantics()
     {
         RTCConfiguration config = default;
-        config.iceServers = new[] { new RTCIceServer { urls = new[] { "stun:stun.services.mozilla.com" } }, new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } };
+        config.iceServers = new[] { 
+            new RTCIceServer { urls = new[] { "stun:stun.services.mozilla.com" } }, 
+            new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } 
+        };
         return config;
     }
 
-    // on을 하기 위해서는 emit안에 넣어야 하는 것 같음 why..?
     void onCreateRoom(Dictionary<string, dynamic> userOption)
     {
         Debug.Log("client onCreateRoom ");
@@ -227,8 +234,23 @@ public class BuskerVideoPanel : MonoBehaviour
         // 근데 전달이 안됨ㅋ null 에러
         try
         {
-            var configuration = GetSelectedSdpSemantics();
-            sendPC = new RTCPeerConnection(ref configuration);
+            userOption["option"] = 1;
+
+            RTCConfiguration configuration = GetSelectedSdpSemantics();
+            sendPC = new RTCPeerConnection(ref configuration); // 이게 안됨
+
+            sendPC.OnIceCandidate = Event => 
+            { 
+                if (Event.Candidate != null)
+                {
+                    Debug.Log("[CLIENT]send Candi");
+                    userOption["candidate"] = Event.Candidate;
+
+                    socket.emit("getSenderCandidate", userOption);
+                }            
+            };
+            // sendPC.AddTrack(userStream.GetTracks, userStream);
+
         }
         catch (Exception ex)
         {
