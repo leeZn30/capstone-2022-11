@@ -1,10 +1,11 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
-
+const auth = require('../../middleware/auth');
 const jwt = require('jsonwebtoken');
 const config = require('../../config/index');
 const { JWT_SECRET } = config;
 
+const Music = require('../../models/music');
 const User = require('../../models/user');
 
 const router = express.Router();
@@ -41,11 +42,39 @@ router.get('/check', async(req, res) =>{
     }
 })
 
+router.get('/uploadList', auth, async(req,res) => {
+    const id = req.user.id;
+    let musicInfo = [];
+
+    User.findOne({id:id}).then(async (user) => {
+        for (let i = 0; i < user.uploadList.length; i++){
+            await Music.findOne({id: user.uploadList[i].musicID}).then((music) => {
+                musicInfo.push(music);
+            })
+        }
+        res.status(200).json({uploadList: musicInfo})
+    })
+})
+
+router.get('/myList', auth, async(req,res) => {
+    const id = req.user.id;
+    let musicInfo = [];
+
+    User.findOne({id:id}).then(async (user) => {
+        for (let i = 0; i < user.myList.length; i++){
+            await Music.findOne({id: user.myList[i].musicID}).then((music) => {
+                musicInfo.push(music);
+            })
+        }
+        res.status(200).json({myList: musicInfo})
+    })
+})
+
 router.post('/', async(req, res) => {
-    const {id, email, password, nickname, character} = req.body;
+    const {id, email, password, nickname, character, preferredGenres} = req.body;
 
     const newUser = new User({
-        id, email, password, nickname, character
+        id, email, password, nickname, character, preferredGenres
     })
 
     bcrypt.genSalt(10, (err, salt) => {
@@ -66,12 +95,65 @@ router.post('/', async(req, res) => {
                                 name: user.name,
                                 email: user.email,
                                 character: user.character,
+                                preferredGenres: user.preferredGenres
                             }
                         })
                     }
                 )
             })
         })
+    })
+})
+
+router.post('/addMyList', auth, async(req, res)=>{
+    const {musicList} = req.body;
+    const id = req.user.id;
+    let musicInfo = [];
+
+    for (let i = 0; i < musicList.length; i++){
+        await User.update({id: id}, {$push: { myList: {musicID: musicList[i]}}});
+    }
+
+    User.findOne({id:id}).then(async (user) => {
+        for (let i = 0; i < user.myList.length; i++){
+            await Music.findOne({id: user.myList[i].musicID}).then((music) => {
+                musicInfo.push(music);
+            })
+        }
+        res.status(200).json({myList: musicInfo})
+    })
+})
+
+router.post('/deleteUploadList', auth, async(req, res)=> {
+    const {musicId} = req.body;
+    const id = req.user.id;
+    let musicInfo = [];
+
+    await User.update({id: id}, {$pull: { uploadList: {musicID: musicId}}});
+    User.findOne({id:id}).then(async (user) => {
+        for (let i = 0; i < user.uploadList.length; i++){
+            await Music.findOne({id: user.uploadList[i].musicID}).then((music) => {
+                musicInfo.push(music);
+            })
+        }
+        res.status(200).json({uploadList: musicInfo})
+    })
+
+})
+
+router.post('/deletemyList', auth, async(req, res)=> {
+    const {musicId} = req.body;
+    const id = req.user.id;
+    let musicInfo = [];
+
+    await User.update({id: id}, {$pull: { myList: {musicID: musicId}}});
+    User.findOne({id:id}).then(async (user) => {
+        for (let i = 0; i < user.myList.length; i++){
+            await Music.findOne({id: user.myList[i].musicID}).then((music) => {
+                musicInfo.push(music);
+            })
+        }
+        res.status(200).json({myList: musicInfo})
     })
 })
 

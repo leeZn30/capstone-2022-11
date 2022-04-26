@@ -1,14 +1,15 @@
 const express = require('express');
 const Music = require('../../models/music');
 const User = require('../../models/user');
+const auth = require('../../middleware/auth');
 
 const router = express.Router();
 
 router.get('/', async(req, res) =>{
     const {title} = req.body;
-    console.log(title)
+
     try{
-        Music.find({title : title}).then((music) => {
+        Music.find({title : {$regex: title}}).then((music) => {
             console.log(music)
             res.status(200).json(music);
         });
@@ -19,34 +20,46 @@ router.get('/', async(req, res) =>{
     }
 })
 
-router.post('/', async(req, res) => {
-    const {locate, title, userID, category} = req.body;
+router.get('/recent', async(req, res)=> {
+    const recent = await Music.find().sort({"created" : -1}).limit(10)
+    console.log(recent);
+    res.status(200).json({recent: recent});
+})
 
+router.post('/', auth, async(req, res) => {
+    const {locate ,imageLocate, title, category, lyrics, info} = req.body;
+
+    const userID = req.user.id;
     console.log(userID);
 
     User.findOne({id: userID}).then((user)=> {
         console.log(user);
-        const id = userID + user.totalNum;
+        const id = userID + "_" + user.totalNum;
+        const userNickname = user.nickname;
         console.log(id)
 
         const newMusic = new Music({
-            locate, title, id, userID, category
+            locate, imageLocate, title, id, userID, userNickname, lyrics, category, info
         });
 
-        newMusic.save().then(()=> console.log("save success!!"));
+        newMusic.save().then(()=> console.log("music save success!!"));
 
         user.totalNum += 1;
-        user.musicList.push({title:title, id:id})
+        user.uploadList.push({musicID:id});
 
         user.save();
 
         res.status(200).json({
             music: {
                 locate : newMusic.locate,
+                imageLocate: newMusic.imageLocate,
                 title :newMusic.title,
                 id :newMusic.id,
                 userID :newMusic.userID,
-                category :newMusic.category
+                userNickName : newMusic.userNickname,
+                category :newMusic.category,
+                lyrics : newMusic.lyrics,
+                info : newMusic.info
             },
             user: {
                 totalNum: user.totalNum,

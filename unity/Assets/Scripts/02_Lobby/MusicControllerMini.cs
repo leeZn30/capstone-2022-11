@@ -5,7 +5,6 @@ using UnityEngine.UI;
 public class MusicControllerMini : MonoBehaviour
 {
 
-
     private AudioSource audioSource;
 
     public Button pauseplayBtn;
@@ -13,6 +12,7 @@ public class MusicControllerMini : MonoBehaviour
 
     public AudioClip audioClip;
 
+    private Image pauseplayImage;
 
     public void Reset()
     {
@@ -21,11 +21,13 @@ public class MusicControllerMini : MonoBehaviour
         audioSource.clip = null;
         audioClip = null;
         scrollbar.value = 0;
-
+        pauseplayImage.sprite = Resources.Load<Sprite>("Image/UI/play");
     }
     public void SetAudioClip(AudioClip ac)
     {
         audioSource.Stop();
+        audioSource.time = 0;
+        scrollbar.value = 0;
         audioClip = ac;
         audioSource.clip = audioClip;
     }
@@ -40,6 +42,9 @@ public class MusicControllerMini : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
         pauseplayBtn.onClick.AddListener(ChangeState);
         scrollbar.onValueChanged.AddListener(OnValueChange);
+
+        pauseplayImage = pauseplayBtn.gameObject.GetComponentInChildren<Image>();
+        
     }
     void OnValueChange(float value)
     {
@@ -66,12 +71,16 @@ public class MusicControllerMini : MonoBehaviour
             if (audioSource.isPlaying)
             {
                 audioSource.Pause();
-                
+                pauseplayImage.sprite = Resources.Load<Sprite>("Image/UI/pause");
+
+
             }
             else
             {
-                audioSource.Play();
+                audioSource.Play(); 
                 StartCoroutine("MoveScrollBar");
+                pauseplayImage.sprite = Resources.Load<Sprite>("Image/UI/play");
+                MusicController.Instance.Stop();
             }
         }
     }

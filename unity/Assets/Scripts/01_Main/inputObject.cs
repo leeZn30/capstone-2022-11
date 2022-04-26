@@ -7,19 +7,19 @@ using System.Text.RegularExpressions;//정규표현식
 using LitJson;
 using UnityEngine.Networking;
 
+
 public class inputObject : MonoBehaviour
 {
-    string url = "http://localhost:8080";
 
 
 
-    public int type;//0:중복체크   1:regex 체크(no 버튼)  2: 이메일 전송   3:regex체크(버튼 o)   4: toggle 3개 선택
+    public int type;//0:중복체크   1:regex 체크(no 버튼)   2:regex체크(버튼 o)   3: toggle 선택
     public string key;
     public string name_content;
     public string btn_content;
     public string under_content;
     public string regex_str;
-    public string[] result_strs;
+    public string[] strs;
 
     public TextMeshProUGUI nameText;
     public Button btn;
@@ -36,6 +36,10 @@ public class inputObject : MonoBehaviour
 
     public delegate void OkayHandler(string str);
     public event OkayHandler OnClickButton_;
+
+    private TextMeshProUGUI btn_text;
+    private Toggle[] toggles;
+    private TextMeshProUGUI[] toggleTexts;
     // Start is called before the first frame update
     void Awake()
     {
@@ -52,11 +56,26 @@ public class inputObject : MonoBehaviour
             }
             else
             {
-                (btn.GetComponentInChildren<TextMeshProUGUI>()).text = btn_content;
+                btn_text = (btn.GetComponentInChildren<TextMeshProUGUI>());
+                btn_text.text = btn_content;
                 btn.onClick.AddListener(onClickButton);
             }
         }
-        
+        if (key=="fav")
+        {
+            
+            toggles = GetComponentsInChildren<Toggle>();
+            toggleTexts = new TextMeshProUGUI[toggles.Length];
+            for (int i=0; i<toggles.Length; i++)
+            {
+                toggleTexts[i] = toggles[i].GetComponentInChildren<TextMeshProUGUI>();
+                toggleTexts[i].text = GlobalData.Genre[i + 1];
+                toggles[i].isOn = false;
+            }
+
+            isOkay = true;
+        }
+
         nameText.text = name_content;
 
 
@@ -68,6 +87,7 @@ public class inputObject : MonoBehaviour
     }
     public void reset()
     {
+  
         if (key=="password2" || key=="email2" )
         {
             setRegex_str("");
@@ -82,7 +102,18 @@ public class inputObject : MonoBehaviour
             inputField.text = "";
             checkRegex();
         }
+
         isOkay = false;
+
+        if (toggles != null)
+        {
+            for (int i = 0; i < toggles.Length; i++)
+            {
+                toggles[i].isOn = false;
+            }
+            isOkay = true;
+        }
+        
 
     }
     void changeUnderTextColor()
@@ -106,6 +137,10 @@ public class inputObject : MonoBehaviour
         //지금은 임시로 기본 메시지가 나오도록 함
         if (inputField != null)
         {
+            if (key == "email")
+            {
+                btn_text.text = btn_content;
+            }
             if (regex.IsMatch(inputField.text))
             {
                 if (underText != null)
@@ -143,14 +178,25 @@ public class inputObject : MonoBehaviour
 
     void onClickButton()
     {
-        if (checkRegex()==true)
+        if (inputField != null && type!=2)
         {
-            switch (type)
-            {
-                //0:중복체크   1:regex 체크(no 버튼)   2:regex체크(버튼 o)   3: toggle 3개 선택
+            if (underText.text == under_content) return;
+        }
+
+        switch (type)
+        {
+                //0:중복체크   1:regex 체크(no 버튼)   2:regex체크(버튼 o)   3: toggle 선택
                 case 0:
+
+                    if (key == "email" && btn_text.text!=btn_content)//보내기 단계라면
+                    {
+                        EmailAuth();
+                    }
+                    else
+                    {
+                        StartCoroutine(GET_Check());
+                    }
                     
-                    StartCoroutine(GET_Check());
                     return;
 
                 case 2:
@@ -167,16 +213,12 @@ public class inputObject : MonoBehaviour
                 default:
                     break;
 
-            }
-            if (result_strs.Length > 0)
-            {//결과 팝업이 뜨는 오브젝트라면
-                OnClickButton_(isOkay ? result_strs[1] : result_strs[0]);
-            }
         }
-        else
-        {
-            isOkay = false;
+        if (strs.Length > 0)
+        {//결과 팝업이 뜨는 오브젝트라면
+            OnClickButton_(isOkay ? strs[1] : strs[0]);
         }
+
         changeUnderTextColor();
     }
     private void EmailAuth()
@@ -201,10 +243,20 @@ public class inputObject : MonoBehaviour
         isOkay = true;
 
         changeUnderTextColor();
-        if (result_strs.Length > 0)
-        {//결과 팝업이 뜨는 오브젝트라면
-            OnClickButton_(isOkay ? result_strs[1] : result_strs[0]);
+        OnClickButton_(isOkay ? strs[3] : strs[2]);
+        
+    }
+    public List<string> GetPreferredGenres()
+    {
+        List<string> list = new List<string>();
+        for (int i = 0; i<toggles.Length; i++)
+        {
+            if (toggles[i].isOn == true)
+            {
+                list.Add(toggleTexts[i].text);
+            }
         }
+        return list;
     }
     public string GetText()
     {
@@ -222,7 +274,7 @@ public class inputObject : MonoBehaviour
         string json = JsonUtility.ToJson(check);
 
         Debug.Log(json);
-        using (UnityWebRequest www = UnityWebRequest.Get(url + "/api/user/check"))
+        using (UnityWebRequest www = UnityWebRequest.Get(GlobalData.url + "/user/check"))
         {
 
             www.SetRequestHeader("Content-Type", "application/json");
@@ -235,13 +287,16 @@ public class inputObject : MonoBehaviour
             {
                 if (www.isDone)
                 {
-                    Debug.Log(key+"중복 통과");
-                    if (key == "email") EmailAuth();
-                    else if(key=="id")
+                    if (key == "email")
+                    {                       
+                        btn_text.text = "인증 코드";
+                    }
+                    else if (key == "id")
                     {
                         isOkay = true;
-                        
+                        changeUnderTextColor();
                     }
+                    OnClickButton_(strs[1]);
                 }
                 else
                 {
@@ -251,15 +306,18 @@ public class inputObject : MonoBehaviour
             }
             else
             {
-                if (www.responseCode == 400) {
+                if (www.responseCode == 400) {//중복
                     isOkay = false;
+                    if (key == "email") {
+                        
+                    }
+                    else if (key == "id")
+                    {
+                        changeUnderTextColor();
+                    }
+                    OnClickButton_(strs[0]);
                 }
                 Debug.Log(www.error.ToString());
-            }
-            changeUnderTextColor();
-            if (result_strs.Length > 0)
-            {//결과 팝업이 뜨는 오브젝트라면
-                OnClickButton_(isOkay ? result_strs[1] : result_strs[0]);
             }
         }
 

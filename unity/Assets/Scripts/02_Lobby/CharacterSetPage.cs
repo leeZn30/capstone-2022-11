@@ -16,8 +16,8 @@ public class CharacterSetPage : Page
     private List<CharacterPartsSlot> characterPartsSlots;
 
 
-    public delegate void CharacterHandler();
-    public event CharacterHandler OnChangeCharacter;
+    public delegate void CharacterChangeHandler();
+    public event CharacterChangeHandler OnChangeCharacter;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,16 +29,21 @@ public class CharacterSetPage : Page
         int tmp = 0;
         for (int i = 0; i < partsCount; i++)
         {
-             tmp += partsIdxs[i] * (int)Mathf.Pow(10, (partsCount-i-1) * 2);
+             tmp += partsIdxs[i] * (int)Mathf.Pow(10, (i) * 2);
         }
-        UserData.Instance.user.character = tmp;
-        OnChangeCharacter();
+        
+        
+
         //DB에 바뀐 char 값 업로드
-        //
-        //
-
+        StartCoroutine(POST_ModifiedChar(UserData.Instance.id, tmp));
+      
+        
+    }
+    void SetUserDataCharacter(int num)
+    {
+        UserData.Instance.user.character = num;
+        OnChangeCharacter();
         Close();
-
     }
     public override void Init()
     {
@@ -60,6 +65,8 @@ public class CharacterSetPage : Page
                 characterPartsSlots[i].OnChangeSlotImage += LoadParts;
             }
             setBtn.onClick.AddListener(SetCharacter);
+
+            ModifyCharacter += SetUserDataCharacter;
             isAlreadyInit = true;
         }
     }
@@ -70,8 +77,8 @@ public class CharacterSetPage : Page
         int tmp = UserData.Instance.user.character;
         for(int i=0; i < partsCount; i++)
         {
-            partsIdxs[partsCount-1-i] = (tmp % (int)Mathf.Pow(10, (i+1)*2))/ (int)Mathf.Pow(10, i*2);
-            characterPartsSlots[partsCount - 1 - i].cur = partsIdxs[partsCount - 1 - i];
+            partsIdxs[i] = (tmp % (int)Mathf.Pow(10, (i+1)*2))/ (int)Mathf.Pow(10, i*2);
+            characterPartsSlots[i].cur = partsIdxs[i];
         }
     }
     void LoadParts(int partsNum, int idx, Sprite sprite)

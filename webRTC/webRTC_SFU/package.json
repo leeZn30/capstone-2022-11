@@ -10,8 +10,8 @@
   "author": "yannju",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.3",
+    "wrtc": "^0.4.7",
     "socket.io": "^4.4.1",
-    "wrtc": "^0.4.7"
+    "express": "^4.17.3"
   }
 }

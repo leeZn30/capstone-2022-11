@@ -5,11 +5,13 @@ using System.IO;
 using TMPro;
 using UnityEngine.Networking;
 using System;
+
 public class AddPageInSongPage : Page
 {
     public Button imageUploadBtn;
     public Button musicUploadBtn;
     public Button okayBtn;
+    public Button removeImageBtn;
     public FileOpenDialog fileOpenDialog;
     
     public Image songImage;
@@ -20,17 +22,17 @@ public class AddPageInSongPage : Page
 
     byte[] musicBytes;
     byte[] imageBytes;
-    string[] infos;//�������� �迭 (������ enum�� ����(�ϵ��ڵ�))
+    string[] infos;
     private TMP_InputField[] infoInputs;
 
-    enum MusicInfo
-    {
-        Title,Artist,Content
-    }
+
+    public ToggleGroup toggleGroup;
+
     void Start()
     {
         Init();
     }
+
     public override void Init()
     {
         if (isAlreadyInit == false)
@@ -38,6 +40,14 @@ public class AddPageInSongPage : Page
             isAlreadyInit = true;
             musicControllerMini.Init();
             infoInputs = GetComponentsInChildren<TMP_InputField>();
+            TextMeshProUGUI[] tmps = toggleGroup.GetComponentsInChildren<TextMeshProUGUI>();
+            for (int i=0; i<tmps.Length; i++)
+            {
+                tmps[i].text = GlobalData.Genre[i];
+
+            }
+            
+
             imageUploadBtn.onClick.AddListener(delegate
             {
                 string filePath = fileOpenDialog.FileOpen(FileOpenDialog.Type.Image);
@@ -57,6 +67,19 @@ public class AddPageInSongPage : Page
                 }
             });
             okayBtn.onClick.AddListener(UploadAndFinish);
+            removeImageBtn.onClick.AddListener(RemoveImage);
+            OnUploaded += AfterUpload;
+
+        }
+    }
+    void AfterUpload(bool success)
+    {
+        if (success)
+        {
+            Close();
+        }
+        else
+        {
 
         }
     }
@@ -67,9 +90,18 @@ public class AddPageInSongPage : Page
             Music music = new Music();
             music.title = infoInputs[0].text;
             music.userID = UserData.Instance.id;
-            music.nickname = UserData.Instance.user.nickname;
-            MusicUpload.Instance.FileUpload(musicBytes,imageBytes, music,localFileName.text);
-            Close();
+            music.userNickname = UserData.Instance.user.nickname;
+            music.lyrics= infoInputs[1].text;
+            music.info = infoInputs[2].text;
+
+            foreach(Toggle tg in toggleGroup.ActiveToggles())
+            {
+                music.category = tg.GetComponentInChildren<TextMeshProUGUI>().text;
+            }
+
+            Debug.Log(music.ToString());
+            StartCoroutine(Upload(musicBytes, imageBytes, music, localFileName.text));
+            //Close();
         }
         else
         {
@@ -85,7 +117,16 @@ public class AddPageInSongPage : Page
         musicBytes = null;
         imageBytes = null;
         infos = new string[0];
+        for (int i = 0; i < infoInputs.Length; i++)
+        {
+            infoInputs[i].text = "";
+        }
         localFileName.text = "파일 없음";
+
+        toggleGroup.transform.GetChild(0).GetComponent<Toggle>().isOn=true;
+        songImage.sprite = null;
+        songImage.color = new Color(255, 255, 255, 0);
+
         musicControllerMini.Reset();
     }
     private void LoadImage(string filePath)
@@ -149,6 +190,12 @@ public class AddPageInSongPage : Page
 
 
         }
+    }
+    void RemoveImage()
+    {
+        imageBytes = null;
+        songImage.sprite = null;
+        songImage.color = new Color(255, 255, 255, 0);
     }
     // Update is called once per frame
     void Update()

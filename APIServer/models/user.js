@@ -3,40 +3,44 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema({
     id: {
         type: String,
-        required: true,
+        required: true
     },
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: true
     },
     password: {
         type: String,
-        required: true,
+        required: true
     },
     nickname: {
         type: String,
-        required: true,
+        required: true
     },
     character: {
         type: Number,
-        default: 0,
+        default: 0
     },
-    created: {
-        type:Date,
-        default:Date.now,
-    },
-    totalNum: {
-        type: Number,
-        default: 0,
-    },
-    musicList: {
+    uploadList: {
         type: Array,
-        default: [],
+        default: []
     },
     myList: {
         type: Array,
-        default: [],
+        default: []
+    },
+    preferredGenres: {
+        type: Array,
+        default: []
+    },
+    totalNum: {
+        type: Number,
+        default: 0
+    },
+    created: {
+        type: Date,
+        default: Date.now
     }
 });
 

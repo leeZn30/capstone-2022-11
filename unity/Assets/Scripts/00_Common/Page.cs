@@ -2,14 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-public class Page : MonoBehaviour
+public class Page : MusicWebRequest
 {//상속용 클래스
     public Button exitBtn; 
     protected bool isAlreadyInit = false;
     // Start is called before the first frame update
     void Awake()
     {
-        exitBtn.onClick.AddListener(Close);
+        if(exitBtn!=null)
+            exitBtn.onClick.AddListener(Close);
     }
 
     // Update is called once per frame
@@ -19,12 +20,13 @@ public class Page : MonoBehaviour
     }
     public void Open()
     {
+        if (gameObject.activeSelf == true) return;
         Init();
 
         gameObject.SetActive(true);
 
         Load();
-
+        MusicController.Instance.SubMusicController.Reset();
     }
 
     virtual public void Init()
@@ -40,6 +42,7 @@ public class Page : MonoBehaviour
         //초기화
         Reset();
         //닫기
+        MusicController.Instance.SubMusicController.Reset();
         gameObject.SetActive(false);
     }
     virtual public void Reset()

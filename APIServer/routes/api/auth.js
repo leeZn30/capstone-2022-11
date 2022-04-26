@@ -14,10 +14,6 @@ const router = express.Router();
 router.post('/', (req, res)=> {
     const {id, password} = req.body;
 
-    if (!id || !password){
-        return res.status(400).json({msg: "모든 필드를 채워주세요."})
-    }
-
     User.findOne({id}).then((user)=> {
         if(!user) return res.status(400).json({msg: "유저가 존재하지 않습니다."})
 
@@ -39,15 +35,17 @@ router.post('/', (req, res)=> {
     })
 })
 
-router.post('/logout', (req, res)=> {
-    res.json("로그아웃 했습니다.")
-})
+// client에서 처리해주는 방식
+// router.post('/logout', (req, res)=> {
+//     res.json("로그아웃 했습니다.")
+// })
 
 router.post('/modifiedChar', auth, async(req, res) => {
     const id = req.user.id;
     const {value} = req.body;
 
     console.log(id)
+    console.log(req.user.character);
 
     User.findOne({id: id}).then((user)=> {
         console.log(user);
@@ -56,34 +54,6 @@ router.post('/modifiedChar', auth, async(req, res) => {
         res.status(200).json({
             character : user.character
         })
-    })
-})
-
-router.get('/user', auth, async(req, res)=>{
-    try{
-        let id = req.user.id;
-        const user = await User.findOne({id}).select("-password");
-        if (!user) throw Error("유저가 존재하지 않습니다.");
-        res.json(user);
-    } catch (e) {
-        console.log(e);
-        res.status(400).json({msg: e.message})
-    }
-})
-
-router.get('/musicList', auth, async(req,res) => {
-    const id = req.user.id;
-
-    User.findOne({id:id}).then((user) => {
-        res.status(200).json({musicList:user.musicList})
-    })
-})
-
-router.get('/myList', auth, async(req,res) => {
-    const id = req.user.id;
-
-    User.findOne({id:id}).then((user) => {
-        res.status(200).json({myList:user.myList})
     })
 })
 
