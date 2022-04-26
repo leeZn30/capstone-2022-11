@@ -10,7 +10,7 @@ const User = require('../../models/user');
 
 const router = express.Router();
 
-router.get('/check', async(req, res) =>{
+router.get('/checkid', async(req, res) =>{
     const {id, email} = req.body;
 
     if (id){
@@ -105,6 +105,23 @@ router.post('/', async(req, res) => {
     })
 })
 
+router.post('/modifiedChar', auth, async(req, res) => {
+    const id = req.user.id;
+    const {value} = req.body;
+
+    console.log(id)
+    console.log(req.user.character);
+
+    User.findOne({id: id}).then((user)=> {
+        console.log(user);
+        user.character = value;
+        user.save();
+        res.status(200).json({
+            character : user.character
+        })
+    })
+})
+
 router.post('/addMyList', auth, async(req, res)=>{
     const {musicList} = req.body;
     const id = req.user.id;
@@ -130,6 +147,7 @@ router.post('/deleteUploadList', auth, async(req, res)=> {
     let musicInfo = [];
 
     await User.update({id: id}, {$pull: { uploadList: {musicID: musicId}}});
+    await Music.deleteOne({id:id});
     User.findOne({id:id}).then(async (user) => {
         for (let i = 0; i < user.uploadList.length; i++){
             await Music.findOne({id: user.uploadList[i].musicID}).then((music) => {
@@ -138,7 +156,6 @@ router.post('/deleteUploadList', auth, async(req, res)=> {
         }
         res.status(200).json({uploadList: musicInfo})
     })
-
 })
 
 router.post('/deletemyList', auth, async(req, res)=> {

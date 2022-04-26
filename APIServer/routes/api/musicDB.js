@@ -19,7 +19,6 @@ router.get('/', async(req, res) =>{
         res.status(400).json({msg: e.message});
     }
 })
-
 router.get('/recent', async(req, res)=> {
     const recent = await Music.find().sort({"created" : -1}).limit(10)
     console.log(recent);
