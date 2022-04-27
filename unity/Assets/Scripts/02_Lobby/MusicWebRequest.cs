@@ -8,6 +8,10 @@ using LitJson;
 using NAudio;
 using NAudio.Wave;
 
+public class MusicID
+{
+    public string musicId;
+}
 public class MusicIDList
 {
     public List<string> musicList;
@@ -24,6 +28,10 @@ public class MusicTitle
 public class UserID
 {
     public string id;
+}
+public class fp
+{
+    public string filepath;
 }
 [System.Serializable]
 public class Music
@@ -51,6 +59,8 @@ public class MusicWebRequest : MonoBehaviour
     protected string url = GlobalData.url;
 
 
+    protected bool getAudioStopFlag=false; 
+
     protected delegate void SongListHandler(List<Music> musics, bool play=false);
     protected event SongListHandler OnGetSongList;
 
@@ -65,12 +75,51 @@ public class MusicWebRequest : MonoBehaviour
     protected delegate void UploadHandler(bool success);
     protected event UploadHandler OnUploaded;
 
-    protected IEnumerator POST_Delete(MusicIDList idList, string listName)
+    protected IEnumerator testLoadUpload()
+    {
+        fp ff = new fp();
+        ff.filepath= "bucket-bsn0zi.s3.ap-northeast-2.amazonaws.com/Music/test00_4.wav";
+
+        Debug.Log("시작"); 
+        string json = JsonUtility.ToJson(ff);
+        using (UnityWebRequest www = UnityWebRequest.Get("http://211.48.30.231:80/api/media")) 
+        {
+            www.SetRequestHeader("token", UserData.Instance.Token);
+            www.SetRequestHeader("Content-Type", "application/json");
+            www.SetRequestHeader("accept", "text/plain");
+            www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
+
+            yield return www.SendWebRequest();
+            Debug.Log("끝");
+            
+            if (www.error == null)
+            {
+                if (www.isDone)
+                {
+
+                    OnGetClip(DownloadHandlerAudioClip.GetContent(www), true);
+                    //string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+                    //Debug.Log("결과 " + jsonResult);
+
+                    //JsonData jsonData2 = JsonToObject(jsonResult);
+
+                }
+                //OnGetSongList(musics, play);
+
+            }
+            else
+            {
+                Debug.Log(www.error.ToString());
+            }
+        }
+        
+    }
+    protected IEnumerator POST_Delete(MusicID id, string listName)
     {
 
 
-        string json = JsonUtility.ToJson(idList);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/delete"+"MyList", json))
+        string json = JsonUtility.ToJson(id);
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/delete"+listName, json))
         {// 보낼 주소와 데이터 입력
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -87,6 +136,7 @@ public class MusicWebRequest : MonoBehaviour
 
                 Debug.Log(request.downloadHandler.text);
 
+
             }
             else
             {
@@ -99,7 +149,7 @@ public class MusicWebRequest : MonoBehaviour
     {
 
         string json = JsonUtility.ToJson(idList);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/addMyList", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/add"+listName, json))
         {// 보낼 주소와 데이터 입력
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -205,8 +255,6 @@ public class MusicWebRequest : MonoBehaviour
            {// 보낼 주소와 데이터 입력
 
                 request.SetRequestHeader("token", UserData.Instance.Token);
-                
-            
              
 
             yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
@@ -308,9 +356,54 @@ public class MusicWebRequest : MonoBehaviour
             audioType = AudioType.OGGVORBIS;
         }
         Debug.Log("get audio " +_filePath+audioType.ToString());
+        using (UnityWebRequest www = UnityWebRequest.Get("https://" + _filePath))
+        {
+            www.SetRequestHeader("token", UserData.Instance.Token);
+            www.SetRequestHeader("Content-Type", "application/json");
+            www.SetRequestHeader("accept", "text/plain");
+           // www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
+
+            yield return www.SendWebRequest();
+            Debug.Log("끝");
+
+            if (www.error == null)
+            {
+                if (www.isDone)
+                {
+                    Debug.Log(www.downloadHandler.data.GetType());
+                    Debug.Log(www.downloadHandler.data.Length);
+                    OnGetClip(DownloadHandlerAudioClip.GetContent(www), true);
+                    //string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+                    //Debug.Log("결과 " + jsonResult);
+
+                    //JsonData jsonData2 = JsonToObject(jsonResult);
+                }
+                //OnGetSongList(musics, play);
+
+            }
+            else
+            {
+                Debug.Log(www.error.ToString());
+            }
+        }
+        /*
         using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("https://" + _filePath, audioType))
         {
-            yield return www.SendWebRequest();
+            //yield return www.SendWebRequest();
+            getAudioStopFlag = false;
+            www.SendWebRequest();
+            while (!www.isDone)
+            {
+                if (getAudioStopFlag == true)
+                {
+                    Debug.Log("중단 !!");
+                    www.Dispose();
+                    
+                    yield break;
+                }
+                yield return new WaitForSeconds(0.001f);
+            }
+
             Debug.Log("get audio 끝" + _filePath + audioType.ToString());
             if (www.result == UnityWebRequest.Result.ConnectionError)
             {
@@ -318,9 +411,10 @@ public class MusicWebRequest : MonoBehaviour
             }
             else
             {
+                Debug.Log(www.downloadHandler.data.Length);
                 OnGetClip(DownloadHandlerAudioClip.GetContent(www),play);
             }
-        }
+        }*/
     }
     protected IEnumerator GET_SearchMusicTitle(string _title)
     {
@@ -338,7 +432,7 @@ public class MusicWebRequest : MonoBehaviour
             www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
 
             yield return www.SendWebRequest();
-
+            
             List<Music> musics = new List<Music>();
             if (www.error == null)
             {
