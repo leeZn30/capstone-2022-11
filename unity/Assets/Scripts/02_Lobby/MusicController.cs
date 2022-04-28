@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;
-using UnityEngine.EventSystems;
+using System.Threading.Tasks;
+using System.Threading;
 public class MusicController : MusicWebRequest
 {
     private static MusicController instance;
@@ -80,8 +81,8 @@ public class MusicController : MusicWebRequest
     private List<SongSlot> currentSongSlotList;
     public GameObject scrollViewObject;
     private ScrollViewRect scrollViewRect;
-
-    private IEnumerator audioLoadIEnum; 
+    CancellationTokenSource cts;
+    //private IEnumerator audioLoadIEnum; 
     private enum PlayState
     {
         Play,Pause
@@ -94,7 +95,19 @@ public class MusicController : MusicWebRequest
     void Start()
     {
         Init();
+;
+
+        /*
+        Task.Factory.StartNew(async () =>
+        {
+            Task<string> s = Task<string>.Factory.StartNew(() => ssss(1));
+            await s;
+            Debug.Log("테스크 끝"+s.Result.ToString());
+
+        });*/
+
     }
+
 
     public void Stop()
     {
@@ -269,6 +282,8 @@ public class MusicController : MusicWebRequest
             OnGetSongList += SetSongList;
 
             StartGetListCoroution("myList", 0, false);
+            
+            cts = new CancellationTokenSource();
         }
     }
 
@@ -298,14 +313,16 @@ public class MusicController : MusicWebRequest
         currentSongIndex = newIdx;
 
         //음원 받아오기
+        GetAudioAsync(currentSongSlotList[currentSongIndex].GetMusic().locate,play);
+        /*
         if (audioLoadIEnum != null)
         {
-            getAudioStopFlag = true;
+            getAudioWWW.Dispose();
             //StopCoroutine(audioLoadIEnum);
-            Debug.Log("Stop download");
-        }
-        audioLoadIEnum = GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, play);
-        StartCoroutine(audioLoadIEnum);
+        }*/
+        //audioLoadIEnum = GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, play);
+        //StartCoroutine(audioLoadIEnum);
+
         //끝
 
         audioSource.Stop();
@@ -324,6 +341,17 @@ public class MusicController : MusicWebRequest
             titleTexts[i].text = music.title;
             artistTexts[i].text = music.GetArtistName();
         }
+    }
+    async void GetAudioAsync(string path, bool play)
+    {
+        if (getAudioWWW!=null)
+        {
+            getAudioWWW.Dispose();
+            //StopCoroutine(audioLoadIEnum);
+        }
+        AudioClipPlay a = await GetAudioClicpAsync(path, play);
+        if(a!=null)
+            SetAudioClip(a.audioClip, a.play);
     }
     public void StartGetListCoroution(string name, int idx, bool play)
     {     
@@ -349,7 +377,7 @@ public class MusicController : MusicWebRequest
         }
         else
         {
-            newIdx = (currentSongIndex - 1) % currentSongSlotList.Count;
+            newIdx = (currentSongIndex - 1+ currentSongSlotList.Count) % currentSongSlotList.Count;
         }
 
         StartGetAudioCoroution(newIdx, true);

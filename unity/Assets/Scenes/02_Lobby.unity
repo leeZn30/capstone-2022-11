@@ -2836,8 +2836,6 @@ GameObject:
   - component: {fileID: 253236366}
   - component: {fileID: 253236369}
   - component: {fileID: 253236368}
-  - component: {fileID: 253236371}
-  - component: {fileID: 253236372}
   - component: {fileID: 253236370}
   m_Layer: 5
   m_Name: Music Controller
@@ -2967,9 +2965,11 @@ MonoBehaviour:
   contentText: {fileID: 1148357714}
   currentListName: 
   currentSongIndex: 0
+  tmpSongIndex: 0
   listBtn: {fileID: 307529017}
   lyricsBtn: {fileID: 198777970}
   contentBtn: {fileID: 1833141739}
+  currentSongSlotList: []
   scrollViewObject: {fileID: 1219103543}
 --- !u!82 &253236370
 AudioSource:
@@ -3067,44 +3067,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &253236371
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 253236364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 0
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
---- !u!223 &253236372
-Canvas:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 253236364}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_RenderMode: 2
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
-  m_PixelPerfect: 0
-  m_ReceivesEvents: 1
-  m_OverrideSorting: 0
-  m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
-  m_TargetDisplay: 0
 --- !u!1 &253738708
 GameObject:
   m_ObjectHideFlags: 0
@@ -6133,7 +6095,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -54.3, y: 564}
+  m_AnchoredPosition: {x: -54.30005, y: 564}
   m_SizeDelta: {x: 150, y: 50}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &463478324
@@ -7220,7 +7182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 0
+  m_IgnoreReversedGraphics: 1
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
@@ -25757,7 +25719,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4191697866416477311, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}
       propertyPath: Token
-      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3QwMCIsImlhdCI6MTY1MDk2MDg5OSwiZXhwIjoxNjUwOTY0NDk5fQ.-c9HJezbkKywJuGXcraXCxqQWLPeXR4UZCbTR5vIrDU
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3QwMCIsImlhdCI6MTY1MTA3NTc1MiwiZXhwIjoxNjUxMDc5MzUyfQ.6Oc0LqboTKnmygCzgAHchejGOFOjs1jJpzX6rHj1QYo
       objectReference: {fileID: 0}
     - target: {fileID: 4191697866416477311, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}
       propertyPath: user.id

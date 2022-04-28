@@ -21,11 +21,23 @@ public class SubMusicController : MusicWebRequest
     {
 
         OnChanged(path);
-        if (audioLoadIEnum != null)
-            StopCoroutine(audioLoadIEnum);
-        audioLoadIEnum = GetAudioCilpUsingWebRequest(path, true);
-        StartCoroutine(audioLoadIEnum);
+        //if (audioLoadIEnum != null)
+        //    StopCoroutine(audioLoadIEnum);
+        //audioLoadIEnum = GetAudioCilpUsingWebRequest(path, true);
+        //StartCoroutine(audioLoadIEnum);
+        GetAudioAsync(path);
 
+    }
+    async void GetAudioAsync(string path)
+    {
+        if (getAudioWWW != null)
+        {
+            getAudioWWW.Dispose();
+            //StopCoroutine(audioLoadIEnum);
+        }
+        AudioClipPlay a = await GetAudioClicpAsync(path, true);
+        SetAudioClip(a.audioClip, a.play);
+        Debug.Log("d");
     }
     public void SetAudioClip(AudioClip ac, bool play)
     {
