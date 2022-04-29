@@ -29,6 +29,9 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     // 채팅
     [SerializeField] GameObject ChatPanel;
 
+    // BusketPanel
+    [SerializeField] private GameObject buskerPanel;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,6 +40,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
             InteractiveButton = FindObjectOfType<Canvas>().transform.Find("InteractiveButton").gameObject;
             videoPanel = FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject;
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
+            buskerPanel = FindObjectOfType<Canvas>().transform.Find("BuskerVideoPanel").gameObject;
         }
     }
 
@@ -101,9 +105,22 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (!isVideoPanelShown)
         {
-            videoPanel.GetComponent<SmallVideoPanel>().mode = mode;
-            videoPanel.SetActive(true);
-            isVideoPanelShown = true;
+            switch (mode)
+            {
+                case 0:
+                    videoPanel.GetComponent<SmallVideoPanel>();
+                    videoPanel.SetActive(true);
+                    isVideoPanelShown = true;
+                    break;
+
+                case 1:
+                    buskerPanel.SetActive(true);
+                    buskerPanel.GetComponent<BuskerVideoPanel>().setDevice();
+                    break;
+
+                default:
+                    break;
+            }
         }
     }
 
@@ -116,6 +133,12 @@ public class PlayerControl : MonoBehaviourPunCallbacks
             videoPanel.SetActive(false);
             isVideoPanelShown = false;
         }
+    }
+
+    // 방송 초기설정
+    public void initBusking()
+    {
+        // 캐릭터 위치 등
     }
 
     // -------------- 이모지 동기화 관련 함수들 -------------

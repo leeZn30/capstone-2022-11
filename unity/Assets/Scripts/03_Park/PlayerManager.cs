@@ -3,33 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Photon.Pun;
+using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class PlayerManager : MonoBehaviourPunCallbacks
 {
 
     // Player 객체 받아오기
-    [SerializeField] private GameObject player;
-
-    // 외형
-    [SerializeField] private int head;
-    [SerializeField] private int body;
+    //[SerializeField] private GameObject player;
 
     // 닉네임
-    [SerializeField] private TextMeshPro nickName;
+    [SerializeField] private string nickName;
 
-    // character 객체
-    [SerializeField] private Character character;
+    // character 외형
+    [SerializeField] private int appearance;
 
     // Start is called before the first frame update
     void Start()
     {
-        player = GameManager.instance.myPlayer;
-
-        if (player.GetPhotonView().IsMine)
+        if (photonView.IsMine)
         {
-            character = player.transform.GetChild(0).GetComponent<Character>();
-            character.ChangeSprite(UserData.Instance.user.character);
-            player.transform.GetChild(2).GetComponent<TextMeshPro>().text = UserData.Instance.user.nickname;
+            setPlayer(PhotonNetwork.LocalPlayer);
+            photonView.RPC("setPlayer", RpcTarget.Others, PhotonNetwork.LocalPlayer);
         }
     }
 
@@ -38,4 +33,33 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     {
         
     }
+
+    [PunRPC]
+    void setPlayer()
+    {
+        transform.GetChild(0).GetComponent<Character>().ChangeSprite(UserData.Instance.user.character);
+        transform.GetChild(2).GetComponent<TextMeshPro>().text = UserData.Instance.user.nickname;
+    }
+
+    [PunRPC]
+    void setPlayer(Player player)
+    {
+        Hashtable playerData = player.CustomProperties;
+
+        // 정보 저장
+        appearance = (int)player.CustomProperties["character"];
+        nickName = player.NickName;
+
+        transform.GetChild(0).gameObject.GetComponent<Character>().ChangeSprite((int)playerData["character"]);
+        transform.GetChild(2).gameObject.GetComponent<TextMeshPro>().text = player.NickName;
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        if (photonView.IsMine)
+            photonView.RPC("setPlayer", RpcTarget.Others, PhotonNetwork.LocalPlayer);
+    }
+
+
+
 }
