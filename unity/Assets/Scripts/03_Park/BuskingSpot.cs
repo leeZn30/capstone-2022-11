@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class BuskingSpot : MonoBehaviourPun, IPunObservable
 {
+    public int roomNum;
+
     // 버스킹 장소가 사용되고 있는지
     public bool isUsed = false;
 
@@ -23,6 +25,21 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
 
     private void Update()
     {
+        /**
+        if (isUsed)
+        {
+            this.GetComponent<SpriteRenderer>().color = Color.blue;
+        }
+        else
+        {
+            this.GetComponent<SpriteRenderer>().color = new Color32(202, 162, 48, 250);
+        }
+        **/
+    }
+
+    [PunRPC]
+    void changeColor()
+    {
         if (isUsed)
         {
             this.GetComponent<SpriteRenderer>().color = Color.blue;
@@ -39,7 +56,11 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
             if (isUsed && !player.GetComponent<PlayerControl>().isVideoPanelShown)
+            {
                 collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
+                webRTCOperate.Instance.roomNum = roomNum;
+                webRTCOperate.Instance.webRTCConnect();
+            }
         }
     }
 

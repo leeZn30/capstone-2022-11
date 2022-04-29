@@ -90,12 +90,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         playerData.Add("character", UserData.Instance.user.character);
 
-        // 직접 전달로 해야함, setcustomproperties 안됨
-        // 이건 내거 전달 (진짜 뭐임???)
+        // 직접 전달로 해야함, setcustomproperties하면 남의 것이 들어옴
         PhotonNetwork.LocalPlayer.CustomProperties = playerData;
 
-        // 이걸로 하면 남의 것 들어옴
-        playerData["character"] = UserData.Instance.user.character;
-        PhotonNetwork.LocalPlayer.SetCustomProperties(playerData);
     }
 }

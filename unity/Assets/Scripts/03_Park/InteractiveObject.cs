@@ -26,10 +26,11 @@ public class InteractiveObject : MonoBehaviour
                     if (!GetComponentInParent<BuskingSpot>().isUsed)
                     {
                         player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
+                        // 일단 부딪치면 roomNum, nowBuskingSpot 설정
+                        webRTCOperate.Instance.roomNum = GetComponentInParent<BuskingSpot>().roomNum;
+                        webRTCOperate.Instance.nowBuskingSpot = GetComponentInParent<BuskingSpot>();
                         player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
                             delegate { player.GetComponent<PlayerControl>().OnVideoPanel(1);});
-                        // 일단 여기다가 isused
-                        GetComponentInParent<BuskingSpot>().isUsed = true;
                     }
                     break;
 

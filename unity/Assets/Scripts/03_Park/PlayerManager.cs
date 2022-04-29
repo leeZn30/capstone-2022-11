@@ -10,17 +10,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks
 {
 
     // Player 객체 받아오기
-    [SerializeField] private GameObject player;
-
-    // 외형
-    [SerializeField] private int head;
-    [SerializeField] private int body;
+    //[SerializeField] private GameObject player;
 
     // 닉네임
-    [SerializeField] private TextMeshPro nickName;
+    [SerializeField] private string nickName;
 
-    // character 객체
-    [SerializeField] private Character character;
+    // character 외형
+    [SerializeField] private int appearance;
 
     // Start is called before the first frame update
     void Start()
@@ -49,6 +45,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     void setPlayer(Player player)
     {
         Hashtable playerData = player.CustomProperties;
+
+        // 정보 저장
+        appearance = (int)player.CustomProperties["character"];
+        nickName = player.NickName;
+
         transform.GetChild(0).gameObject.GetComponent<Character>().ChangeSprite((int)playerData["character"]);
         transform.GetChild(2).gameObject.GetComponent<TextMeshPro>().text = player.NickName;
     }
@@ -59,10 +60,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks
             photonView.RPC("setPlayer", RpcTarget.Others, PhotonNetwork.LocalPlayer);
     }
 
-    public void OnPhotonInstantiate(PhotonMessageInfo info)
-    {
-        info.Sender.TagObject = this.gameObject;
-    }
 
 
 }

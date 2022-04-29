@@ -1,5 +1,5 @@
 const express = require("express");
-const https = require("https");
+const https = require("http");
 const socket = require("socket.io");
 const app = express();
 const fs = require('fs');
@@ -7,6 +7,8 @@ const { join } = require("path");
 const port = 8080;
 const wrtc = require("wrtc");
 const { type } = require("express/lib/response");
+const { stringify } = require("querystring");
+const RTCSessionDescription = require("wrtc/lib/sessiondescription");
 
 const option = {
     key: fs.readFileSync('privkey.pem', 'utf8'), 
@@ -61,8 +63,13 @@ io.on('connection', function(socket) {
         console.log(rooms);
     });
 
-    socket.on('senderOffer', async function(offer, userOption) {
+    // 클라이언트에서 한개만 인자로 보낼 수 있어서 userOption에 offer도 넣어서 보냄
+    socket.on('senderOffer', async function(userOption) {
         console.log("[SERVER]get Offer");
+
+        var offer = userOption.offer;
+        console.log(userOption["senderPC"]);
+
         try {
             socket.join(userOption.roomNum);
             if (userOption.roomNum in serverReceiverPCs) {
@@ -78,11 +85,22 @@ io.on('connection', function(socket) {
             receiverPC.onicecandidate = event => {
                 if (event.candidate) {
                     console.log("[SERVER]send Candi");
-                    socket.emit("getCandidate", event.candidate, userOption.option);
+
+                    // Dictionary로 만들어서 보냄
+                    var data = {"candidate": event.candidate, "option":userOption.option};
+
+                    socket.emit("getCandidate", data);
+                    //socket.emit("getCandidate", event.candidate, userOption.option);
                 }
             }
             serverReceiverPCs[userOption.roomNum]['receivePC'] = receiverPC;
-            receiverPC.setRemoteDescription(offer);
+
+            // Unity의 RTCSessionDecription 형태와 다르기 때문에 직접 넣어준다.
+            var senderoffer = new wrtc.RTCSessionDescription(); //wrtc.
+            senderoffer.sdp = offer.sdp;
+            senderoffer.type = "offer"; 
+            receiverPC.setRemoteDescription(senderoffer);
+
             receiverPC
             .createAnswer({
                 offerToReceiveAudio: true,
@@ -91,7 +109,10 @@ io.on('connection', function(socket) {
             .then((answer) => {
                 console.log("[SERVER]userID : " + userOption.userId);
                 receiverPC.setLocalDescription(new wrtc.RTCSessionDescription(answer));
-                socket.emit("getReceiverAnswer", answer);
+
+                // Dictonary로 만들어서 보내줘야함
+                var answerMsg = {"answer": answer};
+                socket.emit("getReceiverAnswer", answerMsg);
             })
         } catch (error) {
             console.log(error);
@@ -102,6 +123,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on("joinRoomFromClient", function(userOption){
+        console.log("[SERVER] joinRoomFromClient");
         socket.join(userOption.roomNum);
         let sendStream = userStreams[userOption.roomNum].stream;
 
@@ -124,13 +146,21 @@ io.on('connection', function(socket) {
         .then((offer) => {
             console.log("[SERVER]sender Offer");
             sendPC.setLocalDescription(new wrtc.RTCSessionDescription(offer));
-            socket.emit("senderOffer", offer, userOption);
+
+            // Dictonray
+            userOption['offer'] = offer;
+            socket.emit("senderOffer", userOption);
         })
     });
 
-    socket.on("getSenderCandidate", async function(candidate, userOption){
+    socket.on("getSenderCandidate", async function(userOption){
         try{
             console.log("[SERVER] get Sender Candi");
+            // Dictionary로 받기
+            var candidate = userOption["candidate"];
+
+            console.log(typeof(candidate));
+
             let icecandidate = new wrtc.RTCIceCandidate(candidate);
             let rtcPC = serverReceiverPCs[userOption.roomNum].receivePC;
             await rtcPC.addIceCandidate(icecandidate);
@@ -142,8 +172,10 @@ io.on('connection', function(socket) {
         }
     });
     
-    socket.on("getReceiverCandidate", async function(candidate, userOption){
+    socket.on("getReceiverCandidate", async function(userOption){
         console.log("[SERVER]get Receiver Candi");
+        //Dictionary로 받기
+        var candidate = userOption['candidate'];
         let icecandidate = new wrtc.RTCIceCandidate(candidate);
         let rtcPC;
         for (let i = 0; i < serverSenderPCs.length; i++) {

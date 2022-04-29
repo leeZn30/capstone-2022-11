@@ -4,16 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.WebRTC;
 using KyleDulce.SocketIo;
-using System.IO;
 using System;
+using System.Threading;
+
 
 public class BuskerVideoPanel : MonoBehaviour
 {
-    // Stream
-    Socket socket;
-    string mainServer = "http://localhost:8080";
-    public MediaStream sourceStream;
-
     // 카메라 관련
     protected WebCamTexture textureWebCam = null;
     public GameObject objectTarget;
@@ -27,9 +23,6 @@ public class BuskerVideoPanel : MonoBehaviour
     [SerializeField] private Image CameraCheck;
     [SerializeField] private Image MicCheck;
 
-    // webRTC script
-    [SerializeField] public WebRTC webrtc;
-
     // 버스킹 시작 버튼
     [SerializeField] private Button StartButton;
 
@@ -40,20 +33,13 @@ public class BuskerVideoPanel : MonoBehaviour
     [SerializeField] private RawImage cameraImage;
     [SerializeField] private AudioSource MicSource;
 
-    // Webrtc 관련
-    //static RTCConfiguration config;
-    private RTCPeerConnection sendPC;
-    private RTCPeerConnection receivePC;
-    private MediaStream userStream;
-
+    // 보낼 stream
+    private VideoStreamTrack videoStream;
 
     // Start is called before the first frame update
     void Start()
     {
         player = GameManager.instance.myPlayer;
-
-        // 여기에 설정해줘야함
-        Init();
     }
 
     // Update is called once per frame
@@ -70,17 +56,8 @@ public class BuskerVideoPanel : MonoBehaviour
         else
             MicCheck.color = Color.white;
 
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            joinRoom();
-        }
-
     }
 
-    void Init()
-    {
-    }
 
     private void cameraConnect()
     {
@@ -128,7 +105,6 @@ public class BuskerVideoPanel : MonoBehaviour
 
             cameraImage = objectTarget.GetComponent<RawImage>();
 
-            //MediaStreamTrack 
 
         }
         else // 카메라 텍스쳐 없음
@@ -171,159 +147,10 @@ public class BuskerVideoPanel : MonoBehaviour
         if (isMicOn && isCameraOn)
         {
             player.GetComponent<PlayerControl>().OffInteractiveButton();
-            webRTCConnect();
+            webRTCOperate.Instance.webRTCConnect();
+            webRTCOperate.Instance.setWebCamTexture(textureWebCam);
         }
 
-    }
-
-    public void webRTCConnect()
-    {
-        try
-        {
-            socket = SocketIo.establishSocketConnection(mainServer);
-            socket.open();
-
-        }
-        catch 
-        {
-            Debug.Log("No Connection");
-        }
-
-    }
-
-
-    void joinRoom()
-    {
-        int roomNum = 1; // 일단 통일
-
-        if (socket != null)
-        {
-            Dictionary<string, dynamic> userOption = new Dictionary<string, dynamic>();
-            userOption.Add("roomNum", roomNum);
-            userOption.Add("userId", socket.id);
-
-            socket.emit("joinRoom", userOption);
-
-            socket.on("createRoom", onCreateRoom);
-
-            //isJoin = true;
-        }
-    }
-
-    private void OnIceCandidate(RTCPeerConnection pc, RTCIceCandidate candidate)
-    {
-        pc.AddIceCandidate(candidate);
-    }
-
-    private static RTCConfiguration GetSelectedSdpSemantics()
-    {
-        RTCConfiguration config = default;
-        config.iceServers = new[] { 
-            new RTCIceServer { urls = new[] { "stun:stun.services.mozilla.com" } }, 
-            new RTCIceServer { urls = new[] { "stun:stun.l.google.com:19302" } } 
-        };
-        return config;
-    }
-
-    void onCreateRoom(Dictionary<string, dynamic> userOption)
-    {
-        Debug.Log("client onCreateRoom ");
-        // 일단 peerconnection 객체 받아오는지 확인
-        //Debug.Log(userOption["peerConnection"]);
-
-        // 근데 전달이 안됨ㅋ null 에러
-        try
-        {
-            userOption["option"] = 1;
-
-            RTCConfiguration configuration = GetSelectedSdpSemantics();
-            sendPC = new RTCPeerConnection(ref configuration); // 이게 안됨
-
-            sendPC.OnIceCandidate = Event => 
-            { 
-                if (Event.Candidate != null)
-                {
-                    Debug.Log("[CLIENT]send Candi");
-                    userOption["candidate"] = Event.Candidate;
-
-                    socket.emit("getSenderCandidate", userOption);
-                }            
-            };
-            // sendPC.AddTrack(userStream.GetTracks, userStream);
-
-        }
-        catch (Exception ex)
-        {
-            Debug.Log("no rtcpeerconnection: " + ex);
-
-        }
-
-        /**
-        sendPC.OnIceCandidate = candidate => sendPC.AddIceCandidate(candidate);
-
-        var opOffer = sendPC.CreateOffer();
-
-        if (opOffer != null)
-        {
-            RTCSessionDescription desc = new RTCSessionDescription();
-            desc = opOffer.Desc;
-            sendPC.SetLocalDescription(ref desc);
-
-            //Dictionary<string, object> tmp = (Dictionary<string, object>) userOption;
-            //Debug.Log("Tmp : " + tmp);
-            //tmp["offer"] = opOffer;
-           
-            //socket.emit("senderOffer", userOption);
-        }
-        **/
-
-        //user option = 1
-        try
-        {
-            //var sendPc = new RTCPeerConnection(ref config);
-
-            /**
-            sendPc.OnTrack = e =>
-            {
-                if (e.Track is VideoStreamTrack videoTrack)
-                {
-                    videoTrack.OnVideoReceived += tex =>
-                    {
-                        cameraImage.texture = tex;
-
-                        //??????
-                        sourceStream.AddTrack(videoTrack);
-                    };
-                }
-
-                if (e.Track is AudioStreamTrack audioTrack)
-                {
-                    MicSource.SetTrack(audioTrack);
-                    MicSource.loop = true;
-                    MicSource.Play();
-                }
-            };
-
-            sendPc.OnIceCandidate = candidate => sendPc.AddIceCandidate(candidate);
-
-
-            foreach (var track in sourceStream.GetTracks())
-            {
-                sendPc.AddTrack(track, sourceStream);
-            }
-
-            var offer = sendPc.CreateOffer();
-
-            var offerDesc = offer.Desc;
-            sendPc.SetLocalDescription(ref offerDesc);
-
-            //socket.emit("senderOffer", "TESt");
-            **/
-        }
-        catch
-        {
-
-        }
     }
 
 
