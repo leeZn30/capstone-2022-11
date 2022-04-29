@@ -5,12 +5,33 @@ const auth = require('../../middleware/auth');
 
 const router = express.Router();
 
-router.get('/', async(req, res) =>{
+router.get('/title', async(req, res) =>{
     const {title} = req.body;
+    const filter = [
+        {$match : {title : {$regex: title}}},
+        {$project: {
+                "locate": 1,
+                "imageLocate": 1,
+                "title": 1,
+                "id" : 1,
+                "userID" : 1,
+                "userNickname" : 1,
+                "category" : 1,
+                "lyrics" : 1,
+                "info" : 1,
+                "created" : 1,
+                "length": {"$strLenCP": "$userNickname"}
+            }
+        },
+        {
+            $sort: {
+                length: -1
+            }
+        }];
 
     try{
-        Music.find({title : {$regex: title}}).then((music) => {
-            console.log(music)
+        Music.aggregate(filter).then((music) => {
+            console.log(music.length)
             res.status(200).json(music);
         });
 
@@ -19,6 +40,43 @@ router.get('/', async(req, res) =>{
         res.status(400).json({msg: e.message});
     }
 })
+
+router.get('/artist', async(req, res) =>{
+    const {artist} = req.body;
+    const filter = [
+                    {$match : {userNickname : {$regex: artist}}},
+                    {$project: {
+                        "locate": 1,
+                        "imageLocate": 1,
+                        "title": 1,
+                        "id" : 1,
+                        "userID" : 1,
+                        "userNickname" : 1,
+                        "category" : 1,
+                        "lyrics" : 1,
+                        "info" : 1,
+                        "created" : 1,
+                        "length": {"$strLenCP": "$userNickname"}
+                    }
+                    },
+                    {
+                        $sort: {
+                            length: -1
+                        }
+                    }];
+
+    try{
+        Music.aggregate(filter).then((music) => {
+            console.log(music)
+            res.status(200).json(music);
+        })
+
+    } catch (e) {
+        console.log(e);
+        res.status(400).json({msg: e.message});
+    }
+})
+
 router.get('/recent', async(req, res)=> {
     const recent = await Music.find().sort({"created" : -1}).limit(10)
     console.log(recent);

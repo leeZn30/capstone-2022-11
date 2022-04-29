@@ -172,6 +172,7 @@ public class AddPageInSongPage : Page
             AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
             if (clip.length>10)
             {
+                //7,200,000 바이트
                 errorText.text = "";
                 musicBytes = File.ReadAllBytes(_filePath);
                 localFileName.text = _filePath;
