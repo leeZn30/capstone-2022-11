@@ -417,7 +417,7 @@ public class MusicWebRequest : MonoBehaviour
 
 
         string json = JsonUtility.ToJson(mo);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/auth/modifiedChar", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/modifiedChar", json))
         {// 보낼 주소와 데이터 입력
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -541,7 +541,7 @@ public class MusicWebRequest : MonoBehaviour
 
 
     }
-    protected async UniTask<AudioClipPlay> GetAudioClicpAsync(string _filePath, bool play)
+    protected async UniTask<AudioClipPlay> GetAudioClipAsync(string _filePath, bool play)
     {
         try
         {
@@ -566,7 +566,13 @@ public class MusicWebRequest : MonoBehaviour
             using (getAudioWWW = UnityWebRequestMultimedia.GetAudioClip("https://"+_filePath, audioType))
             {
                 Debug.Log("get audio " + _filePath + audioType.ToString());
-                var res = await getAudioWWW.SendWebRequest();// Unity의 Async Operation 이라 await 가능하다.
+                //getAudioWWW.SendWebRequest();
+                
+                await getAudioWWW.SendWebRequest();// Unity의 Async Operation 이라 await 가능하다.
+                //while (!getAudioWWW.isDone)
+                //{
+                    //yield return new WaitForSecondsRealtime(0.01f);
+                //}
                 // var responseString = res.downloadHandler.text;
 
                 Debug.Log("get audio 끝" + _filePath + audioType.ToString());
@@ -594,7 +600,55 @@ public class MusicWebRequest : MonoBehaviour
         }
     }
     protected UnityWebRequest getAudioWWW;
-    
+    protected bool flag;
+
+    protected IEnumerator GetAudioCilpUsingWebRequest(string _filePath, bool play)
+    {
+
+
+            AudioType audioType = AudioType.MPEG;
+
+            string type = _filePath.Substring(_filePath.Length - 3);
+            if (type == "wav")
+            {
+                audioType = AudioType.WAV;
+            }
+            else if (type == "mp3")
+            {
+
+                audioType = AudioType.MPEG;
+            }
+            else if (type == "ogg")
+            {
+                audioType = AudioType.OGGVORBIS;
+            }
+
+            using (getAudioWWW = UnityWebRequestMultimedia.GetAudioClip("https://" + _filePath, audioType))
+            {
+                Debug.Log("get audio " + _filePath + audioType.ToString());
+            //getAudioWWW.SendWebRequest();
+            flag = false;
+                getAudioWWW.SendWebRequest();// Unity의 Async Operation 이라 await 가능하다.
+                                                   while (!getAudioWWW.isDone)
+                                                   {
+                if (flag == true) yield break;
+                                                   yield return new WaitForSecondsRealtime(0.01f);
+                                                   }
+                                                   // var responseString = res.downloadHandler.text;
+
+                Debug.Log("get audio 끝" + _filePath + audioType.ToString());
+                if (getAudioWWW.result == UnityWebRequest.Result.ConnectionError)
+                {
+                    Debug.Log(getAudioWWW.error);
+                }
+                else
+                {
+                    //return new AudioClipPlay(DownloadHandlerAudioClip.GetContent(getAudioWWW), play);
+                    OnGetClip(DownloadHandlerAudioClip.GetContent(getAudioWWW), play);
+                }
+            }
+
+    }
     protected IEnumerator GET_SearchMusicTitle(string _title)
     {
         MusicTitle musicTitle = new MusicTitle();
@@ -603,7 +657,7 @@ public class MusicWebRequest : MonoBehaviour
         string json = JsonUtility.ToJson(musicTitle);
         Debug.Log("곡 검색 json: " + json);
 
-        using (UnityWebRequest www = UnityWebRequest.Get(url + "/music/"))
+        using (UnityWebRequest www = UnityWebRequest.Get(url + "/music/title"))
         {
 
             www.SetRequestHeader("Content-Type", "application/json");

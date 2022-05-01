@@ -35,7 +35,7 @@ public class SubMusicController : MusicWebRequest
             getAudioWWW.Dispose();
             //StopCoroutine(audioLoadIEnum);
         }
-        AudioClipPlay a = await GetAudioClicpAsync(path, true);
+        AudioClipPlay a = await GetAudioClipAsync(path, true);
         SetAudioClip(a.audioClip, a.play);
         Debug.Log("d");
     }

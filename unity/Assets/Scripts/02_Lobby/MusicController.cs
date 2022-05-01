@@ -6,8 +6,14 @@ using TMPro;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
 using System.Threading;
+using Cysharp.Threading.Tasks;
+using Unity.Jobs;
+using Unity.Collections;
+
 public class MusicController : MusicWebRequest
 {
+    
+
     private static MusicController instance;
     public static MusicController Instance
     {
@@ -82,7 +88,7 @@ public class MusicController : MusicWebRequest
     public GameObject scrollViewObject;
     private ScrollViewRect scrollViewRect;
     CancellationTokenSource cts;
-    //private IEnumerator audioLoadIEnum; 
+    private IEnumerator audioLoadIEnum; 
     private enum PlayState
     {
         Play,Pause
@@ -95,16 +101,7 @@ public class MusicController : MusicWebRequest
     void Start()
     {
         Init();
-;
 
-        /*
-        Task.Factory.StartNew(async () =>
-        {
-            Task<string> s = Task<string>.Factory.StartNew(() => ssss(1));
-            await s;
-            Debug.Log("테스크 끝"+s.Result.ToString());
-
-        });*/
 
     }
 
@@ -119,7 +116,7 @@ public class MusicController : MusicWebRequest
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            StartCoroutine(testLoadUpload());
+            //StartCoroutine(testLoadUpload());
         }
         if (audioSource.clip != null)
         {
@@ -307,8 +304,10 @@ public class MusicController : MusicWebRequest
     }
     void StartGetAudioCoroution(int newIdx, bool play)
     {
-
-        currentSongSlotList[currentSongIndex].SetImage(new Color(1f, 1f, 1f));
+        if (currentSongSlotList.Count > currentSongIndex)
+        {
+            currentSongSlotList[currentSongIndex].SetImage(new Color(1f, 1f, 1f));
+        }
         currentSongSlotList[newIdx].SetImage(new Color(0.8f, 0.8f, 0.8f));
         currentSongIndex = newIdx;
 
@@ -317,12 +316,13 @@ public class MusicController : MusicWebRequest
         /*
         if (audioLoadIEnum != null)
         {
+            flag = true;
             getAudioWWW.Dispose();
-            //StopCoroutine(audioLoadIEnum);
-        }*/
-        //audioLoadIEnum = GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, play);
-        //StartCoroutine(audioLoadIEnum);
-
+            StopCoroutine(audioLoadIEnum);
+        }
+        audioLoadIEnum = GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, play);
+        StartCoroutine(audioLoadIEnum);
+        */
         //끝
 
         audioSource.Stop();
@@ -349,7 +349,12 @@ public class MusicController : MusicWebRequest
             getAudioWWW.Dispose();
             //StopCoroutine(audioLoadIEnum);
         }
-        AudioClipPlay a = await GetAudioClicpAsync(path, play);
+        //CancellationTokenSource cts;
+        //UniTask t=new UniTask<AudioClipPlay> (GetAudioClicpAsync(path, play),cts)
+        //var thread = new Thread(() => UniTask.RunOnThreadPool<AudioClipPlay>(GetAudioClicpAsync(path, play)));
+        //AudioClipPlay a = await UniTask.RunOnThreadPool<AudioClipPlay>(() => GetAudioClicpAsync(path, play));
+        AudioClipPlay a = await GetAudioClipAsync(path, play);
+        //t.Wait();
         if(a!=null)
             SetAudioClip(a.audioClip, a.play);
     }
@@ -438,6 +443,7 @@ public class MusicController : MusicWebRequest
     }
     void OpenCloseInfo()
     {
+        Debug.Log("Open");
         animator.SetBool("isOpen", !animator.GetBool("isOpen"));
         if (animator.GetBool("isOpen")==false)
         {
