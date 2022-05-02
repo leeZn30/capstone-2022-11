@@ -227,9 +227,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af8dff003e6dd4e43addb339736d3391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  objectTarget: {fileID: 0}
-  micAudioSource: {fileID: 0}
+  roomNum: 0
   isUsed: 0
+  deviceID: 0
+  webRTC: {fileID: 0}
+  remoteView: {fileID: 0}
 --- !u!114 &-555076778938142243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -245,7 +247,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 2
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:

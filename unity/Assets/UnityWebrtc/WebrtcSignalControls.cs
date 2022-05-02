@@ -56,6 +56,7 @@ namespace UnityWebrtc
         /// </summary>
         [Tooltip("The text field in which we display the device name")]
         public Text DeviceNameLabel;
+        //public InputField DeviceNameLabel;
 
         /// <summary>
         /// The text input field in which we accept the target device name
@@ -120,10 +121,13 @@ namespace UnityWebrtc
 
 
             // if playerprefs has a last target id, autofill the field
+            // 저장 안하는게 나을듯
+            /**
             if (PlayerPrefs.HasKey(kLastTargetId))
             {
                 TargetIdField.text = PlayerPrefs.GetString(kLastTargetId);
             }
+            **/
 
             // bind our handler for creating the offer
             CreateOfferButton.onClick.AddListener(() =>
@@ -132,7 +136,7 @@ namespace UnityWebrtc
                 if (TargetIdField.text.Length > 0)
                 {
                     // cache the targetId in PlayerPrefs so we can autofill it in the future
-                    PlayerPrefs.SetString(kLastTargetId, TargetIdField.text);
+                    //PlayerPrefs.SetString(kLastTargetId, TargetIdField.text);
 
                     PeerEventsInstance.CreateOffer();
                 }
@@ -256,6 +260,15 @@ namespace UnityWebrtc
         /// </remarks>
         private void Update()
         {
+            /**
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                onPeerReady();
+                Debug.Log("S!");
+
+            }
+            **/
+
             // if we have not reached our PollTimeMs value...
             if (timeSincePoll <= PollTimeMs)
             {
@@ -279,7 +292,7 @@ namespace UnityWebrtc
             
         }
 
-        public void startLocal()
+        public void onPeerReady()
         {
             // bind our handler so when the peer is ready, we can start local av
             PeerEventsInstance.OnPeerReady.AddListener(() =>

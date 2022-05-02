@@ -32,31 +32,18 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         }
     }
 
-    private void Update()
+    [PunRPC]
+    void setUsed()
     {
-        /**
-        if (isUsed)
+        if (!isUsed)
         {
-            this.GetComponent<SpriteRenderer>().color = Color.blue;
+            isUsed = true;
         }
-        else
-        {
-            this.GetComponent<SpriteRenderer>().color = new Color32(202, 162, 48, 250);
-        }
-        **/
     }
 
-    [PunRPC]
-    void changeColor()
+    public void callSetUsed()
     {
-        if (isUsed)
-        {
-            this.GetComponent<SpriteRenderer>().color = Color.blue;
-        }
-        else
-        {
-            this.GetComponent<SpriteRenderer>().color = new Color32(202, 162, 48, 250);
-        }
+        photonView.RPC("setUsed", RpcTarget.All);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

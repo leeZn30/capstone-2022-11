@@ -31,6 +31,7 @@ public class InteractiveObject : MonoBehaviour
 
                         // 일단 여기다가 isused 변경해두기 > 원래는 startBusking하면
                         GetComponentInParent<BuskingSpot>().isUsed = true;
+                        //GetComponent<BuskingSpot>().callSetUsed();
                     }
                     break;
 

@@ -45,6 +45,7 @@ MonoBehaviour:
   - ReceiveMsg
   - setPlayer
   - changeColor
+  - setUsed
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
