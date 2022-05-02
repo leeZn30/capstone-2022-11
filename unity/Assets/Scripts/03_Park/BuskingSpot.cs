@@ -11,15 +11,24 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
     // 버스킹 장소가 사용되고 있는지
     public bool isUsed = false;
 
+    // 버스킹 장소가 사용되고 있다면, 해당 디바이스 id
+    public int deviceID;
+
+    //WebRTC
+    public GameObject webRTC;
+    public GameObject remoteView;
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
             stream.SendNext(isUsed);
+            stream.SendNext(deviceID);
         }
         else
         {
             this.isUsed = (bool)stream.ReceiveNext();
+            this.deviceID = (int)stream.ReceiveNext();
         }
     }
 
@@ -58,8 +67,9 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
             if (isUsed && !player.GetComponent<PlayerControl>().isVideoPanelShown)
             {
                 collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
-                webRTCOperate.Instance.roomNum = roomNum;
-                webRTCOperate.Instance.webRTCConnect();
+
+                webRTC.SetActive(true);
+                remoteView.SetActive(true);
             }
         }
     }

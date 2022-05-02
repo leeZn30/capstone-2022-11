@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.WebRTC;
-using KyleDulce.SocketIo;
 using System;
 using System.Threading;
-
+using UnityWebrtc;
 
 public class BuskerVideoPanel : MonoBehaviour
 {
@@ -33,8 +31,13 @@ public class BuskerVideoPanel : MonoBehaviour
     [SerializeField] private RawImage cameraImage;
     [SerializeField] private AudioSource MicSource;
 
-    // 보낼 stream
-    private VideoStreamTrack videoStream;
+    //WebRTC
+    [SerializeField] private GameObject webrtcSignalControls;
+    public GameObject localView;
+
+    //Busking 장소
+    public BuskingSpot nowBuskingSpot;
+
 
     // Start is called before the first frame update
     void Start()
@@ -135,8 +138,8 @@ public class BuskerVideoPanel : MonoBehaviour
 
     public void setDevice()
     {
-        cameraConnect();
-        micConnect();
+        //cameraConnect();
+        //micConnect();
 
         StartButton.onClick.AddListener(StartBusking);
     }
@@ -144,12 +147,19 @@ public class BuskerVideoPanel : MonoBehaviour
     // 버스킹 인터렉티브
     public void StartBusking()
     {
+        /**
         if (isMicOn && isCameraOn)
         {
             player.GetComponent<PlayerControl>().OffInteractiveButton();
-            webRTCOperate.Instance.webRTCConnect();
-            webRTCOperate.Instance.setWebCamTexture(textureWebCam);
+            webrtcSignalControls.startLocal();
         }
+        **/
+
+        player.GetComponent<PlayerControl>().OffInteractiveButton();
+        //webrtcSignalControls.GetComponent<GameObject>().SetActive(true);
+        webrtcSignalControls.SetActive(true);
+        localView.SetActive(true);
+        
 
     }
 

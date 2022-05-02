@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Samples/WebRTC/2.4.0-exp.6/Example/MultiplePeerConnections/MultiplePeerConnections.unity
     guid: ad11cc7c597c0e94d8cf4db5a3ebde11
+  - enabled: 0
+    path: Assets/UnityWebrtc/Examples/WebrtcBasicSignalExample.unity
+    guid: 61f44246f3d10de4b80d8a2fd3146bac
   m_configObjects: {}
