@@ -42,6 +42,14 @@ const UserSchema = new mongoose.Schema({
     created: {
         type: Date,
         default: Date.now
+    },
+    follow: {
+        type: Array,
+        default: []
+    },
+    follower: {
+        type: Array,
+        default: []
     }
 });
 

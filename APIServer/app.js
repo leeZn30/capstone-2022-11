@@ -11,6 +11,7 @@ const usersRouters = require('./routes/api/user');
 const authRouters = require('./routes/api/auth');
 const mediaRouter = require('./routes/api/media');
 const musicRouter = require('./routes/api/musicDB');
+const followRouter = require('./routes/api/follow');
 
 const app = express();
 const { MONGO_URI } = config;
@@ -57,5 +58,6 @@ app.use('/api/user', usersRouters);
 app.use('/api/auth', authRouters);
 app.use('/api/media', mediaRouter);
 app.use('/api/music', musicRouter);
+app.use('/api/follow', followRouter);
 
 module.exports = app;
