@@ -23,33 +23,6 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
         }
     }
 
-    private void Update()
-    {
-        /**
-        if (isUsed)
-        {
-            this.GetComponent<SpriteRenderer>().color = Color.blue;
-        }
-        else
-        {
-            this.GetComponent<SpriteRenderer>().color = new Color32(202, 162, 48, 250);
-        }
-        **/
-    }
-
-    [PunRPC]
-    void changeColor()
-    {
-        if (isUsed)
-        {
-            this.GetComponent<SpriteRenderer>().color = Color.blue;
-        }
-        else
-        {
-            this.GetComponent<SpriteRenderer>().color = new Color32(202, 162, 48, 250);
-        }
-    }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject player = GameManager.instance.myPlayer;

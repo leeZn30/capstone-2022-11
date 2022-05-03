@@ -135,21 +135,26 @@ public class BuskerVideoPanel : MonoBehaviour
 
     public void setDevice()
     {
-        cameraConnect();
-        micConnect();
+        //cameraConnect();
+        //micConnect();
 
+        AgoraManager.Instance.loadEngine();
         StartButton.onClick.AddListener(StartBusking);
     }
 
     // 버스킹 인터렉티브
     public void StartBusking()
     {
+        /**
         if (isMicOn && isCameraOn)
         {
             player.GetComponent<PlayerControl>().OffInteractiveButton();
             webRTCOperate.Instance.webRTCConnect();
             webRTCOperate.Instance.setWebCamTexture(textureWebCam);
         }
+        **/
+
+        AgoraManager.Instance.setBuskerAgora(1); // 현재 roomNum 1로 고정
 
     }
 
