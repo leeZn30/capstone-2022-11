@@ -4,50 +4,25 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 
-public class BuskingSpot : MonoBehaviourPun, IPunObservable
+public class BuskingSpot : MonoBehaviourPunCallbacks
 {
     public int roomNum;
 
     // 버스킹 장소가 사용되고 있는지
     public bool isUsed = false;
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    public void callChangeUsed()
     {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(isUsed);
-        }
-        else
-        {
-            this.isUsed = (bool)stream.ReceiveNext();
-        }
-    }
-
-    private void Update()
-    {
-        /**
-        if (isUsed)
-        {
-            this.GetComponent<SpriteRenderer>().color = Color.blue;
-        }
-        else
-        {
-            this.GetComponent<SpriteRenderer>().color = new Color32(202, 162, 48, 250);
-        }
-        **/
+        photonView.RPC("changeUsed", RpcTarget.AllBuffered, null);
     }
 
     [PunRPC]
-    void changeColor()
+    void changeUsed()
     {
-        if (isUsed)
-        {
-            this.GetComponent<SpriteRenderer>().color = Color.blue;
-        }
+        if (!isUsed)
+            isUsed = true;
         else
-        {
-            this.GetComponent<SpriteRenderer>().color = new Color32(202, 162, 48, 250);
-        }
+            isUsed = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
