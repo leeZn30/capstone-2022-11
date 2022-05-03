@@ -20,12 +20,12 @@ router.get('/title', async(req, res) =>{
                 "lyrics" : 1,
                 "info" : 1,
                 "created" : 1,
-                "length": {"$strLenCP": "$userNickname"}
+                "length": {"$strLenCP": "$title"}
             }
         },
         {
             $sort: {
-                length: -1
+                length: 1
             }
         }];
 
@@ -61,7 +61,7 @@ router.get('/artist', async(req, res) =>{
                     },
                     {
                         $sort: {
-                            length: -1
+                            length: 1
                         }
                     }];
 
@@ -87,6 +87,7 @@ router.post('/', auth, async(req, res) => {
     const {locate ,imageLocate, title, category, lyrics, info} = req.body;
 
     const userID = req.user.id;
+
     console.log(userID);
 
     User.findOne({id: userID}).then((user)=> {
