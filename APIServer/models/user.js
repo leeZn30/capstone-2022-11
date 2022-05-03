@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema({
     id: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     email: {
         type: String,
@@ -41,6 +42,14 @@ const UserSchema = new mongoose.Schema({
     created: {
         type: Date,
         default: Date.now
+    },
+    follow: {
+        type: Array,
+        default: []
+    },
+    follower: {
+        type: Array,
+        default: []
     }
 });
 
