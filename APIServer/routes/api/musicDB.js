@@ -161,7 +161,7 @@ router.post('/', auth, async(req, res) => {
 router.post('/play', async(req, res) => {
     const {id} = req.body;
 
-    await Music.update({id: id}, {$inc: { playedNum: 1}})
+    await Music.updateOne({id: id}, {$inc: { playedNum: 1}})
     Music.find({id:id}).then((music)=>{
         console.log(music)
     })
