@@ -51,8 +51,15 @@ public class webRTCOperate : Singleton<webRTCOperate>
             socket.open();
             isSocketOn = true;
 
+            /**
             if (nowBuskingSpot != null) // 나중에 연결 끊나거나 하면 roomNum이랑 nowvBuskingSpot 초기화시키기
                 nowBuskingSpot.isUsed = true; // 일단 에디터에서는ㄴ 잘 바뀜 근데 이거 에디터에서 안하면 바로 안바뀔 수 있다는 점 상기
+            **/
+
+            if (nowBuskingSpot != null)
+            {
+                nowBuskingSpot.callChangeUsed();
+            }
         }
         catch
         {
