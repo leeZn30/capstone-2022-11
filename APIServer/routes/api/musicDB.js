@@ -93,7 +93,7 @@ router.get('/category', async(req, res) =>{
 })
 
 router.get('/recent', async(req, res)=> {
-    const recent = await Music.find().sort({"created" : -1}).limit(10)
+    const recent = await Music.find().sort({"created" : -1}).limit(10);
     console.log(recent);
     res.status(200).json({recent: recent});
 })
@@ -101,6 +101,17 @@ router.get('/recent', async(req, res)=> {
 router.get('/popular', async(req, res)=>{
     const popular = await Music.find().sort({playedNum : -1}).limit(20);
     res.status(200).json({popular: popular});
+})
+
+router.get('/personalGenre', auth, async(req, res)=>{
+    const userId = req.user.id;
+
+    User.findOne({id:userId}).then((user)=>{
+        console.log(user.preferredGenres);
+        Music.find({category:user.preferredGenres}).sort({playedNum: -1}).limit(20).then((music)=>{
+            res.status(200).json({music:music})
+        })
+    })
 })
 
 router.post('/', auth, async(req, res) => {
