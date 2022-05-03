@@ -23,9 +23,9 @@ httpsServer.listen(port, function () {
 app.use(express.static(__dirname + "/public"));
 
 // 라우팅 정의
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/webRTC.html");
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(__dirname + "/webRTC.html");
+// });
 
 let io = socket(httpsServer);
 let serverReceiverPCs = {'room1':{'senderPC':'yannju'}};
@@ -71,7 +71,6 @@ io.on('connection', function(socket) {
         console.log(userOption["senderPC"]);
 
         try {
-            socket.join(userOption.roomNum);
             if (userOption.roomNum in serverReceiverPCs) {
                 console.log("[SERVER ERROR-!] already create Room!")
                 throw "roomErr";
@@ -84,10 +83,17 @@ io.on('connection', function(socket) {
             let receiverPC = createReceiverPeerConnection(userOption);
             receiverPC.onicecandidate = event => {
                 if (event.candidate) {
-                    console.log("[SERVER]send Candi");
+                    console.log("[SERVER]send Candi(CreateRoom)");
 
                     // Dictionary로 만들어서 보냄
-                    var data = {"candidate": event.candidate, "option":userOption.option};
+                    var candiDic = Object.values(event.candidate)[0];
+                    var sdpMidDic = Object.values(event.candidate)[1];
+                    var sdpMLineIndexDic = Object.values(event.candidate)[2];
+                    var data = {
+                        "candidate": candiDic, 
+                        "sdpMid":sdpMidDic, 
+                        "sdpMLineIndex":sdpMLineIndexDic,
+                        "option":userOption["option"]};
 
                     socket.emit("getCandidate", data);
                     //socket.emit("getCandidate", event.candidate, userOption.option);
@@ -111,11 +117,13 @@ io.on('connection', function(socket) {
                 receiverPC.setLocalDescription(new wrtc.RTCSessionDescription(answer));
 
                 // Dictonary로 만들어서 보내줘야함
-                var answerMsg = {"answer": answer};
+                var sdp = Object.values(answer)[1];
+                var answerMsg = {"answer": sdp};
                 socket.emit("getReceiverAnswer", answerMsg);
+                console.log("[SERVER]sendAnswer");
             })
         } catch (error) {
-            console.log(error);
+            console.log("SERVER ERROR -!!(senderOffer)" + error);
             if (error == "roomErr") {
                 socket.emit("Error", error);
             }
@@ -124,18 +132,31 @@ io.on('connection', function(socket) {
 
     socket.on("joinRoomFromClient", function(userOption){
         console.log("[SERVER] joinRoomFromClient");
-        socket.join(userOption.roomNum);
         let sendStream = userStreams[userOption.roomNum].stream;
 
         //create Sender PC
         let sendPC = createSenderPeerConnection(sendStream, userOption);
         sendPC.onicecandidate = event => {
-            socket.emit("getCandidate", event.candidate, userOption.option);
+            if (event.candidate) {
+                console.log("[SERVER]send Candi(Join Room)");
+
+                // Dictionary로 만들어서 보냄
+                var candiDic = Object.values(event.candidate)[0];
+                var sdpMidDic = Object.values(event.candidate)[1];
+                var sdpMLineIndexDic = Object.values(event.candidate)[2];
+                var data = {
+                    "candidate": candiDic, 
+                    "sdpMid":sdpMidDic, 
+                    "sdpMLineIndex":sdpMLineIndexDic,
+                    "option":userOption["option"]};
+
+                socket.emit("getCandidate", data);
+                //socket.emit("getCandidate", event.candidate, userOption.option);
+            }
         };
         serverSenderPCs.push({
                 'roomNum':userOption.roomNum,
                 'senderPC':sendPC, 
-                'receivePC':userOption.receivePC, 
                 'id':userOption.userId
         });
         sendPC
@@ -146,10 +167,10 @@ io.on('connection', function(socket) {
         .then((offer) => {
             console.log("[SERVER]sender Offer");
             sendPC.setLocalDescription(new wrtc.RTCSessionDescription(offer));
-
-            // Dictonray
-            userOption['offer'] = offer;
+            var sdp = Object.values(offer)[1];
+            userOption['offer'] = sdp;
             socket.emit("senderOffer", userOption);
+            console.log("[SERVER] SEND OFFER-");
         })
     });
 
@@ -159,15 +180,13 @@ io.on('connection', function(socket) {
             // Dictionary로 받기
             var candidate = userOption["candidate"];
 
-            console.log(typeof(candidate));
-
             let icecandidate = new wrtc.RTCIceCandidate(candidate);
             let rtcPC = serverReceiverPCs[userOption.roomNum].receivePC;
             await rtcPC.addIceCandidate(icecandidate);
             console.log("ServerCandi Perfect");
         }
         catch(err) {
-            console.log(err);
+            console.log("[SERVER ERROR (getSenderCandidate) : " + err);
             socket.emit('Error', err);
         }
     });
@@ -178,26 +197,39 @@ io.on('connection', function(socket) {
         var candidate = userOption['candidate'];
         let icecandidate = new wrtc.RTCIceCandidate(candidate);
         let rtcPC;
-        for (let i = 0; i < serverSenderPCs.length; i++) {
-            if (serverSenderPCs[i].id === userOption.userId) {
+
+        for (let i = 0; i < rooms.length; i++) {
+            console.log(userOption.userId);
+            if (serverSenderPCs[i].id == userOption.userId) {
                 rtcPC = serverSenderPCs[i].senderPC;
                 await rtcPC.addIceCandidate(icecandidate);
                 break;
             }
         }
+        console.log("ServerCandi Perfect");
     });
 
-    socket.on("getReceiverAnswer", async function(answer, userOption){
+    socket.on("getReceiverAnswer", async function(userOption){
         console.log("[SERVER]get Answer");
         let rtcPC;
-        for (let i = 0; i < serverSenderPCs.length; i++) {
-            if (serverSenderPCs[i].id == userOption.userId) {
-                rtcPC = serverSenderPCs[i].senderPC;
-                break;
+        try {
+            for (let i = 0; i < serverSenderPCs.length; i++) {
+                console.log(userOption.userId);
+                if (serverSenderPCs[i].id == userOption.userId) {
+                    rtcPC = serverSenderPCs[i].senderPC;
+                    var answer = userOption.answer;
+                    var receiveranswer = new wrtc.RTCSessionDescription(); //wrtc.
+                    receiveranswer.sdp = answer.sdp;
+                    receiveranswer.type = "answer"; 
+                    await rtcPC.setRemoteDescription(receiveranswer);
+                    break;
+                }
             }
         }
+        catch (e) {
+            console.log("[SERVER ERRIR -!! (getReceiverAnswer)] : " + e);
+        }
 
-        await rtcPC.setRemoteDescription(answer);
     });
 });
 
@@ -205,11 +237,11 @@ function createSenderPeerConnection(userStream) {
     try{
         let rtcPeerConnection = new wrtc.RTCPeerConnection(iceServers);
         rtcPeerConnection.addTrack(userStream.getTracks()[0], userStream);
-        rtcPeerConnection.addTrack(userStream.getTracks()[1], userStream);
+        // rtcPeerConnection.addTrack(userStream.getTracks()[1], userStream);
         return rtcPeerConnection;
     }
     catch(e) {
-        console.log(e);
+        console.log("SERVER ERROR - !! (createSenderPeerConnection) : " + e);
     }
 }
 
@@ -226,7 +258,7 @@ function createReceiverPeerConnection(senderOption) {
         return rtcPeerConnection;
     }   
     catch (e) {
-        console.log(e);
+        console.log("SERVER ERROR - !! (createReceiverPeerConnection) : " + e);
     }
 }
 
