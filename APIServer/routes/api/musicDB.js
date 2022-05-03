@@ -98,6 +98,11 @@ router.get('/recent', async(req, res)=> {
     res.status(200).json({recent: recent});
 })
 
+router.get('/popular', async(req, res)=>{
+    const popular = await Music.find().sort({playedNum : -1}).limit(20);
+    res.status(200).json({popular: popular});
+})
+
 router.post('/', auth, async(req, res) => {
     const {locate ,imageLocate, title, category, lyrics, info} = req.body;
 
