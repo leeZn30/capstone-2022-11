@@ -5,7 +5,7 @@ const auth = require('../../middleware/auth');
 
 const router = express.Router();
 
-router.get('/follow', auth, async(req, res)=>{
+router.get('/', auth, async(req, res)=>{
     const id = req.user.id;
 
     User.findOne({id:id}).then((user)=>{
