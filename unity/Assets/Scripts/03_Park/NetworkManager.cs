@@ -14,6 +14,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public TextMeshProUGUI connectionInfoText; // 네트워크 정보를 표시할 텍스트
     public Button joinButton; // 룸 접속 버튼
 
+    public string roomName = "MetaBuskingPark";
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +23,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.GameVersion = this.gameVersion;
         //설정한 정보로 마스터 서버 접속 시도
         PhotonNetwork.ConnectUsingSettings();
-
 
         this.joinButton.interactable = false;
         this.connectionInfoText.text = "마스터 서버에 접속중...";
@@ -33,6 +34,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         this.joinButton.interactable = true;
         this.connectionInfoText.text = "온라인 : 마스터 서버와 연결 됨";
+
     }
 
     // 마스터 서버 접속 실패시 자동 실행
@@ -53,10 +55,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         // 마스터 서버에 접속 중이라면
         if (PhotonNetwork.IsConnected)
         {
-
             //룸에 접속한다.
             this.connectionInfoText.text = "룸에 접속....";
-            PhotonNetwork.JoinRandomRoom();
+            //PhotonNetwork.JoinRandomRoom();
+
+            // 방 만들기
+                PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = 100 });
+
         }
         else
         {
@@ -66,14 +71,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
     }
 
-    // (빈 방이 없어)랜덤 룸 참가에 실패한 경우 자동 실행
-    public override void OnJoinRandomFailed(short returnCode, string message)
+    public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        this.connectionInfoText.text = "빈 방 없음, 새로운방 생성...";
-        //최대 인원을 4명으로 설정 + 방을 만듦
-        //방이름 , 4명 설정
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 100 });
+        if (returnCode == 32766)
+            PhotonNetwork.JoinRoom(roomName);
 
+        else
+            Debug.Log("방 생성 실패");
+    }
+
+    public override void OnCreatedRoom()
+    {
+        Debug.Log("방 생성 성공");
     }
 
     // 룸에 참가 완료된 경우 자동 실행
