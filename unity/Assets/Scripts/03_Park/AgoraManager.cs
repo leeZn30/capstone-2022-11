@@ -101,6 +101,9 @@ public class AgoraManager : Singleton<AgoraManager>
             };
             mRtcEngine.OnError = HandleError;
 
+            mRtcEngine.EnableVideo();
+            mRtcEngine.EnableVideoObserver();
+
             // join channel
             /*  This API Assumes the use of a test-mode AppID
                  mRtcEngine.JoinChannel(channel, null, 0);
@@ -180,7 +183,7 @@ public class AgoraManager : Singleton<AgoraManager>
         if (!ReferenceEquals(videoSurface, null))
         {
             // configure videoSurface
-            videoSurface.SetForUser(uid);
+            videoSurface.SetForUser(uid); // 이러면 이제 되는거같은데
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
         }
