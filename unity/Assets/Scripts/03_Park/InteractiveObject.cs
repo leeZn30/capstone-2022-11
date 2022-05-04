@@ -31,6 +31,7 @@ public class InteractiveObject : MonoBehaviour
                         webRTCOperate.Instance.roomNum = GetComponentInParent<BuskingSpot>().roomNum;
                         webRTCOperate.Instance.nowBuskingSpot = GetComponentInParent<BuskingSpot>();
                         **/
+                        AgoraManager.Instance.nowBuskingSpot = GetComponentInParent<BuskingSpot>();
 
                         player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
                             delegate { player.GetComponent<PlayerControl>().OnVideoPanel(1);});

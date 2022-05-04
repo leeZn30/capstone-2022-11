@@ -6,6 +6,7 @@ using agora_gaming_rtc;
 
 public class AgoraManager : Singleton<AgoraManager>
 {
+    /**
     [Header("Agora Properties")]
 
     // *** ADD YOUR APP ID HERE BEFORE GETTING STARTED *** //
@@ -15,15 +16,231 @@ public class AgoraManager : Singleton<AgoraManager>
     [SerializeField] private AgoraChannel nowChannel;
     private IRtcEngine mRtcEngine = null;
     private uint myUID = 0;
+    **/
 
     [Header("GameObjects")]
     [SerializeField] private RawImage buskerVideo;
+    [SerializeField] private RawImage audienceVideo;
 
-    // Start is called before the first frame update
-    void Start()
+    // instance of agora engine
+    private IRtcEngine mRtcEngine;
+    private Text MessageText;
+    [SerializeField] private string appID;
+
+    // a token is a channel key that works with a AppID that requires it. 
+    // Generate one by your token server or get a temporary token from the developer console
+    private string token = "006ed5d27a64ca7451189266ef6703397bfIAA2wv6ofnhXKDGGLECAtqRCyBNxkd3TjzRKsFNm5cpnho5IG0UAAAAAEACf/Brp/nhzYgEAAQD/eHNi";
+
+    public BuskingSpot nowBuskingSpot;
+
+    // load agora engine
+    public void loadEngine(string appId)
     {
+        // start sdk
+        Debug.Log("initializeEngine");
+
+        if (mRtcEngine != null)
+        {
+            Debug.Log("Engine exists. Please unload it first!");
+            return;
+        }
+
+        // init engine
+        mRtcEngine = IRtcEngine.GetEngine(appId);
+
+        // enable log
+        mRtcEngine.SetLogFilter(LOG_FILTER.DEBUG | LOG_FILTER.INFO | LOG_FILTER.WARNING | LOG_FILTER.ERROR | LOG_FILTER.CRITICAL);
     }
 
+    public void join(int mode)
+    {
+        if (nowBuskingSpot != null)
+            nowBuskingSpot.callChangeUsed();
+
+        Debug.Log("calling join (channel = " + appID + ")");
+
+        if (mRtcEngine == null)
+            return;
+
+        if (mode == 0) // Busker
+        {
+            // set callbacks (optional)
+            mRtcEngine.OnJoinChannelSuccess = onJoinChannelSuccess;
+            //mRtcEngine.OnUserJoined = onUserJoined;
+            //mRtcEngine.OnUserOffline = onUserOffline;
+            mRtcEngine.OnWarning = (int warn, string msg) =>
+            {
+                Debug.LogWarningFormat("Warning code:{0} msg:{1}", warn, IRtcEngine.GetErrorDescription(warn));
+            };
+            mRtcEngine.OnError = HandleError;
+
+            // enable video
+            mRtcEngine.EnableVideo();
+            // allow camera output callback
+            mRtcEngine.EnableVideoObserver();
+
+            // join channel
+            /*  This API Assumes the use of a test-mode AppID
+                 mRtcEngine.JoinChannel(channel, null, 0);
+            */
+
+            /*  This API Accepts AppID with token; by default omiting info and use 0 as the local user id */
+            mRtcEngine.JoinChannelByKey(channelKey: token, channelName: "MetaBusking");
+
+            onSceneHelloVideoLoaded(0);
+        }
+        else // Audience
+        {
+            // set callbacks (optional)
+            mRtcEngine.OnJoinChannelSuccess = onAudienceJoinChannelSuccess;
+            mRtcEngine.OnUserJoined = onUserJoined; // Busker만 봐야함
+            //mRtcEngine.OnUserOffline = onUserOffline;
+            mRtcEngine.OnWarning = (int warn, string msg) =>
+            {
+                Debug.LogWarningFormat("Warning code:{0} msg:{1}", warn, IRtcEngine.GetErrorDescription(warn));
+            };
+            mRtcEngine.OnError = HandleError;
+
+            // join channel
+            /*  This API Assumes the use of a test-mode AppID
+                 mRtcEngine.JoinChannel(channel, null, 0);
+            */
+
+            /*  This API Accepts AppID with token; by default omiting info and use 0 as the local user id */
+            mRtcEngine.JoinChannelByKey(channelKey: token, channelName: "MetaBusking");
+
+            //onSceneHelloVideoLoaded(1);
+
+        }
+    }
+
+    public void leave()
+    {
+        Debug.Log("calling leave");
+
+        if (mRtcEngine == null)
+            return;
+
+        // leave channel
+        mRtcEngine.LeaveChannel();
+        // deregister video frame observers in native-c code
+        mRtcEngine.DisableVideoObserver();
+    }
+
+    // unload agora engine
+    public void unloadEngine()
+    {
+        Debug.Log("calling unloadEngine");
+
+        nowBuskingSpot = null;
+
+        // delete
+        if (mRtcEngine != null)
+        {
+            IRtcEngine.Destroy();  // Place this call in ApplicationQuit
+            mRtcEngine = null;
+        }
+    }
+
+    // accessing GameObject in Scnene1
+    // set video transform delegate for statically created GameObject
+    public void onSceneHelloVideoLoaded(int mode)
+    {
+        if (mode == 0) // Busker
+        {
+            VideoSurface videoSurface = makeImageSurface(buskerVideo);
+        }
+        else // Audience
+        {
+            VideoSurface videoSurface = makeImageSurface(audienceVideo);
+        }
+    }
+
+
+    // implement engine callbacks
+    private void onJoinChannelSuccess(string channelName, uint uid, int elapsed)
+    {
+        Debug.Log("Busker JoinChannelSuccessHandler: uid = " + uid);
+    }
+
+    private void onAudienceJoinChannelSuccess(string channelName, uint uid, int elapsed)
+    {
+        Debug.Log("Audience JoinChannelSuccessHandler: uid = " + uid);
+    }
+
+    // When a remote user joined, this delegate will be called. Typically
+    // create a GameObject to render video on it
+    private void onUserJoined(uint uid, int elapsed)
+    {
+        Debug.Log("onUserJoined: uid = " + uid + " elapsed = " + elapsed);
+        // this is called in main thread
+
+        // create a GameObject and assign to this new user
+        VideoSurface videoSurface = makeImageSurface(audienceVideo);
+        if (!ReferenceEquals(videoSurface, null))
+        {
+            // configure videoSurface
+            videoSurface.SetForUser(uid);
+            videoSurface.SetEnable(true);
+            videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+        }
+    }
+
+    public VideoSurface makeImageSurface(RawImage rawimage)
+    {
+        // configure videoSurface
+        VideoSurface videoSurface = rawimage.gameObject.AddComponent<VideoSurface>();
+        videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+        return videoSurface;
+    }
+    // When remote user is offline, this delegate will be called. Typically
+    // delete the GameObject for this user
+    private void onUserOffline(uint uid, USER_OFFLINE_REASON reason)
+    {
+        // remove video stream
+        Debug.Log("onUserOffline: uid = " + uid + " reason = " + reason);
+        // this is called in main thread
+    }
+
+    #region Error Handling
+    private int LastError { get; set; }
+    private void HandleError(int error, string msg)
+    {
+        if (error == LastError)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(msg))
+        {
+            msg = string.Format("Error code:{0} msg:{1}", error, IRtcEngine.GetErrorDescription(error));
+        }
+
+        switch (error)
+        {
+            case 101:
+                msg += "\nPlease make sure your AppId is valid and it does not require a certificate for this demo.";
+                break;
+        }
+
+        Debug.LogError(msg);
+        if (MessageText != null)
+        {
+            if (MessageText.text.Length > 0)
+            {
+                msg = "\n" + msg;
+            }
+            MessageText.text += msg;
+        }
+
+        LastError = error;
+    }
+
+    #endregion
+
+
+
+    /**
     void setChannel(int roomNum)
     {
         // channel을 여러개 만든다
@@ -38,24 +255,6 @@ public class AgoraManager : Singleton<AgoraManager>
         }
     }
 
-    public void loadEngine()
-    {
-        if (mRtcEngine != null)
-        {
-            mRtcEngine = null;
-            IRtcEngine.Destroy();
-        }
-
-
-        mRtcEngine = IRtcEngine.GetEngine(appID);
-        //mRtcEngine = IRtcEngine.getEngine(appID);
-        //RtcEngineConfig config = new RtcEngineConfig(appID, config: new LogConfig());
-        //mRtcEngine = IRtcEngine.GetEngine(config);
-
-        // 여러 채널 만들기 허용
-        mRtcEngine.SetMultiChannelWant(true);
-
-    }
 
     public void setBuskerAgora(int roomNum)
     {
@@ -73,7 +272,7 @@ public class AgoraManager : Singleton<AgoraManager>
 
         // SetUp Callbacks
         nowChannel.ChannelOnJoinChannelSuccess 
-            = OnBuskerJoinChannelSuccessHandler;
+            = OnJoinChannelSuccessHandler;
         // mRtcEngine.OnUserJoined = OnAudienceJoinedHandler; // 다른 유저 들어왔는지 알 필요 없음
         mRtcEngine.OnLeaveChannel = OnBuskerLeaveChannelHandler;
         // mRtcEngine.OnUserOffline = OnAudienceOfflineHandler; // 다른 유저 나가는지 알 필요 없음
@@ -85,11 +284,16 @@ public class AgoraManager : Singleton<AgoraManager>
         // By setting our UID to "0" the Agora Engine creates a unique UID and returns it in the OnJoinChannelSuccess callback. 
         nowChannel.JoinChannel(token, "", 0, new ChannelMediaOptions(true, true));
     }
+    **/
+
 
     #region Agora Callbacks
     // Busker Join Success Handler
-    private void OnBuskerJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
+    /**
+    private void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
     {
+        Debug.Log("Join Channel Success");
+
         myUID = uid;
 
         CreateUserVideoSurface(uid, true);
@@ -115,7 +319,7 @@ public class AgoraManager : Singleton<AgoraManager>
             mRtcEngine.DisableVideo();
         }
     }
-
+    **/
     #endregion
 
     // Create new image plane to display users in party.
@@ -148,7 +352,9 @@ public class AgoraManager : Singleton<AgoraManager>
 
     private void OnApplicationQuit()
     {
-        TerminateAgoraEngine();
+        //TerminateAgoraEngine();
+
+        unloadEngine();
     }
 
     private void TerminateAgoraEngine()
@@ -160,7 +366,6 @@ public class AgoraManager : Singleton<AgoraManager>
             IRtcEngine.Destroy();
         }
     }
-
 
 
 }

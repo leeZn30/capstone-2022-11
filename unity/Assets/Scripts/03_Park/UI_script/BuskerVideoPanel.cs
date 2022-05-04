@@ -138,7 +138,7 @@ public class BuskerVideoPanel : MonoBehaviour
         //cameraConnect();
         //micConnect();
 
-        AgoraManager.Instance.loadEngine();
+        AgoraManager.Instance.loadEngine("ed5d27a64ca7451189266ef6703397bf");
         StartButton.onClick.AddListener(StartBusking);
     }
 
@@ -154,7 +154,8 @@ public class BuskerVideoPanel : MonoBehaviour
         }
         **/
 
-        AgoraManager.Instance.setBuskerAgora(1); // 현재 roomNum 1로 고정
+        //AgoraManager.Instance.setBuskerAgora(1); // 현재 roomNum 1로 고정
+        AgoraManager.Instance.join(0);
 
     }
 

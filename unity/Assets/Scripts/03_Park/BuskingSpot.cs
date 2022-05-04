@@ -4,23 +4,24 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 
-public class BuskingSpot : MonoBehaviourPun, IPunObservable
+public class BuskingSpot : MonoBehaviourPun
 {
     public int roomNum;
 
     // 버스킹 장소가 사용되고 있는지
     public bool isUsed = false;
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    public void callChangeUsed()
     {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(isUsed);
-        }
+        photonView.RPC("changeUsed", RpcTarget.AllBuffered, null);
+    }
+
+    [PunRPC]
+    void changeUsed()
+    {
+        if (!isUsed)
+            isUsed = true;
         else
-        {
-            this.isUsed = (bool)stream.ReceiveNext();
-        }
+            isUsed = false;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -31,8 +32,11 @@ public class BuskingSpot : MonoBehaviourPun, IPunObservable
             if (isUsed && !player.GetComponent<PlayerControl>().isVideoPanelShown)
             {
                 collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
-                webRTCOperate.Instance.roomNum = roomNum;
-                webRTCOperate.Instance.webRTCConnect();
+                //webRTCOperate.Instance.roomNum = roomNum;
+                //webRTCOperate.Instance.webRTCConnect();
+                AgoraManager.Instance.loadEngine("ed5d27a64ca7451189266ef6703397bf");
+                AgoraManager.Instance.join(1);
+
             }
         }
     }

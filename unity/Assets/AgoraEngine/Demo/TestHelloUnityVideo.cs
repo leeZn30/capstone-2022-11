@@ -19,7 +19,7 @@ public class TestHelloUnityVideo
 
     // a token is a channel key that works with a AppID that requires it. 
     // Generate one by your token server or get a temporary token from the developer console
-    private string token = "";
+    private string token = "006ed5d27a64ca7451189266ef6703397bfIAA2wv6ofnhXKDGGLECAtqRCyBNxkd3TjzRKsFNm5cpnho5IG0UAAAAAEACf/Brp/nhzYgEAAQD/eHNi";
 
     // load agora engine
     public void loadEngine(string appId)
@@ -68,7 +68,7 @@ public class TestHelloUnityVideo
         */
 
         /*  This API Accepts AppID with token; by default omiting info and use 0 as the local user id */
-        mRtcEngine.JoinChannelByKey(channelKey: token, channelName: channel);
+        mRtcEngine.JoinChannelByKey(channelKey: token, channelName: "MetaBusking");
     }
 
     public string getSdkVersion()

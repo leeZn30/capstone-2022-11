@@ -17,4 +17,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Samples/WebRTC/2.4.0-exp.6/Example/MultiplePeerConnections/MultiplePeerConnections.unity
     guid: ad11cc7c597c0e94d8cf4db5a3ebde11
+  - enabled: 0
+    path: Assets/AgoraEngine/Demo/SceneHelloVideo.unity
+    guid: 38239e0a3e78848d8a1e3b083920e199
+  - enabled: 0
+    path: Assets/AgoraEngine/Demo/SceneHome.unity
+    guid: 11e44933caff747879b06a78a609ddfe
   m_configObjects: {}
