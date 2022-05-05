@@ -138,7 +138,7 @@ public class BuskerVideoPanel : MonoBehaviour
         //cameraConnect();
         //micConnect();
 
-        AgoraManager.Instance.loadEngine("ed5d27a64ca7451189266ef6703397bf");
+        AgoraManager.Instance.loadEngine();
         StartButton.onClick.AddListener(StartBusking);
     }
 
