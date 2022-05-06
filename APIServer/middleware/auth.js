@@ -12,6 +12,7 @@ const auth = (req, res, next) => {
     try{
         const decoded = jwt.verify(token, JWT_SECRET)
         req.user = decoded
+        console.log(req.user)
         next()
     } catch (e){
         console.log(e)
