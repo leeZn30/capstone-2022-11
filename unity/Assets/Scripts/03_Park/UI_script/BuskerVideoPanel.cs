@@ -26,6 +26,9 @@ public class BuskerVideoPanel : MonoBehaviour
     // 버스킹 시작 버튼
     [SerializeField] private Button StartButton;
 
+    // 토큰 버튼
+    [SerializeField] private Button tokenButton;
+
     // player
     GameObject player;
 
@@ -139,7 +142,13 @@ public class BuskerVideoPanel : MonoBehaviour
         //micConnect();
 
         AgoraManager.Instance.loadEngine();
+        tokenButton.onClick.AddListener(callSetToken);
         StartButton.onClick.AddListener(StartBusking);
+    }
+
+    public void callSetToken()
+    {
+        AgoraManager.Instance.setToken("publisher");
     }
 
     // 버스킹 인터렉티브

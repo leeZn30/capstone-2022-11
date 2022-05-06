@@ -16,6 +16,7 @@ public class AgoraManager : Singleton<AgoraManager>
     [SerializeField] private List<string> tokens;
     [SerializeField] private AgoraChannel nowChannel = null;
     private IRtcEngine mRtcEngine = null;
+    [SerializeField] private uint myUID;
 
     [Header("GameObjects")]
     [SerializeField] private RawImage buskerVideo;
@@ -29,6 +30,16 @@ public class AgoraManager : Singleton<AgoraManager>
 
     // TMP
     public TextMeshProUGUI text;
+    public string _token = null;
+
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            join(1);
+        }
+    }
 
     // load agora engine
     public void loadEngine()
@@ -47,24 +58,47 @@ public class AgoraManager : Singleton<AgoraManager>
             // init engine
             mRtcEngine = IRtcEngine.GetEngine(appID);
 
+            isEngineLoaded = true;
+
             // multiChannel setting
             mRtcEngine.SetMultiChannelWant(true);
             mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
             // 채널 만들기
-            nowChannel = mRtcEngine.CreateChannel(channelName); // 채널 이름과 토큰이 같아야하는 듯
+            nowChannel = mRtcEngine.CreateChannel("testing"); // 채널 이름과 토큰이 같아야하는 듯
+
+            // 임시
+            if (myUID == 123)
+            {
+                setToken("audience");
+            }
 
             // enable log
             mRtcEngine.SetLogFilter(LOG_FILTER.DEBUG | LOG_FILTER.INFO | LOG_FILTER.WARNING | LOG_FILTER.ERROR | LOG_FILTER.CRITICAL);
 
-            isEngineLoaded = true;
-
         }
+    }
+
+    public void setToken(string role)
+    {
+        StartCoroutine(HelperClass.FetchToken(url: "localhost:8080", channel: "testing", role: role, userId: myUID, callback: getToken));
+    }
+
+    private void getToken(string token)
+    {
+        _token = token;
+
+        Debug.Log("Received token: " + _token);
+    }
+
+    public void deleteToken()
+    {
+        StartCoroutine(HelperClass.deleteToken(url: "localhost:8080", channel: "testing"));
     }
 
     public void join(int mode)
     {
-        Debug.Log("calling join (channel = " + appID + ")");
-        text.text = nowChannel.ChannelId();
+        Debug.Log("calling join (AppID = " + appID + ")");
+        //text.text = nowChannel.ChannelId();
 
         if (mRtcEngine == null)
             return;
@@ -77,19 +111,20 @@ public class AgoraManager : Singleton<AgoraManager>
             nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
             nowChannel.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
             nowChannel.ChannelOnLeaveChannel = onLeaveChannel;
+            //mRtcEngine.OnJoinChannelSuccess = onJoinChannelSuccess;
             mRtcEngine.OnWarning = (int warn, string msg) =>
             {
                 Debug.LogWarningFormat("Warning code:{0} msg:{1}", warn, IRtcEngine.GetErrorDescription(warn));
             };
             mRtcEngine.OnError = HandleError;
 
-            // enable video
             mRtcEngine.EnableVideo();
-            // allow camera output callback
-            mRtcEngine.EnableVideoObserver();
+            mRtcEngine.EnableVideoObserver();;
 
-            //mRtcEngine.JoinChannelByKey(channelKey: token, channelName: "MetaBusking");
-            nowChannel.JoinChannel(token: tokens[Int32.Parse(channelName)], info: null, uid: 0, channelMediaOptions: new ChannelMediaOptions(false, false, true, true));
+            //mRtcEngine.RenewToken(_token);
+            //mRtcEngine.JoinChannelByKey(_token, "testing", null, myUID);
+            nowChannel.JoinChannel(token: _token, info: null, uid: myUID, channelMediaOptions: new ChannelMediaOptions(false, false, true, true));
+            //nowChannel.JoinChannel(token: tokens[Int32.Parse(channelName)], info: null, uid: 0, channelMediaOptions: new ChannelMediaOptions(false, false, true, true));
 
             nowChannel.Publish();
 
@@ -101,8 +136,11 @@ public class AgoraManager : Singleton<AgoraManager>
             nowChannel.MuteLocalVideoStream(true);
             nowChannel.MuteLocalAudioStream(true);
             nowChannel.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
-            nowChannel.ChannelOnLeaveChannel = onLeaveChannel;
             nowChannel.ChannelOnUserJoined = onBuskerJoined;
+
+            //mRtcEngine.OnJoinChannelSuccess = onJoinChannelSuccess;
+            //mRtcEngine.OnUserJoined = onUserJoined;
+            //nowChannel.ChannelOnLeaveChannel = oneLeaveChannel;  // audience는 나간거 신경 x
             mRtcEngine.OnWarning = (int warn, string msg) =>
             {
                 Debug.LogWarningFormat("Warning code:{0} msg:{1}", warn, IRtcEngine.GetErrorDescription(warn));
@@ -110,11 +148,11 @@ public class AgoraManager : Singleton<AgoraManager>
             mRtcEngine.OnError = HandleError;
 
             mRtcEngine.EnableVideo();
-            //mRtcEngine.DisableAudio(); // 소리 끄기
             mRtcEngine.EnableVideoObserver();
 
+            //mRtcEngine.JoinChannelByKey(_token, "testing", null, myUID); // 바로 못받아오고 있음
             //mRtcEngine.JoinChannelByKey(channelKey: token, channelName: "MetaBusking");
-            nowChannel.JoinChannel(token: tokens[Int32.Parse(channelName)], info: null, uid: 0, channelMediaOptions: new ChannelMediaOptions(true, true, false, false));
+            nowChannel.JoinChannel(token: _token, info: null, uid: myUID, channelMediaOptions: new ChannelMediaOptions(true, true, false, false));
 
         }
      }
@@ -130,6 +168,7 @@ public class AgoraManager : Singleton<AgoraManager>
     {
         nowBuskingSpot.callChangeUsed();
         deleteChannel();
+        deleteToken();
     }
     
     private void onBuskerJoined(string channelId, uint uid, int elapsed)
@@ -143,6 +182,23 @@ public class AgoraManager : Singleton<AgoraManager>
         {
             // configure videoSurface
             videoSurface.SetForMultiChannelUser(channelId, uid);
+            videoSurface.SetForUser(uid); // 이러면 이제 되는거같은데
+            videoSurface.SetEnable(true);
+            videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+        }
+    }
+
+    private void onUserJoined(uint uid, int elapsed)
+    {
+        //Debug.Log("onBuskerInfo: uid = " + uid + " elapsed = " + elapsed + " nowChannel: " + channelId);
+        // this is called in main thread
+
+        // create a GameObject and assign to this new user
+        VideoSurface videoSurface = makeImageSurface(audienceVideo);
+        if (!ReferenceEquals(videoSurface, null))
+        {
+            // configure videoSurface
+            //videoSurface.SetForMultiChannelUser(channelId, uid);
             videoSurface.SetForUser(uid); // 이러면 이제 되는거같은데
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
@@ -180,11 +236,13 @@ public class AgoraManager : Singleton<AgoraManager>
             // delete
             if (mRtcEngine != null)
             {
+                // 지금 나가는 버튼을 안만들어서 임시로
+                deleteToken();
+
                 deleteChannel();
                 nowChannel = null;
                 IRtcEngine.Destroy();  // Place this call in ApplicationQuit
                 mRtcEngine = null;
-
                 isEngineLoaded = false;
             }
         }

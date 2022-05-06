@@ -41,7 +41,7 @@ public class BuskingSpot : MonoBehaviourPun
 
                 // Agora°ü·Ã
                 AgoraManager.Instance.loadEngine();
-                AgoraManager.Instance.join(1);
+                //AgoraManager.Instance.join(1);
 
             }
         }
