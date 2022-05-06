@@ -15,7 +15,10 @@ public class SearchPageInSongPage : Page
     public Button putBtn;
     public Button cancelBtn;
 
+    public Button typeBtn;
     public Button clearBtn;
+
+    public TextMeshProUGUI searchTypeText;
     public TMP_InputField searchField;
     public GameObject scrollViewObject;
     private List<PlaySongSlot> searchedSlots;
@@ -34,31 +37,7 @@ public class SearchPageInSongPage : Page
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            var ped = new PointerEventData(null);
-            ped.position = Input.mousePosition;
-            List<RaycastResult> results = new List<RaycastResult>();
-            gr.Raycast(ped, results);
 
-            if (results.Count <= 0) return;
-            // 이벤트 처리부분
-            if (results[0].gameObject.name != "SearchedSlot(Clone)") return;
-
-            PlaySongSlot ss = results[0].gameObject.GetComponent<PlaySongSlot>();
-            ss.isSelected = !ss.isSelected;
-
-            if (ss.isSelected == true)
-            {
-                selectedSlots.Add(ss);
-            }
-            else
-            {
-                selectedSlots.Remove(ss);
-            }
-            OnOffBtnObject();
-
-        }
     }
 
 
@@ -91,7 +70,26 @@ public class SearchPageInSongPage : Page
                     clearBtn.gameObject.SetActive(true);
                 }
                     });
-            searchField.onSubmit.AddListener(delegate { Search(); });
+            typeBtn.onClick.AddListener(delegate
+            {
+               
+                if (searchTypeText.text=="제목 검색")
+                {
+                    searchTypeText.text = "가수 검색";
+                }
+                else if(searchTypeText.text == "가수 검색")
+                {
+                    searchTypeText.text = "장르 검색";
+                }
+                else if (searchTypeText.text == "장르 검색")
+                {
+                    searchTypeText.text = "제목 검색";
+                }
+            });
+            searchField.onSubmit.AddListener(delegate {
+               
+                SearchAsync(searchTypeText.text=="제목 검색"?"title":(searchTypeText.text == "가수 검색"?"artist":"category")); 
+            });
             OnGetSongList += LoadSongs;
         }
     }
@@ -110,11 +108,11 @@ public class SearchPageInSongPage : Page
     private void PutSelect()
     {
         MusicIDList iDList = new MusicIDList();
-        iDList.musicList = new List<string>();
+        iDList.musicIDList = new List<string>();
         for (int i = 0; i < selectedSlots.Count; i++)
         {
             selectedSlots[i].isSelected = false;
-            iDList.musicList.Add(selectedSlots[i].GetMusic().id);
+            iDList.musicIDList.Add(selectedSlots[i].GetMusic().id);
         }
         selectedSlots.Clear();
         OnOffBtnObject();
@@ -144,6 +142,7 @@ public class SearchPageInSongPage : Page
     {
         if (_musics != null)
         {
+            Remove();
             currentMusics = _musics;
             
 
@@ -155,20 +154,38 @@ public class SearchPageInSongPage : Page
                 _obj = Instantiate(Resources.Load("Prefabs/SongSlot/SearchedSlot") as GameObject,scrollViewObject.transform);
                 _searchedSlot = _obj.GetComponent<PlaySongSlot>();
                 _searchedSlot.SetMusic(currentMusics[i]);
+                _searchedSlot.OnClickSlot += SongClickHandler;
                 searchedSlots.Add(_searchedSlot);
                 
             }
             scrollViewRect.SetContentSize(100);
         }
     }
-    public void Search()
+    private void SongClickHandler(PlaySongSlot ss)
+    {
+        ss.isSelected = !ss.isSelected;
+
+        if (ss.isSelected == true)
+        {
+            selectedSlots.Add(ss);
+        }
+        else
+        {
+            selectedSlots.Remove(ss);
+        }
+        OnOffBtnObject();
+    }
+    async void SearchAsync(string type)
     {
 
-        Remove();
+        //Remove();
         searchedObj.SetActive(true);
-        StartCoroutine(GET_SearchMusicTitle(searchField.text));
+        MusicList m = await GET_SearchMusicTitleAsync(type, searchField.text);
+        if (m != null)
+            LoadSongs(m.musicList);
+        //StartCoroutine(GET_SearchMusicTitle(searchField.text));
     }
-  
+
     void Remove()
     {
         currentMusics.Clear();

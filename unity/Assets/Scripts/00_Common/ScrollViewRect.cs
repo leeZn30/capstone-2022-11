@@ -8,6 +8,7 @@ public class ScrollViewRect : MonoBehaviour
 {
     // 스크롤 뷰와 관련된 수정을 하기 위해 가지고 있는 변수 
     RectTransform rect;
+    public bool isGrid;
 
     void Awake () {
 
@@ -15,14 +16,22 @@ public class ScrollViewRect : MonoBehaviour
         SetContentSize();
     } 
 
-    public void SetContentSize(float height = 100) {
+    public void SetContentSize(float height = 30) {
 
         int cnt = transform.childCount;
-        for(int i=0; i<cnt; i++)
-        {
-            height += transform.GetChild(i).gameObject.GetComponent<RectTransform>().sizeDelta.y;
-        }
 
+        if (gameObject.GetComponent<GridLayoutGroup>() is GridLayoutGroup gl)
+        {
+            height += gl.cellSize.y * ((int)(cnt/4)+(cnt%4 !=0 ?1 :0));
+        }
+        else
+        {
+            for (int i = 0; i < cnt; i++)
+            {
+                height += transform.GetChild(i).gameObject.GetComponent<RectTransform>().sizeDelta.y;
+                Debug.Log(height);
+            }
+        }
 
         // scrollRect.content를 통해서 Hierachy 뷰에서 봤던 Viewport 밑의 Content 게임 오브젝트에 접근할 수 있다. 
         // 그리고 sizeDelta 값을 통해서 Content의 높이와 넓이를 수정할 수 있다. 

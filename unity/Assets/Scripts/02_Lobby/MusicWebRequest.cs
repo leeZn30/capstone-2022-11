@@ -209,7 +209,16 @@ public class MusicID
 }
 public class MusicIDList
 {
-    public List<string> musicList;
+    public List<string> musicIDList;
+}
+public class MusicList
+{
+    public List<Music> musicList;
+
+    public MusicList(List<Music> musicList)
+    {
+        this.musicList = musicList;
+    }
 }
 public class ModifiedChar
 {
@@ -219,6 +228,14 @@ public class ModifiedChar
 public class MusicTitle
 {
     public string title;
+}
+public class MusicArtist
+{
+    public string artist;
+}
+public class MusicCategory
+{
+    public string category;
 }
 public class UserID
 {
@@ -541,6 +558,7 @@ public class MusicWebRequest : MonoBehaviour
 
 
     }
+    protected UnityWebRequest getAudioWWW;
     protected async UniTask<AudioClipPlay> GetAudioClipAsync(string _filePath, bool play)
     {
         try
@@ -599,7 +617,7 @@ public class MusicWebRequest : MonoBehaviour
             return null;
         }
     }
-    protected UnityWebRequest getAudioWWW;
+    /*
     protected bool flag;
 
     protected IEnumerator GetAudioCilpUsingWebRequest(string _filePath, bool play)
@@ -649,63 +667,163 @@ public class MusicWebRequest : MonoBehaviour
             }
 
     }
-    protected IEnumerator GET_SearchMusicTitle(string _title)
+    */
+
+    protected async UniTask<MusicList> GET_SearchMusicTitleAsync(string type, string value)
     {
-        MusicTitle musicTitle = new MusicTitle();
-        musicTitle.title = _title;
-
-        string json = JsonUtility.ToJson(musicTitle);
-        Debug.Log("곡 검색 json: " + json);
-
-        using (UnityWebRequest www = UnityWebRequest.Get(url + "/music/title"))
+        try
         {
-
-            www.SetRequestHeader("Content-Type", "application/json");
-            www.SetRequestHeader("accept", "text/plain");
-            www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
-
-            yield return www.SendWebRequest();
-            
-            List<Music> musics = new List<Music>();
-            if (www.error == null)
+            string json = "";
+            if (type=="artist")
             {
-                if (www.isDone)
-                {
-                    string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
-                    Debug.Log("결과 " + jsonResult);
-                    JsonData jsonData = JsonToObject(jsonResult);
+                MusicArtist musicArtist = new MusicArtist();
+                musicArtist.artist = value;
 
+                json = JsonUtility.ToJson(musicArtist);
+            }
+            else if (type=="category")
+            {
+                MusicCategory musicCategory = new MusicCategory();
+                musicCategory.category = value;
 
-                    for (int i = 0; i < jsonData.Count; i++)
-                    {
-                        Music music = new Music();
-
-                        music.title = (string)jsonData[i]["title"];
-                        music.id = (string)jsonData[i]["id"];
-                        music.locate = (string)jsonData[i]["locate"];
-                        music.imageLocate = (string)jsonData[i]["imageLocate"];
-                        music.userID = (string)jsonData[i]["userID"];
-                        music.userNickname = (string)jsonData[i]["userNickname"];
-                        music.category = (string)jsonData[i]["category"];
-                        music.lyrics = (string)jsonData[i]["lyrics"];
-                        music.info = (string)jsonData[i]["info"];
-
-                        musics.Add(music);
-
-                    }
-                }
-                OnGetSongList(musics);
-                Debug.Log("done");
+                json = JsonUtility.ToJson(musicCategory);
 
             }
             else
+            {//title
+                MusicTitle musicTitle = new MusicTitle();
+                musicTitle.title = value;
+
+                json = JsonUtility.ToJson(musicTitle);
+            }
+
+            Debug.Log("곡 검색 json: " + json);
+
+            using (UnityWebRequest www = UnityWebRequest.Get(url + "/music/"+type))
             {
-                Debug.Log(www.error.ToString());
+
+                www.SetRequestHeader("Content-Type", "application/json");
+                www.SetRequestHeader("accept", "text/plain");
+                www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
+
+                await www.SendWebRequest();
+
+                List<Music> musics = new List<Music>();
+                if (www.error == null)
+                {
+                    if (www.isDone)
+                    {
+                        string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+                        Debug.Log("결과 " + jsonResult);
+                        JsonData jsonData = JsonToObject(jsonResult);
+
+
+                        for (int i = 0; i < jsonData.Count; i++)
+                        {
+                            Music music = new Music();
+
+                            music.title = (string)jsonData[i]["title"];
+                            music.id = (string)jsonData[i]["id"];
+                            music.locate = (string)jsonData[i]["locate"];
+                            music.imageLocate = (string)jsonData[i]["imageLocate"];
+                            music.userID = (string)jsonData[i]["userID"];
+                            music.userNickname = (string)jsonData[i]["userNickname"];
+                            music.category = (string)jsonData[i]["category"];
+                            music.lyrics = (string)jsonData[i]["lyrics"];
+                            music.info = (string)jsonData[i]["info"];
+
+                            musics.Add(music);
+
+                        }
+                    }
+
+                    Debug.Log("done");
+                    return new MusicList(musics);
+
+                }
+                else
+                {
+                    Debug.Log(www.error.ToString());
+                    return null;
+                }
             }
         }
+        catch (ArgumentNullException e)
+        {
+            Debug.Log("search 요청 취소됨");
+            return null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            return null;
+        }
+    }
+    protected async UniTask<MusicList> GET_SpecificMusicListAsync(SpecificMusic type)
+    {
+        try
+        {
+            //type은 recent, personalGenre, popular 있음
+            using (UnityWebRequest www = UnityWebRequest.Get(url + "/music/" + type.ToString()))
+            {
+                if(type==SpecificMusic.personalGenre)
+                    www.SetRequestHeader("token", UserData.Instance.Token);
+                //www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
 
+                await www.SendWebRequest();
 
+                List<Music> musics = new List<Music>();
+                if (www.error == null)
+                {
+                    if (www.isDone)
+                    {
 
+                        string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+                        Debug.Log("결과 " + jsonResult);
+
+                        JsonData jsonData2 = JsonToObject(jsonResult);
+                        JsonData jsonData = jsonData2[type.ToString()];
+
+                        for (int i = 0; i < jsonData.Count; i++)
+                        {
+                            Music music = new Music();
+
+                            music.title = (string)jsonData[i]["title"];
+                            music.id = (string)jsonData[i]["id"];
+                            music.locate = (string)jsonData[i]["locate"];
+                            music.imageLocate = (string)jsonData[i]["imageLocate"];
+                            music.userID = (string)jsonData[i]["userID"];
+                            music.userNickname = (string)jsonData[i]["userNickname"];
+                            music.category = (string)jsonData[i]["category"];
+                            music.lyrics = (string)jsonData[i]["lyrics"];
+                            music.info = (string)jsonData[i]["info"];
+                            musics.Add(music);
+
+                        }
+                    }
+                   
+                    Debug.Log("done");
+                    return new MusicList(musics);
+               
+
+                }
+                else
+                {
+                    Debug.Log(www.error.ToString());
+                    return null;
+                }
+            }           
+        }
+        catch (ArgumentNullException e)
+        {
+            Debug.Log("get "+type+" List 요청 취소됨");
+            return null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            return null;
+        }
     }
     JsonData JsonToObject(string json)
     {

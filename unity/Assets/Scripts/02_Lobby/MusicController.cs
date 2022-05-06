@@ -123,7 +123,7 @@ public class MusicController : MusicWebRequest
             
             if (audioSource.isPlaying == true && isCurrentSongFinish == false)
             {//재생상태일 때
-                if ((int)audioSource.time == (int)audioClip.length)
+                if ((int)audioSource.time == (int)audioSource.clip.length)
                 {//재생이 끝나면
                     
                     
