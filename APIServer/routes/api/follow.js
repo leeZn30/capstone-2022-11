@@ -22,21 +22,23 @@ router.get('/follower', auth, async(req, res)=>{
 })
 
 router.post('/', auth, async(req, res)=>{
-    const {userId} = req.body;
+    const {userId, userNickname} = req.body;
     const id = req.user.id;
+    const nickname = req.user.nickname;
 
-    await User.updateOne({id: id}, {$addToSet: { follow: userId}});
-    await User.updateOne({id: userId}, {$addToSet: { follower: id}});
+    await User.updateOne({id: id}, {$addToSet: { follow: [userId, userNickname]}});
+    await User.updateOne({id: userId}, {$addToSet: { follower: [id, nickname]}});
     res.status(200).json({message:"OK"})
 
 })
 
 router.post('/delete', auth, async(req, res)=>{
-    const {userId} = req.body;
+    const {userId, userNickname} = req.body;
     const id = req.user.id;
+    const nickname = req.user.nickname;
 
-    await User.updateOne({id: id}, {$pull: { follow: userId}});
-    await User.updateOne({id: userId}, {$pull: { follower: id}});
+    await User.updateOne({id: id}, {$pull: { follow: [userId, userNickname]}});
+    await User.updateOne({id: userId}, {$pull: { follower: [id, nickname]}});
     res.status(200).json({message:"OK"})
 
 })
