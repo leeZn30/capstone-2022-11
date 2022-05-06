@@ -3,13 +3,21 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const auth = require('../../middleware/auth');
 const config = require('../../config/index');
+const nodemailer = require('nodemailer');
 
-const { JWT_SECRET } = config;
+const { JWT_SECRET, EMAIL_PASS } = config;
 
 const User = require('../../models/user');
 
 const router = express.Router();
 
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth:{
+        user: 'metabusking@gmail.com',
+        pass: EMAIL_PASS
+    }
+});
 
 router.post('/', (req, res)=> {
     const {id, password} = req.body;
@@ -32,6 +40,28 @@ router.post('/', (req, res)=> {
                 })
             })
         })
+    })
+})
+
+router.post('/email', (req, res)=>{
+    const email = req.body.email
+    const key = req.body.key
+
+    let mailOptions = {
+        from: 'metabusking@gmail.com',
+        to: email,
+        subject: "메타버스킹 인증번호",
+        text: "요청하신 인증번호는 " + key + "입니다."
+    }
+
+    transporter.sendMail(mailOptions, function (error, info){
+        if (error) {
+            console.log(error);
+            res.status(500).json({message:error});
+        }
+        else{
+            res.status(200).json({message:"OK!"});
+        }
     })
 })
 
