@@ -40,6 +40,10 @@ const MusicSchema = new mongoose.Schema({
     created: {
         type:Date,
         default:Date.now
+    },
+    playedNum:{
+        type: Number,
+        default: 0
     }
 });
 
