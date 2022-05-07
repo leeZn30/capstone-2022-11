@@ -11,10 +11,12 @@ public class Lobby : MonoBehaviour
 
     public Button openSongPageBtn;
     public Button loadSquareSceneBtn;
+    public Button followPageBtn;
     public Button characterSetBtn;
 
     public CharacterSetPage characterSetPage;
     public SongPage songPage;
+    public FollowPage followPage;
     public LobbySetting lobbySetting;
 
     public Character character;
@@ -27,9 +29,11 @@ public class Lobby : MonoBehaviour
         settingBtn.onClick.AddListener(delegate { lobbySetting.Open(); });
         openSongPageBtn.onClick.AddListener(delegate { songPage.Open(); });
         characterSetBtn.onClick.AddListener(delegate { characterSetPage.Open(); });
+        followPageBtn.onClick.AddListener(delegate { followPage.Open(); });
         
         characterSetPage.Close();
         songPage.Close();
+        followPage.Close();
 
         characterSetPage.OnChangeCharacter += ChangeCharacter;
 

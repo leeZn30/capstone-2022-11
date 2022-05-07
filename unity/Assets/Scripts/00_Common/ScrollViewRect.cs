@@ -22,14 +22,14 @@ public class ScrollViewRect : MonoBehaviour
 
         if (gameObject.GetComponent<GridLayoutGroup>() is GridLayoutGroup gl)
         {
-            height += gl.cellSize.y * ((int)(cnt/4)+(cnt%4 !=0 ?1 :0));
+            height += gl.cellSize.y * ((int)(cnt/4)+(cnt%4 !=0 ?1 :0)) + gl.spacing.y*((int)(cnt / 4) + (cnt % 4 != 0 ? 1 : 0));
         }
         else
         {
             for (int i = 0; i < cnt; i++)
             {
                 height += transform.GetChild(i).gameObject.GetComponent<RectTransform>().sizeDelta.y;
-                Debug.Log(height);
+               
             }
         }
 

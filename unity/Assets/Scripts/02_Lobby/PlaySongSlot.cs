@@ -12,6 +12,9 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
 
     private Image playImage;
     private Button playBtn;
+
+    public bool isSearchSlot;
+
     private bool isPlaying;
     private bool isSet;
     private IEnumerator enumerator;
@@ -20,9 +23,12 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
     new public delegate void ClickHandler(PlaySongSlot ss);
     new public event ClickHandler OnClickSlot;
 
+
     new public void OnPointerDown(PointerEventData eventData)
     {
-        OnClickSlot(this);
+        MusicController.Instance.subMusicController.SetAudioPath(this, false);
+        if(isSearchSlot)
+            OnClickSlot(this);
     }
     private void Awake()
     {
@@ -41,7 +47,7 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
             
         }
 
-        MusicController.Instance.SubMusicController.OnChanged += Off;
+        MusicController.Instance.subMusicController.OnChanged += Off;
 
 
     }
@@ -50,8 +56,8 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
     {
 
         if (isSet == false) return;
-        float tmp=Mathf.Max(Mathf.Min(MusicController.Instance.SubMusicController.GetLength()* value, MusicController.Instance.SubMusicController.GetLength()), 0);
-        MusicController.Instance.SubMusicController.SetTime(tmp);
+        float tmp=Mathf.Max(Mathf.Min(MusicController.Instance.subMusicController.GetLength()* value, MusicController.Instance.subMusicController.GetLength()), 0);
+        MusicController.Instance.subMusicController.SetTime(tmp);
 
         if (isPlaying == true)
             StartCoroutine(enumerator);
@@ -69,15 +75,15 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
     {
         while (isSet)
         {
-            slider.value = Mathf.Max(MusicController.Instance.SubMusicController.GetTime() / MusicController.Instance.SubMusicController.GetLength(),0);
+            slider.value = Mathf.Max(MusicController.Instance.subMusicController.GetTime() / MusicController.Instance.subMusicController.GetLength(),0);
             yield return new WaitForSeconds(0.1f);
         }
     }
 
-    private void Off(string path)
+    private void Off(PlaySongSlot ss)
     {
 
-        if (path == music.locate) {
+        if (ss == this) {
             isSet = true;
             isPlaying = true;
             ChangeBtnImage();
@@ -113,51 +119,53 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
                 slider.gameObject.SetActive(true);
             }
 
+
             isSet = true;
             isPlaying = true;
-            MusicController.Instance.SubMusicController.Pause();
-            MusicController.Instance.SubMusicController.SetTime(0);
+            MusicController.Instance.subMusicController.Pause();
+            MusicController.Instance.subMusicController.SetTime(0);
 
-            MusicController.Instance.SubMusicController.SetAudioPath(music.locate);
-            
-            
+            MusicController.Instance.subMusicController.SetAudioPath(this);
+
+           
         }
         else
         {
             if (isPlaying == false)
             {
                 isPlaying = true;
-                MusicController.Instance.SubMusicController.Play();
+                MusicController.Instance.subMusicController.Play();
+
             }
             else
             {
                 isPlaying = false;
-                MusicController.Instance.SubMusicController.Pause();
+                MusicController.Instance.subMusicController.Pause();
             }
             ChangeBtnImage();
         }
         
     }
-    private void ChangeBtnImage()
+    public void ChangeBtnImage()
     {
         if (playImage == null) return;
-        if (isPlaying)
-        {
-            playImage.sprite = Resources.Load<Sprite>("Image/UI/pause");
-            if(slider!=null)
+        if (isPlaying )
+        {       
+            if (slider!=null)
                 StartCoroutine(enumerator);
-
+            playImage.sprite = Resources.Load<Sprite>("Image/UI/pause");
         }
         else
         {
-            playImage.sprite = Resources.Load<Sprite>("Image/UI/play");
+            
             if (slider != null)
                 StopCoroutine(enumerator);
+            playImage.sprite = Resources.Load<Sprite>("Image/UI/play");
         }
     }
     private void OnDestroy()
     {
-        MusicController.Instance.SubMusicController.OnChanged -= Off;
+        MusicController.Instance.subMusicController.OnChanged -= Off;
         if (slider != null)
         {
             slider.OnPointUp -= OnValueChange;

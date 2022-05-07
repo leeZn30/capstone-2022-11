@@ -33,7 +33,7 @@ public class MusicController : MusicWebRequest
     }
 
     private AudioSource audioSource;
-    public SubMusicController SubMusicController;
+    public SubMusicController subMusicController;
 
 
 
@@ -138,7 +138,8 @@ public class MusicController : MusicWebRequest
             }
 
             if (audioSource.isPlaying == true && playState == PlayState.Pause)
-            {
+            {//재생시키기
+                subMusicController.Pause();
                 //Debug.Log("Play");
                 playState = PlayState.Play;
 
@@ -151,7 +152,7 @@ public class MusicController : MusicWebRequest
 
             }
             else if(audioSource.isPlaying ==false && playState == PlayState.Play)
-            {
+            {//중지시키기
                 //Debug.Log("Pause");
                 playState = PlayState.Pause;
                 StopCoroutine(enumerator);
@@ -276,7 +277,7 @@ public class MusicController : MusicWebRequest
 
             //리스너
             OnGetClip += SetAudioClip;
-            OnGetSongList += SetSongList;
+            
 
             StartGetListCoroution("myList", 0, false);
             
@@ -358,17 +359,22 @@ public class MusicController : MusicWebRequest
         if(a!=null)
             SetAudioClip(a.audioClip, a.play);
     }
-    public void StartGetListCoroution(string name, int idx, bool play)
+    public async void StartGetListCoroution(string name, int idx, bool play)
     {     
 
         if (name != currentListName)
         {
             tmpSongIndex = idx;
             currentListName = name;
-            StartCoroutine(GET_MusicList(currentListName, UserData.Instance.id, play));
+            MusicList ml= await GET_MusicListAsync(currentListName, play);
+            if (ml != null)
+            {
+                SetSongList(ml.musicList, ml.play);
+            }
         }
         else
         {
+
             StartGetAudioCoroution(idx, play);
         }
     }

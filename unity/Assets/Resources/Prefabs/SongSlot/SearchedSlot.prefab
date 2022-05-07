@@ -244,6 +244,7 @@ MonoBehaviour:
   imageBackObject: {fileID: 814738624400905581}
   playBtnObject: {fileID: 4122117841968011896}
   slider: {fileID: 7641490153647877471}
+  isSearchSlot: 1
 --- !u!1 &15992833693497480
 GameObject:
   m_ObjectHideFlags: 0
