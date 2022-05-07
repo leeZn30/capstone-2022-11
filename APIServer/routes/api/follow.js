@@ -35,6 +35,7 @@ router.post('/', auth, async(req, res)=>{
     for (let i = 0; i < userList.length; i++){
         if (userList[i][0] === userId) {
             duplicate = true;
+            break;
         }
     }
 
