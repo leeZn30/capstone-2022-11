@@ -10,15 +10,34 @@ public class User
     public string email;
     public string nickname;
     public int character;
+    public int followNum;
+    public int followerNum;
     public List<string> preferredGenres;
+    public List<string> followIds;
 
-    public void SetUser(string id,string email,string nickname,int character, List<string> preferredGenres=null)
+    public void SetUser(string id,string email,string nickname,int character, List<string> preferredGenres=null, List<string> followIds = null)
     {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.character = character;
         this.preferredGenres = preferredGenres;
+        this.followIds = followIds;
+
+
+        if (preferredGenres == null)
+            this.preferredGenres = new List<string>();
+        if (followIds == null)
+            this.followIds = new List<string>();
+        
+    }
+    public void AddFollow(string id)
+    {
+        followIds.Add(id);
+    }
+    public void DelFollow(string id)
+    {
+        followIds.Remove(id);
     }
     public void Clear()
     {
@@ -26,7 +45,8 @@ public class User
         this.email = "";
         this.nickname = "";
         this.character = 0;
-        this.preferredGenres = null;
+        this.preferredGenres.Clear();
+        this.followIds.Clear();
     }
     public string GetName()
     {

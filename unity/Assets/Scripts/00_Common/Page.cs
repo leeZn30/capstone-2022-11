@@ -26,7 +26,7 @@ public class Page : MusicWebRequest
         gameObject.SetActive(true);
 
         Load();
-        MusicController.Instance.SubMusicController.Reset();
+        MusicController.Instance.subMusicController.Reset();
     }
 
     virtual public void Init()
@@ -38,11 +38,14 @@ public class Page : MusicWebRequest
 
     }
     public void Close()
-    { 
+    {
+        Init();
+
         //√ ±‚»≠
         Reset();
+
         //¥›±‚
-        MusicController.Instance.SubMusicController.Reset();
+        MusicController.Instance.subMusicController.Reset();
         gameObject.SetActive(false);
     }
     virtual public void Reset()
