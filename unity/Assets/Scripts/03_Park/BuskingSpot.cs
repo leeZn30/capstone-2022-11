@@ -36,12 +36,10 @@ public class BuskingSpot : MonoBehaviourPun
             if (isUsed && !player.GetComponent<PlayerControl>().isVideoPanelShown)
             {
                 collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
-                //webRTCOperate.Instance.roomNum = roomNum;
-                //webRTCOperate.Instance.webRTCConnect();
 
                 // Agora°ü·Ã
                 AgoraManager.Instance.loadEngine();
-                //AgoraManager.Instance.join(1);
+                AgoraManager.Instance.callJoin(1);
 
             }
         }

@@ -27,8 +27,8 @@ public class BuskerVideoPanel : MonoBehaviour
     // 토큰 버튼
     [SerializeField] private Button tokenButton;
 
-    // player
-    GameObject player;
+    // 버스킹 나가기 버튼
+    [SerializeField] private Button ExitButton;
 
     // 카메라, 마이크
     [SerializeField] private RawImage cameraImage;
@@ -37,7 +37,7 @@ public class BuskerVideoPanel : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        player = GameManager.instance.myPlayer;
+        ExitButton.onClick.AddListener(() => { gameObject.SetActive(false); });
     }
 
     // Update is called once per frame
@@ -133,34 +133,14 @@ public class BuskerVideoPanel : MonoBehaviour
 
     public void setDevice()
     {
-        //cameraConnect();
-        //micConnect();
-
         AgoraManager.Instance.loadEngine();
-        tokenButton.onClick.AddListener(callSetToken);
         StartButton.onClick.AddListener(StartBusking);
-    }
-
-    public void callSetToken()
-    {
-        AgoraManager.Instance.setToken("publisher");
     }
 
     // 버스킹 인터렉티브
     public void StartBusking()
     {
-        /**
-        if (isMicOn && isCameraOn)
-        {
-            player.GetComponent<PlayerControl>().OffInteractiveButton();
-            webRTCOperate.Instance.webRTCConnect();
-            webRTCOperate.Instance.setWebCamTexture(textureWebCam);
-        }
-        **/
-
-        //AgoraManager.Instance.setBuskerAgora(1); // 현재 roomNum 1로 고정
-        AgoraManager.Instance.join(0);
-
+        AgoraManager.Instance.callJoin(0);
     }
 
 
