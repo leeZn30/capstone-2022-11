@@ -35,6 +35,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
+    void setPlayer()
+    {
+        transform.GetChild(0).GetComponent<Character>().ChangeSprite(UserData.Instance.user.character);
+        transform.GetChild(2).GetComponent<TextMeshPro>().text = UserData.Instance.user.nickname;
+    }
+
+    [PunRPC]
     void setPlayer(Player player)
     {
         Hashtable playerData = player.CustomProperties;
@@ -50,7 +57,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (photonView.IsMine)
-            photonView.RPC("setPlayer", RpcTarget.OthersBuffered, PhotonNetwork.LocalPlayer);
+            photonView.RPC("setPlayer", RpcTarget.Others, PhotonNetwork.LocalPlayer);
     }
 
 

@@ -24,7 +24,6 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler
 
         imageBackObject.SetActive(false);
         slider.gameObject.SetActive(false);
-
         MusicController.Instance.SubMusicController.OnChanged += Off;
         enumerator = MoveSlider();
         slider.OnPointUp += OnValueChange;

@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.WebRTC;
-using KyleDulce.SocketIo;
 using System;
 using System.Threading;
 
@@ -26,15 +24,15 @@ public class BuskerVideoPanel : MonoBehaviour
     // 버스킹 시작 버튼
     [SerializeField] private Button StartButton;
 
+    // 토큰 버튼
+    [SerializeField] private Button tokenButton;
+
     // player
     GameObject player;
 
     // 카메라, 마이크
     [SerializeField] private RawImage cameraImage;
     [SerializeField] private AudioSource MicSource;
-
-    // 보낼 stream
-    private VideoStreamTrack videoStream;
 
     // Start is called before the first frame update
     void Start()
@@ -135,21 +133,33 @@ public class BuskerVideoPanel : MonoBehaviour
 
     public void setDevice()
     {
-        cameraConnect();
-        micConnect();
+        //cameraConnect();
+        //micConnect();
 
+        AgoraManager.Instance.loadEngine();
+        tokenButton.onClick.AddListener(callSetToken);
         StartButton.onClick.AddListener(StartBusking);
+    }
+
+    public void callSetToken()
+    {
+        AgoraManager.Instance.setToken("publisher");
     }
 
     // 버스킹 인터렉티브
     public void StartBusking()
     {
+        /**
         if (isMicOn && isCameraOn)
         {
             player.GetComponent<PlayerControl>().OffInteractiveButton();
             webRTCOperate.Instance.webRTCConnect();
             webRTCOperate.Instance.setWebCamTexture(textureWebCam);
         }
+        **/
+
+        //AgoraManager.Instance.setBuskerAgora(1); // 현재 roomNum 1로 고정
+        AgoraManager.Instance.join(0);
 
     }
 
