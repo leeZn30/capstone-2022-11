@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.IO;
 using UnityEngine.UI;
 using Unity.WebRTC;
 using KyleDulce.SocketIo;
@@ -15,7 +16,7 @@ public class webRTCOperate : Singleton<webRTCOperate>
 
     // Socket 관련
     Socket socket = null;
-    string mainServer = "http://localhost:8080";
+    string mainServer = "http://172.20.10.4:8080";
 
     // Webrtc 관련
     private RTCPeerConnection sendPC;
@@ -51,14 +52,9 @@ public class webRTCOperate : Singleton<webRTCOperate>
             socket.open();
             isSocketOn = true;
 
-            /**
             if (nowBuskingSpot != null) // 나중에 연결 끊나거나 하면 roomNum이랑 nowvBuskingSpot 초기화시키기
-                nowBuskingSpot.isUsed = true; // 일단 에디터에서는ㄴ 잘 바뀜 근데 이거 에디터에서 안하면 바로 안바뀔 수 있다는 점 상기
-            **/
-
-            if (nowBuskingSpot != null)
             {
-                nowBuskingSpot.callChangeUsed();
+                nowBuskingSpot.callChangeUsed(); // 일단 에디터에서는ㄴ 잘 바뀜 근데 이거 에디터에서 안하면 바로 안바뀔 수 있다는 점 상기
             }
         }
         catch
@@ -82,12 +78,13 @@ public class webRTCOperate : Singleton<webRTCOperate>
             Dictionary<string, dynamic> userOption = new Dictionary<string, dynamic>();
             userOption.Add("roomNum", roomNum);
             userOption.Add("userId", socket.id);
-
+            Debug.Log("User : " + socket.id);
             socket.emit("joinRoom", userOption);
             socket.on("createRoom", onCreateRoom);
-            //socket.on("joinRoom", onjoinRoom);
-
-            //socket.on("senderOffer", onSenderOffer);
+            socket.on("joinRoom", onjoinRoom);
+            socket.on("senderOffer", onSenderOffer);
+            socket.on("getReceiverAnswer", onGetReceiverAnswer);
+            socket.on("getCandidate", getCandidate);
 
 
             //isJoin = true;
@@ -99,29 +96,30 @@ public class webRTCOperate : Singleton<webRTCOperate>
         try
         {
             Debug.Log("[CLIENT]get Offer");
-            var offer = userOption["offer"];
+            string resultOffer = "" + userOption["offer"];
+            RTCSessionDescription sdOffer = new RTCSessionDescription();
+            sdOffer.type = RTCSdpType.Offer;
+            sdOffer.sdp = resultOffer;
+            receivePC.SetRemoteDescription(ref sdOffer);
+            
+            Debug.Log("[CLIENT]Offer Is Done");
+            StartCoroutine(CreateAnswer(userOption));
+            // var op = receivePC.CreateAnswer();
 
-            Debug.Log("getOpper: " + offer);
+            // // offer.Desc의 type이 offer이고, offer.Desc.sdp가 있다.
+            // var tmp = op.Desc;
+            // receivePC.SetLocalDescription(ref tmp);
 
-            receivePC.SetRemoteDescription(offer);
+            // Dictionary<string, dynamic> answer = new Dictionary<string, dynamic>();
+            // answer.Add("sdp", tmp.sdp);
+            // Debug.Log(userOption["userId"] + " 1");
+            // userOption["answer"] = answer;
+            // socket.emit("getReceiverAnswer", userOption);
 
-
-            /**
-            receivePC
-            .createAnswer({
-            offerToReceiveAudio: true,
-                offerToReceiveVideo: true,
-            })
-            .then((answer) => {
-                 console.log("[CLIENT]sender Answer");
-                 receivePC.setLocalDescription(new RTCSessionDescription(answer));
-                 socket.emit("getReceiverAnswer", answer, userOption);
-             })
-            **/
         }
         catch (Exception e)
         {
-            Debug.Log(e);
+            Debug.Log("[CLIENT ERROR -!! (onSenderOffer)] " + e);
         }
     }
 
@@ -138,28 +136,44 @@ public class webRTCOperate : Singleton<webRTCOperate>
     void onjoinRoom(Dictionary<string, dynamic> userOption)
     {
         Debug.Log("Join : " + userOption["userId"] + " RoomID : " + userOption["roomNum"]);
-
         userOption["option"] = 2;
 
         var config = GetSelectedSdpSemantics();
         receivePC = new RTCPeerConnection(ref config);
 
         receivePC.OnIceCandidate = Event => {
-            if (Event.Candidate != null)
+            if (!string.IsNullOrEmpty(Event.Candidate)) // Candidate 형식이 다름 > 다 Json으로 만들어줘야함
             {
-                Debug.Log("[CLIENT]receive Candi");
-                userOption["candidate"] = Event.Candidate;
+                Debug.Log("[CLIENT]send Candi");
+                // Json으로 변경
+                try {
+                    // string candidate = JsonUtility.ToJson(Event.Candidate);
+                    string candidate = Event.Candidate;
+                    Dictionary<string, dynamic> candidateDic = new Dictionary<string, dynamic>();
+                    candidateDic.Add("candidate", candidate);
+                    candidateDic.Add("sdpMid", 0);
+                    candidateDic.Add("sdpMLineIndex", 0);
+                    userOption["candidate"] = candidateDic;
 
-                socket.emit("getReceiverCandidate", userOption);
+                    // 순서가 > createoffer > oniceCandidate인거 같음
+                    socket.emit("getReceiverCandidate", userOption);
+                }
+                catch (Exception e) {
+                    Debug.Log(e);
+                }
             }
         };
 
-        receivePC.OnTrack = (RTCTrackEvent e) =>
-        {
-            Debug.Log("OnTrack is execute");
+        receivePC.OnTrack = (RTCTrackEvent e) => {
+            if (e.Track.Kind == TrackKind.Video)
+            {
+                otherRawImageSmall
+            }
         };
-
-        userOption["receivePC"] = receivePC;
+        // {
+        //     Debug.Log("OnTrack is execute");
+        // };
+        // userOption["receivePC"] = receivePC;
         socket.emit("joinRoomFromClient", userOption);
 
         /**
@@ -211,13 +225,22 @@ public class webRTCOperate : Singleton<webRTCOperate>
             if (!string.IsNullOrEmpty(Event.Candidate)) // Candidate 형식이 다름 > 다 Json으로 만들어줘야함
             {
                 Debug.Log("[CLIENT]send Candi");
-                
                 // Json으로 변경
-                JsonData candidate = JsonMapper.ToJson((RTCIceCandidate)Event);
-                userOption["candidate"] = candidate;
+                try {
+                    // string candidate = JsonUtility.ToJson(Event.Candidate);
+                    string candidate = Event.Candidate;
+                    Dictionary<string, dynamic> candidateDic = new Dictionary<string, dynamic>();
+                    candidateDic.Add("candidate", candidate);
+                    candidateDic.Add("sdpMid", 0);
+                    candidateDic.Add("sdpMLineIndex", 0);
+                    userOption["candidate"] = candidateDic;
 
-                // 순서가 > createoffer > oniceCandidate인거 같음
-                socket.emit("getSenderCandidate", userOption);
+                    // 순서가 > createoffer > oniceCandidate인거 같음
+                    socket.emit("getSenderCandidate", userOption);
+                }
+                catch (Exception e) {
+                    Debug.Log(e);
+                }
             }
         };
 
@@ -256,7 +279,6 @@ public class webRTCOperate : Singleton<webRTCOperate>
             Dictionary<string, dynamic> offer = new Dictionary<string, dynamic>();
             offer.Add("sdp", op.Desc.sdp);
             userOption["offer"] = offer;
-
             socket.emit("senderOffer", userOption);
 
         }
@@ -267,39 +289,89 @@ public class webRTCOperate : Singleton<webRTCOperate>
 
     }
 
+    private IEnumerator CreateAnswer(Dictionary<string, dynamic> userOption)
+    {
+        var op = receivePC.CreateAnswer();
+        yield return op;
+
+        if (op.IsError)
+        {
+            OnCreateSessionDescriptionError(op.Error);
+            yield break;
+        }
+
+        try
+        {
+            // offer.Desc의 type이 offer이고, offer.Desc.sdp가 있다.
+            var tmp = op.Desc;
+            receivePC.SetLocalDescription(ref tmp);
+            Dictionary<string, dynamic> answer = new Dictionary<string, dynamic>();
+            answer.Add("sdp", op.Desc.sdp);
+            userOption["answer"] = answer;
+            socket.emit("getReceiverAnswer", userOption);
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log("No Sending Answer: " + e);
+        }
+
+    }
+
     private static void OnCreateSessionDescriptionError(RTCError error)
     {
         Debug.LogError($"Failed to create session description: {error.message}");
     }
 
-    void getReceiverAnswer(Dictionary<string, dynamic> answer)
+    void onGetReceiverAnswer(Dictionary<string, dynamic> answer)
     {
         Debug.Log("[CLIENT]get Answer");
 
         //await sendPC.setRemoteDescription(answer);
-        Debug.Log(answer["answer"]);
-        sendPC.SetRemoteDescription(answer["answer"]);
+        RTCSessionDescription sdAnswer = new RTCSessionDescription();
+        sdAnswer.type =  RTCSdpType.Answer;
+        try {
+            string resultAnswer = "" + answer["answer"];
+            sdAnswer.sdp = resultAnswer;
+            sendPC.SetRemoteDescription(ref sdAnswer);
+            Debug.Log("[CLIENT]Answer Is Done");
+        }
+        catch (Exception e) {
+            Debug.Log("Error Set Des : " + e);
+        }
     }
 
     void getCandidate(Dictionary<string, dynamic> data)
     {
-        Debug.Log("[CLIENT]get Candi " + data);
+        try {
+            Debug.Log("[CLIENT]get Candi");
+            string candi = "" + data["candidate"];
+            string sdpMid = "" + data["sdpMid"];
+            string sdpMLineIndexStr = ""+ data["sdpMLineIndex"];
+            int? sdpMLineIndex = int.Parse(sdpMLineIndexStr);
+            RTCIceCandidateInit candiInfo = new RTCIceCandidateInit();
+            candiInfo.candidate = candi;
+            candiInfo.sdpMid = sdpMid;
+            candiInfo.sdpMLineIndex = sdpMLineIndex;
 
-        var candidate = data["candidate"];
-        var option = data["option"];
+            RTCIceCandidate candidate = new RTCIceCandidate(candiInfo);
 
-        var iceCandidate = new RTCIceCandidate(candidate);
-
-        if (option == 1)
-        {
-            // 일단 필요없을듯
-            //buskerRawImage.texture = videoStream.Texture;
+            int option = int.Parse(""+ data["option"]);
+            if (option == 1)
+            {
+                // 일단 필요없을듯
+                //buskerRawImage.texture = videoStream.Texture;
+                sendPC.AddIceCandidate(candidate);
+            }
+            else
+            {
+                // receivePC.AddIceCandidate(candidateObj);
+            }
+                Debug.Log("End Candi !!!");
         }
-        else
-        {
-            receivePC.AddIceCandidate(iceCandidate);
+        catch (Exception e) {
+            Debug.Log("[CLIENT ERROR-!!(getCandidate) : " + e);
         }
-
     }
 
 
