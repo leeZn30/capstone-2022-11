@@ -80,20 +80,25 @@ router.get('/myList', auth, async(req,res) => {
     })
 })
 
-router.get('/info', auth, async(req, res)=>{
+router.get('/info', async(req, res)=>{
     const {userId} = req.body;
 
     const filter = [
         {$match : {id : userId}},
         {$project: {
-                "id": 1,
-                "nickname": 1
+                id: 1,
+                nickname: 1,
+                character: 1,
+                followNum: {$cond: { if: {$isArray: "$follow"}, then: {$size: "$follow"}, else: 0}},
+                followerNum: {$cond: { if: {$isArray: "$follower"}, then: {$size: "$follower"}, else: 0}},
+                preferredGenres: 1,
+                follow: 1
             }
         }];
 
     User.aggregate(filter).then((user)=>{
         console.log(user)
-        res.status(200).json({id: user[0].id, nickname: user[0].nickname})
+        res.status(200).json({user: user[0]})
     })
 })
 
