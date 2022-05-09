@@ -41,6 +41,11 @@ public class AgoraManager : Singleton<AgoraManager>
         }
     }
 
+    public void setMyUID() // userId이용해서 하기
+    {
+
+    }
+
     // load agora engine
     public void loadEngine()
     {
@@ -64,7 +69,7 @@ public class AgoraManager : Singleton<AgoraManager>
             mRtcEngine.SetMultiChannelWant(true);
             mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
             // 채널 만들기
-            nowChannel = mRtcEngine.CreateChannel("testing"); // 채널 이름과 토큰이 같아야하는 듯
+            nowChannel = mRtcEngine.CreateChannel(channelName); // 채널 이름과 토큰이 같아야하는 듯
 
             // 임시
             if (myUID == 123)
@@ -80,7 +85,7 @@ public class AgoraManager : Singleton<AgoraManager>
 
     public void setToken(string role)
     {
-        StartCoroutine(HelperClass.FetchToken(url: "localhost:8080", channel: "testing", role: role, userId: myUID, callback: getToken));
+        StartCoroutine(HelperClass.FetchToken(url: "localhost:8080", channel: channelName, role: role, userId: myUID, callback: getToken));
     }
 
     private void getToken(string token)
@@ -92,7 +97,7 @@ public class AgoraManager : Singleton<AgoraManager>
 
     public void deleteToken()
     {
-        StartCoroutine(HelperClass.deleteToken(url: "localhost:8080", channel: "testing"));
+        StartCoroutine(HelperClass.deleteToken(url: "localhost:8080", channel: channelName));
     }
 
     public void join(int mode)

@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Unity.WebRTC;
-using KyleDulce.SocketIo;
 using System;
 using System.Threading;
 
@@ -35,9 +33,6 @@ public class BuskerVideoPanel : MonoBehaviour
     // 카메라, 마이크
     [SerializeField] private RawImage cameraImage;
     [SerializeField] private AudioSource MicSource;
-
-    // 보낼 stream
-    private VideoStreamTrack videoStream;
 
     // Start is called before the first frame update
     void Start()
