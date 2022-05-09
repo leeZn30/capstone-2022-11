@@ -121,7 +121,7 @@ public class AgoraManager : Singleton<AgoraManager>
             nowChannel.JoinChannel(token: _token, info: null, uid: myUID, channelMediaOptions: new ChannelMediaOptions(false, false, true, true));
             nowChannel.Publish();
 
-            setBuskerVideoSurface();
+            setBuskerVideoSurface(buskerVideo);
         }
         else // Audience
         {
@@ -167,29 +167,17 @@ public class AgoraManager : Singleton<AgoraManager>
         Debug.Log("onBuskerInfo: uid = " + uid + " elapsed = " + elapsed + " nowChannel: " + channelId);
         // this is called in main thread
 
+        setAudicenVideoSurface(audienceVideo, channelId, uid, elapsed);
+    }
+
+    public void setAudicenVideoSurface(RawImage rawImage, string channelId, uint uid, int elapsed)
+    {
         // create a GameObject and assign to this new user
-        VideoSurface videoSurface = makeImageSurface(audienceVideo);
+        VideoSurface videoSurface = makeImageSurface(rawImage);
         if (!ReferenceEquals(videoSurface, null))
         {
             // configure videoSurface
             videoSurface.SetForMultiChannelUser(channelId, uid);
-            videoSurface.SetForUser(uid); // 이러면 이제 되는거같은데
-            videoSurface.SetEnable(true);
-            videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-        }
-    }
-
-    private void onUserJoined(uint uid, int elapsed)
-    {
-        //Debug.Log("onBuskerInfo: uid = " + uid + " elapsed = " + elapsed + " nowChannel: " + channelId);
-        // this is called in main thread
-
-        // create a GameObject and assign to this new user
-        VideoSurface videoSurface = makeImageSurface(audienceVideo);
-        if (!ReferenceEquals(videoSurface, null))
-        {
-            // configure videoSurface
-            //videoSurface.SetForMultiChannelUser(channelId, uid);
             videoSurface.SetForUser(uid); // 이러면 이제 되는거같은데
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
@@ -239,9 +227,9 @@ public class AgoraManager : Singleton<AgoraManager>
         }
     }
 
-    public void setBuskerVideoSurface()
+    public void setBuskerVideoSurface(RawImage rawImage)
     {
-        VideoSurface videoSurface = makeImageSurface(buskerVideo);
+        VideoSurface videoSurface = makeImageSurface(rawImage);
     }
 
 
