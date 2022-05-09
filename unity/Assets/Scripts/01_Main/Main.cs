@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -34,6 +33,7 @@ public class Main : MonoBehaviour
     private Animator animator;
     private TextMeshProUGUI wrongText;
 
+    IEnumerator timewaitter;
     // Start is called before the first frame update
     void Awake()
     {
@@ -43,17 +43,36 @@ public class Main : MonoBehaviour
         wrong_obj.SetActive(false);
         wrongText = wrong_obj.GetComponentInChildren<TextMeshProUGUI>();
         join.OnClickJoinButton_ += PostJoin;
+        timewaitter = waitTime(5);
+        
     }
     void PostJoin(User user)
     {
+        if (timewaitter != null)
+        {
+            StopCoroutine(timewaitter);
+            StartCoroutine(timewaitter);
+        }
         StartCoroutine(Join_UnityWebRequestPOST(user));
+    }
+    void PostEmailCode(string email, string code)
+    {
+        StartCoroutine(POST_EmailCode(email,code));
     }
     void OnClickLoginButton()
     {//로그인 버튼이 눌렸을 때 
-
-        StartCoroutine(Login_UnityWebRequestPOST());
+        if (timewaitter != null)
+        {
+            StopCoroutine(timewaitter);
+            StartCoroutine(timewaitter);
+        }
+        StartCoroutine(Login_UnityWebRequestPOST());     
         
-        
+    }
+    IEnumerator waitTime(float value)
+    {
+        yield return new WaitForSeconds(value);
+        StopAllCoroutines();
     }
     IEnumerator Login_UnityWebRequestPOST()
     {
@@ -77,7 +96,10 @@ public class Main : MonoBehaviour
             yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
 
 
-
+            if (timewaitter != null)
+            {
+                StopCoroutine(timewaitter);
+            }
             animator.SetBool("isLoading", false);
 
             if (request.error == null)//로그인 성공
@@ -119,8 +141,8 @@ public class Main : MonoBehaviour
                 Debug.Log(request.error);
             }
         }
-
-
+       
+        
     }
     IEnumerator Join_UnityWebRequestPOST(User user)
     {
@@ -136,7 +158,10 @@ public class Main : MonoBehaviour
             request.SetRequestHeader("Content-Type", "application/json");
 
             yield return request.SendWebRequest();//응답 기다리기
-
+            if (timewaitter != null)
+            {
+                StopCoroutine(timewaitter);
+            }
 
             if (request.error == null)//가입 성공
             {
@@ -155,9 +180,46 @@ public class Main : MonoBehaviour
 
 
     }
+    
+    IEnumerator POST_EmailCode(string email, string key)
+    {
+        EmailKey emailKey = new EmailKey();
+        emailKey.email = email;
+        emailKey.key = key;
+        string json = JsonUtility.ToJson(emailKey);
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/auth/email", json))
+        {// 보낼 주소와 데이터 입력
+            byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();//응답 기다리기
+
+            if (request.error == null)//가입 성공
+            {
+
+                //join 성공
+
+            }
+            else//로그인 실패
+            {
+
+                Debug.Log(request.error.ToString());
+
+            }
+        }
+
+
+    }
     JsonData JsonToObject(string json)
     {
         return JsonMapper.ToObject(json);
     }
 
+}
+public class EmailKey
+{
+    public string email;
+    public string key;
 }
