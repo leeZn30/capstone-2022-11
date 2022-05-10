@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/01_Main.unity
     guid: 16862651d9b09fd4da564c7c33d65926
   - enabled: 1
@@ -15,12 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/03_Park.unity
     guid: a2d298ed4b056204fa2634812ccb73a7
   - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
-  - enabled: 0
-    path: Assets/AgoraEngine/Demo/SceneHome.unity
-    guid: 11e44933caff747879b06a78a609ddfe
-  - enabled: 0
-    path: Assets/AgoraEngine/Demo/SceneHelloVideo.unity
-    guid: 38239e0a3e78848d8a1e3b083920e199
+    path: Assets/Samples/WebRTC/2.4.0-exp.6/Example/MultiplePeerConnections/MultiplePeerConnections.unity
+    guid: ad11cc7c597c0e94d8cf4db5a3ebde11
   m_configObjects: {}
