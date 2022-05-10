@@ -34,12 +34,23 @@ public class UserSlot : MonoBehaviour, IPointerDownHandler
             button.gameObject.SetActive(false);
         else if(type== FollowPage.FollowSystemType.searched) {
             //검색된 슬롯일 때,
-            UserData.Instance.OnDeleteFollow += (str) =>
-            {//검색된 슬롯의 유저id가 팔로우취소된 아이디 일때 팔로우 false처리
-                if (str == user.id) Follow = false;
-            };
+
+            //검색된 슬롯의 유저id가 팔로우취소된 아이디 일때 팔로우 false처리
+            UserData.Instance.OnDeleteFollow += SetUserFollowFalse;
+
+            //검색된 슬롯의 유저id가 팔로우된 아이디 일때 팔로우 true처리
+            UserData.Instance.OnAddFollow += SetUserFollowTrue;
+
         }
 
+    }
+    void SetUserFollowTrue(string str)
+    {
+        if (str == user.id) Follow = true;
+    }
+    void SetUserFollowFalse(string str)
+    {
+        if (str == user.id) Follow = false;
     }
     public void SetUser(User user)
     {
@@ -97,6 +108,13 @@ public class UserSlot : MonoBehaviour, IPointerDownHandler
     {
         if (OnClickSlot != null)
             OnClickSlot(this);
+    }
+    private void OnDestroy()
+    {
+ 
+        UserData.Instance.OnDeleteFollow -= SetUserFollowFalse;
+
+        UserData.Instance.OnAddFollow -= SetUserFollowTrue;
     }
 
 

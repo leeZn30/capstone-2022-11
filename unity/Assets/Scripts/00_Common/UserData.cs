@@ -56,8 +56,9 @@ public class UserData : Singleton<UserData>
     public delegate void FollowHandler();
     public event FollowHandler OnChangeFollow;
 
-    public delegate void FollowDeleteHandler(string id);
-    public event FollowDeleteHandler OnDeleteFollow;
+    public delegate void FollowStateHandler(string id);
+    public event FollowStateHandler OnDeleteFollow;
+    public event FollowStateHandler OnAddFollow;
     public string id
     {
         get { return user.id; }    // _data ¹ÝÈ¯
@@ -78,6 +79,7 @@ public class UserData : Singleton<UserData>
         user.follow.Add(id);
         user.followNum++;
         OnChangeFollow?.Invoke();
+        OnAddFollow?.Invoke(id);
     }
     public void DelFollow(string id)
     {

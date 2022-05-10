@@ -12015,7 +12015,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 688c7c47cf939c048ada149a7cd0367d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 188b8e1eaa670154c90a1a2a530c1cb2, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -29074,7 +29074,7 @@ MonoBehaviour:
   searchField: {fileID: 1472461068}
   character: {fileID: 1278092239}
   myInfoBtn: {fileID: 199168060}
-  InfoFollowBtn: {fileID: 408659198}
+  infoFollowBtn: {fileID: 408659198}
   followBtns:
   - {fileID: 1742507643}
   - {fileID: 2035867579}

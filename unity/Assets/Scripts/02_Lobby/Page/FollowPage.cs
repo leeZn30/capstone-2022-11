@@ -14,7 +14,7 @@ public class FollowPage : Page
     public Character character;
 
     public Button myInfoBtn;
-    public Button InfoFollowBtn;
+    public Button infoFollowBtn;
 
     public Button[] followBtns;
 
@@ -27,7 +27,8 @@ public class FollowPage : Page
 
     private List<UserSlot> followUserSlots;
     private List<UserSlot> searchedUserSlots;
-    private string currentUserId;
+    private string[] currentUserId;
+    private TextMeshProUGUI infoFollowText;//팔로우 취소, 팔로우 하기 text
 
     private FollowSystemType FL;//follow를 보여줄건지, follower보여줄건지
     public enum FollowSystemType
@@ -44,11 +45,14 @@ public class FollowPage : Page
         {
 
             isAlreadyInit = true;
+            currentUserId = new string[2];
 
             uploadedSlots = new List<PlaySongSlot>(uploadedSongScrollViewObject.GetComponentsInChildren<PlaySongSlot>());
             followUserSlots = new List<UserSlot>(followUserScrollViewObject.GetComponentsInChildren<UserSlot>());
             searchedUserSlots = new List<UserSlot>(searchedUserScrollViewObject.GetComponentsInChildren<UserSlot>());
-            
+
+            infoFollowText = infoFollowBtn.transform.GetComponentInChildren<TextMeshProUGUI>();
+
             searchField.onSubmit.AddListener(delegate {
                 
                 GetUserListAsync(FollowSystemType.searched);
@@ -72,27 +76,68 @@ public class FollowPage : Page
                 GetUserListAsync(FollowSystemType.follow);
             });
 
+            infoFollowBtn.onClick.AddListener(delegate{
+                if (infoFollowText.text == "팔로우")
+                {//팔로우
+                    FollowUser(currentUserId[0], currentUserId[1]);
+                }
+                else
+                {//팔로우 취소
+                    FollowCancelUser(currentUserId[0], currentUserId[1]);
+                }
+            });
+            //팔로우가 취소되었을때
+            UserData.Instance.OnDeleteFollow += SetInfoFollowTextOnDelete;
+
+            //팔로우가 추가되었을 때
+            UserData.Instance.OnAddFollow += SetInfoFollowTextOnAdd;
+
+
 
         }
     }
+    void SetInfoFollowTextOnDelete(string str)
+    {
+        if (str == currentUserId[0])
+            infoFollowText.text = "팔로우";
 
+    }
+    void SetInfoFollowTextOnAdd(string str)
+    {
+        if (str == currentUserId[0])
+            infoFollowText.text = "팔로우 취소";
+    }
     //유저 프로필을 로드하는 함수
-    async void LoadUserProfile(User user=null)
+    async void LoadUserProfile(User user=null, bool isFollow=false)
     {
         if (user != null)
         {
-            if (currentUserId == user.id)
+            if (currentUserId[0] == user.id)
                 return;
             //현재 보여지는 유저의 id를 새로 설정
-            currentUserId = user.id;
+            currentUserId[0] = user.id;
+            currentUserId[1] = user.nickname;//팔로우 삭제용
+
+            if (isFollow == true)
+            {//내가 이미 팔로우한 유저라면
+                infoFollowText.text = "팔로우 취소";
+                infoFollowBtn.gameObject.SetActive(true);
+                
+            }
+            else
+            {//내가 팔로우하지않은 유저라면
+                infoFollowText.text = "팔로우";
+                infoFollowBtn.gameObject.SetActive(true);
+            }
         }
         else if (user == null)
         {   //null일때 본인의 프로필을 표시.
             //현재 유저 아이디를 본인의 아이디로 바꿈.
-            currentUserId = UserData.Instance.user.id;
+            currentUserId[0] = UserData.Instance.user.id;
+            currentUserId[1] = UserData.Instance.user.nickname;
             user = UserData.Instance.user;
             //팔로우 버튼을 비활성화
-            InfoFollowBtn.gameObject.SetActive(false);
+            infoFollowBtn.gameObject.SetActive(false);
         }
 
         if (user.preferredGenres.Count == 0)
@@ -234,11 +279,24 @@ public class FollowPage : Page
         UserData.Instance.AddFollow(us.user.id);
 
     }
+    void FollowUser(string id, string nickname)
+    {
+        //유저슬롯 팔로우 버튼 클릭시
+        CallFollowApi(id, nickname);
+        UserData.Instance.AddFollow(id);
+
+    }
     void FollowCancelUser(UserSlot us)
     {
         //유저슬롯 팔로우 취소 버튼 클릭시
-        CallFollowApi(us.user.id,  us.user.nickname,true);
+        CallFollowApi(us.user.id, us.user.nickname, true);
         UserData.Instance.DelFollow(us.user.id);
+    }
+    void FollowCancelUser(string id, string nickname)
+    {
+        //유저슬롯 팔로우 취소 버튼 클릭시
+        CallFollowApi(id, nickname, true);
+        UserData.Instance.DelFollow(id);
     }
     async void CallFollowApi(string userID, string userName, bool isDelete = false)
     {
@@ -249,14 +307,14 @@ public class FollowPage : Page
             GetUserListAsync(FollowSystemType.follow);
         }
 
-        if(currentUserId==UserData.Instance.user.id)
+        if(currentUserId[0]==UserData.Instance.user.id)
             followText.text = UserData.Instance.user.follow.Count + "\n팔로우";
 
     }
     void UserSlotClickHandler(UserSlot us)
     {
         //유저 슬롯 클릭시
-        LoadUserProfile(us.user);
+        LoadUserProfile(us.user,us.Follow);
     }
     void RemoveSlots(FollowSystemType type)
     {
@@ -296,9 +354,16 @@ public class FollowPage : Page
     }
     override public void Reset()
     {
-        currentUserId = "";
+        currentUserId[0] = "";
+        currentUserId[1] = "";
         RemoveSlots(FollowSystemType.searched);
         RemoveSlots(FollowSystemType.follow);
         RemoveSlots(FollowSystemType.uploadList);
+    }
+    private void OnDestroy()
+    {
+
+        UserData.Instance.OnDeleteFollow -= SetInfoFollowTextOnDelete;
+        UserData.Instance.OnAddFollow -= SetInfoFollowTextOnAdd;
     }
 }
