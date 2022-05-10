@@ -26,9 +26,13 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
 
     new public void OnPointerDown(PointerEventData eventData)
     {
-        MusicController.Instance.subMusicController.SetAudioPath(this, false);
-        if(isSearchSlot)
+        
+        if (isSearchSlot)
             OnClickSlot(this);
+        else
+            MusicController.Instance.subMusicController.SetAudioPath(this, false);
+
+
     }
     private void Awake()
     {

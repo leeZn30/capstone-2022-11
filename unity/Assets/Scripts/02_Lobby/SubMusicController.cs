@@ -75,8 +75,11 @@ public class SubMusicController : MusicWebRequest
         {
             GetAudioAsync(music.locate);
         }
-        if (slot.isSearchSlot) return;
-
+        if (slot.isSearchSlot)
+        {
+            subController.SetActive(false);
+            return;
+        }
         subController.SetActive(true);
         titleText.text = music.title+ " - " + music.GetArtistName();
 
