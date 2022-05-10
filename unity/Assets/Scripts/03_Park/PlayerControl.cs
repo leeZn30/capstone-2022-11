@@ -32,11 +32,17 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     // BusketPanel
     [SerializeField] private GameObject buskerPanel;
 
+    // 줌 인/줌 아웃
+    private float wheelSpeed = 10;
+    [SerializeField] private float cameraDistance = 10;
+
     // Start is called before the first frame update
     void Start()
     {
         if (this.photonView.IsMine)
         {
+            Camera.main.orthographicSize = cameraDistance;
+
             InteractiveButton = FindObjectOfType<Canvas>().transform.Find("InteractiveButton").gameObject;
             videoPanel = FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject;
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
@@ -78,11 +84,21 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                 gameObject.transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
             }
 
+            cameraDistance = Input.GetAxis("Mouse ScrollWheel") * wheelSpeed * Time.deltaTime;
+            Camera.main.orthographicSize = cameraDistance;
+
         }
     }
 
     public void OnInteractiveButton(int type)
     {
+        /**
+         * 0) 버스킹
+         * 1) 버스킹 그만두기
+         * 2) 버스커 팔로우
+         * 3) 순간이동기
+         * **/
+
         if (!isInteractiveAble)
         {
             InteractiveButton.GetComponent<Image>().sprite = buttonImages[type];
@@ -174,11 +190,4 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     }
     //----------------------------------------------------------------
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == "InteractiveObject")
-        {
-
-        }
-    }
 }

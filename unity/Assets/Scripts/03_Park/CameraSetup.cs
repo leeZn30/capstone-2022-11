@@ -16,12 +16,5 @@ public class CameraSetup : MonoBehaviourPun
             followcam.LookAt = this.gameObject.transform;
 
         }
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
