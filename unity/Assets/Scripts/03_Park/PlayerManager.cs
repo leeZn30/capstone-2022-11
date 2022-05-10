@@ -28,10 +28,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks
         }
     }
 
-    // Update is called once per frame
-    void Update()
+
+    [PunRPC]
+    void setPlayer()
     {
-        
+        transform.GetChild(0).GetComponent<Character>().ChangeSprite(UserData.Instance.user.character);
+        transform.GetChild(2).GetComponent<TextMeshPro>().text = UserData.Instance.user.nickname;
     }
 
     [PunRPC]
@@ -50,7 +52,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         if (photonView.IsMine)
-            photonView.RPC("setPlayer", RpcTarget.OthersBuffered, PhotonNetwork.LocalPlayer);
+            photonView.RPC("setPlayer", RpcTarget.Others, PhotonNetwork.LocalPlayer);
     }
 
 

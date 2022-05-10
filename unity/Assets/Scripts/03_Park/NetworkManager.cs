@@ -9,80 +9,89 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
 {
-    private string gameVersion = "1"; // °ÔÀÓ ¹öÀü
+    private string gameVersion = "1"; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    public TextMeshProUGUI connectionInfoText; // ³×Æ®¿öÅ© Á¤º¸¸¦ Ç¥½ÃÇÒ ÅØ½ºÆ®
-    public Button joinButton; // ·ë Á¢¼Ó ¹öÆ°
+    public TextMeshProUGUI connectionInfoText; // ï¿½ï¿½Æ®ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®
+    public Button joinButton; // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°
+
+    public string roomName = "MetaBuskingPark";
 
     // Start is called before the first frame update
     void Start()
     {
-        //Á¢¼Ó¿¡ ÇÊ¿äÇÑ Á¤º¸ (°ÔÀÓ ¹öÀü) ¼³Á¤
+        //ï¿½ï¿½ï¿½Ó¿ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½
         PhotonNetwork.GameVersion = this.gameVersion;
-        //¼³Á¤ÇÑ Á¤º¸·Î ¸¶½ºÅÍ ¼­¹ö Á¢¼Ó ½Ãµµ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½
         PhotonNetwork.ConnectUsingSettings();
 
-
         this.joinButton.interactable = false;
-        this.connectionInfoText.text = "¸¶½ºÅÍ ¼­¹ö¿¡ Á¢¼ÓÁß...";
+        this.connectionInfoText.text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...";
 
     }
 
-    // ¸¶½ºÅÍ ¼­¹ö Á¢¼Ó ¼º°ø½Ã ÀÚµ¿ ½ÇÇà
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
     public override void OnConnectedToMaster()
     {
         this.joinButton.interactable = true;
-        this.connectionInfoText.text = "¿Â¶óÀÎ : ¸¶½ºÅÍ ¼­¹ö¿Í ¿¬°á µÊ";
+        this.connectionInfoText.text = "ï¿½Â¶ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½";
+
     }
 
-    // ¸¶½ºÅÍ ¼­¹ö Á¢¼Ó ½ÇÆÐ½Ã ÀÚµ¿ ½ÇÇà
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ð½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
     public override void OnDisconnected(DisconnectCause cause)
     {
         this.joinButton.interactable = false;
-        this.connectionInfoText.text = "¿ÀÇÁ¶óÀÎ : ¸¶½ºÅÍ ¼­¹ö¿Í ¿¬°áµÇÁö ¾ÊÀ½\n Á¢¼Ó Àç½ÃµµÁß... ";
-        //¼³Á¤ÇÑ Á¤º¸·Î ¸¶½ºÅÍ ¼­¹ö Á¢¼Ó ½Ãµµ
+        this.connectionInfoText.text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½\n ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ãµï¿½ï¿½ï¿½... ";
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    // ·ë Á¢¼Ó ½Ãµµ
+    // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½
     public void Connect()
     {
-        // Áßº¹ Á¢¼Ó ¸·±â
+        // ï¿½ßºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         this.joinButton.interactable = false;
 
-        // ¸¶½ºÅÍ ¼­¹ö¿¡ Á¢¼Ó ÁßÀÌ¶ó¸é
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½
         if (PhotonNetwork.IsConnected)
         {
+            //ï¿½ë¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+            this.connectionInfoText.text = "ï¿½ë¿¡ ï¿½ï¿½ï¿½ï¿½....";
+            //PhotonNetwork.JoinRandomRoom();
 
-            //·ë¿¡ Á¢¼ÓÇÑ´Ù.
-            this.connectionInfoText.text = "·ë¿¡ Á¢¼Ó....";
-            PhotonNetwork.JoinRandomRoom();
+            // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
+            PhotonNetwork.CreateRoom(roomName, new RoomOptions { MaxPlayers = 100 });
+
         }
         else
         {
-            this.connectionInfoText.text = "¿ÀÇÁ¶óÀÎ : ¸¶½ºÅÍ ¼­¹ö¿Í ¿¬°á ²÷±è \n ´Ù½Ã Á¢¼Ó ½ÃµµÇÕ´Ï´Ù.";
-            //¼³Á¤ÇÑ Á¤º¸·Î ¸¶½ºÅÍ ¼­¹ö Á¢¼Ó ½Ãµµ
+            this.connectionInfoText.text = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ \n ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½ï¿½Õ´Ï´ï¿½.";
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½
             PhotonNetwork.ConnectUsingSettings();
         }
     }
 
-    // (ºó ¹æÀÌ ¾ø¾î)·£´ý ·ë Âü°¡¿¡ ½ÇÆÐÇÑ °æ¿ì ÀÚµ¿ ½ÇÇà
-    public override void OnJoinRandomFailed(short returnCode, string message)
+    public override void OnCreateRoomFailed(short returnCode, string message)
     {
-        this.connectionInfoText.text = "ºó ¹æ ¾øÀ½, »õ·Î¿î¹æ »ý¼º...";
-        //ÃÖ´ë ÀÎ¿øÀ» 4¸íÀ¸·Î ¼³Á¤ + ¹æÀ» ¸¸µê
-        //¹æÀÌ¸§ , 4¸í ¼³Á¤
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 100 });
+        if (returnCode == 32766)
+            PhotonNetwork.JoinRoom(roomName);
 
+        else
+            Debug.Log("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
     }
 
-    // ·ë¿¡ Âü°¡ ¿Ï·áµÈ °æ¿ì ÀÚµ¿ ½ÇÇà
+    public override void OnCreatedRoom()
+    {
+        Debug.Log("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
+    }
+
+    // ï¿½ë¿¡ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
     public override void OnJoinedRoom()
     {
 
-        this.connectionInfoText.text = "¹æ Âü°¡ ¼º°ø!";
+        this.connectionInfoText.text = "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½!";
 
-        //¸ðµç ·ë Âü°¡ÀÚ°¡ Main ¾ÀÀ» ·ÎµåÇÏ°Ô ÇÔ
+        //ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ Main ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½Ï°ï¿½ ï¿½ï¿½
         PhotonNetwork.LoadLevel("03_Park");
 
         PhotonNetwork.LocalPlayer.NickName = UserData.Instance.user.nickname;
@@ -90,10 +99,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         playerData.Add("character", UserData.Instance.user.character);
 
-        // Á÷Á¢ Àü´Þ·Î ÇØ¾ßÇÔ, setcustompropertiesÇÏ¸é ³²ÀÇ °ÍÀÌ µé¾î¿È
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Þ·ï¿½ ï¿½Ø¾ï¿½ï¿½ï¿½, setcustompropertiesï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         PhotonNetwork.LocalPlayer.CustomProperties = playerData;
 
-        // ¾êµµ ÇØÁà¾ß ¿ÜÇü µ¿±âÈ­µÊ
+        // ï¿½êµµ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½
         playerData["character"] = UserData.Instance.user.character;
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerData);
 
