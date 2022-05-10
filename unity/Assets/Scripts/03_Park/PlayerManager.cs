@@ -28,11 +28,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     [PunRPC]
     void setPlayer()

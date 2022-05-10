@@ -12,7 +12,8 @@ public class BuskingSpot : MonoBehaviourPun
 
     // Title 관련
     [SerializeField] private TextMeshProUGUI titleBar;
-    public string title;
+    public string titleText;
+    public string buskerNickname;
 
     private void Start()
     {
@@ -23,9 +24,9 @@ public class BuskingSpot : MonoBehaviourPun
     {
         photonView.RPC("changeUsed", RpcTarget.AllBuffered, null);
     }
-    public void callsetTitle(string _title)
+    public void callsetTitle(string name, string t)
     {
-        photonView.RPC("setTitle", RpcTarget.AllBuffered, _title);
+        photonView.RPC("setTitle", RpcTarget.AllBuffered, name, t);
     }
 
     [PunRPC]
@@ -38,15 +39,16 @@ public class BuskingSpot : MonoBehaviourPun
     }
 
     [PunRPC]
-    void setTitle(string _title)
+    void setTitle(string name, string t)
     {
         if (isUsed)
         {
-            title = _title;
+            buskerNickname = name;
+            titleText = t;
         }
         else
         {
-            title = null;
+            titleText = null;
         }
     }
 
@@ -61,7 +63,7 @@ public class BuskingSpot : MonoBehaviourPun
 
             if (isUsed && !player.GetComponent<PlayerControl>().isVideoPanelShown)
             {
-                titleBar.text = title;
+                titleBar.text = buskerNickname + ": " + titleText;
                 titleBar.gameObject.SetActive(true);
 
                 collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
@@ -69,6 +71,10 @@ public class BuskingSpot : MonoBehaviourPun
                 // Agora관련
                 AgoraManager.Instance.loadEngine();
                 AgoraManager.Instance.callJoin(1);
+
+
+                player.GetComponent<PlayerControl>().OnInteractiveButton(2);
+                //player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(); // 팔로우
 
             }
         }
@@ -80,8 +86,8 @@ public class BuskingSpot : MonoBehaviourPun
         GameObject player = GameManager.instance.myPlayer;
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
-            titleBar.text = null;
-            titleBar.gameObject.SetActive(false);
+
+            offTitleBar();
 
             // AgoraManager의 버스킹 존 관련 정보 지우기
             AgoraManager.Instance.nowBuskingSpot = null;
@@ -92,7 +98,14 @@ public class BuskingSpot : MonoBehaviourPun
 
             if (player.GetComponent<PlayerControl>().isVideoPanelShown)
                 collision.transform.GetComponent<PlayerControl>().OffVideoPanel();
+
         }
+    }
+
+    public void offTitleBar()
+    {
+        titleBar.text = null;
+        titleBar.gameObject.SetActive(false);
     }
 
 

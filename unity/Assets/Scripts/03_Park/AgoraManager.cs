@@ -17,16 +17,23 @@ public class AgoraManager : Singleton<AgoraManager>
     public string _token = null;
     private IRtcEngine mRtcEngine = null;
     [SerializeField] private uint myUID;
+    [SerializeField] private string role;
 
     [Header("GameObjects")]
     [SerializeField] private RawImage buskerVideo;
+    [SerializeField] private RawImage buskersmallVideo;
     [SerializeField] private RawImage audienceVideo;
+    [SerializeField]
+    private RawImage bigAudienceImage;
 
     // instance of agora engine
     private Text MessageText;
 
     // BuskingZone 정보
     public BuskingSpot nowBuskingSpot;
+
+    // TMP
+    public InputField InputField;
 
     private void Start()
     {
@@ -71,7 +78,7 @@ public class AgoraManager : Singleton<AgoraManager>
 
     public async void setToken(string role)
     {
-        StartCoroutine(HelperClass.FetchToken(url: "localhost:8080", channel: channelName, role: role, userId: myUID, callback: getToken));
+        StartCoroutine(HelperClass.FetchToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID, callback: getToken));
     }
 
     private void getToken(string token)
@@ -83,7 +90,7 @@ public class AgoraManager : Singleton<AgoraManager>
 
     public void deleteToken()
     {
-        StartCoroutine(HelperClass.deleteToken(url: "localhost:8080", channel: channelName));
+        StartCoroutine(HelperClass.deleteToken(url: "localhost:8082", channel: channelName));
     }
 
     public void callJoin(int mode)
@@ -103,10 +110,12 @@ public class AgoraManager : Singleton<AgoraManager>
             if (nowBuskingSpot != null)
                 nowBuskingSpot.callChangeUsed();
 
+            role = "publisher";
             setToken("publisher");
             yield return new WaitForSeconds(0.05f);
 
             nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+            //nowChannel.ChannelOnReJoinChannelSuccess = onRejoinChannelSuccess;
             nowChannel.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
             nowChannel.ChannelOnLeaveChannel = onLeaveChannel;
             mRtcEngine.OnWarning = (int warn, string msg) =>
@@ -125,14 +134,16 @@ public class AgoraManager : Singleton<AgoraManager>
         }
         else // Audience
         {
+            role = "audience";
             setToken("audience");
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.05f);
 
             nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
             nowChannel.MuteLocalVideoStream(true);
             nowChannel.MuteLocalAudioStream(true);
             nowChannel.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
             nowChannel.ChannelOnUserJoined = onBuskerJoined;
+            nowChannel.ChannelOnUserOffLine = onBuskerOffline;
 
             mRtcEngine.OnWarning = (int warn, string msg) =>
             {
@@ -148,18 +159,27 @@ public class AgoraManager : Singleton<AgoraManager>
         }
      }
 
+    private void onReJoinChannelSuccess(string channelName, uint uid, int elapsed)
+    {
+
+    }
+
     // implement engine callbacks
     private void onJoinChannelSuccess(string channelName, uint uid, int elapsed)
     {
         Debug.Log("JoinChannelSuccessHandler: uid = " + uid);
     }
 
-
     private void onLeaveChannel(string channelId, RtcStats rtcStats)
     {
-        nowBuskingSpot.callChangeUsed();
+        Debug.Log("Busker(Me) is leave");
+
         deleteChannel();
-        deleteToken();
+
+        Destroy(buskersmallVideo.GetComponent<VideoSurface>());
+        buskersmallVideo.gameObject.SetActive(false);
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
     }
     
     private void onBuskerJoined(string channelId, uint uid, int elapsed)
@@ -168,6 +188,15 @@ public class AgoraManager : Singleton<AgoraManager>
         // this is called in main thread
 
         setAudicenVideoSurface(audienceVideo, channelId, uid, elapsed);
+    }
+
+    private void onBuskerOffline(string channelId, uint uid, USER_OFFLINE_REASON reason)
+    {
+        Debug.Log("onLeaveBuskerInfo: uid = " + uid + " elapsed = " + reason + " nowChannel: " + channelId);
+
+        Destroy(audienceVideo.GetComponent<VideoSurface>());
+        audienceVideo.gameObject.SetActive(false);
+        nowBuskingSpot.offTitleBar();
     }
 
     public void setAudicenVideoSurface(RawImage rawImage, string channelId, uint uid, int elapsed)
@@ -182,6 +211,7 @@ public class AgoraManager : Singleton<AgoraManager>
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
         }
+
     }
 
     public VideoSurface makeImageSurface(RawImage rawimage)
@@ -209,16 +239,28 @@ public class AgoraManager : Singleton<AgoraManager>
         {
             Debug.Log("calling unloadEngine");
 
+            if (role == "publisher")
+            {
+                Destroy(buskersmallVideo.GetComponent<VideoSurface>());
+                GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
+                nowBuskingSpot.offTitleBar();
+                nowBuskingSpot.callChangeUsed();
+                deleteChannel();
+            }
+            else
+            {
+                Destroy(audienceVideo.GetComponent<VideoSurface>());
+                GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
+                nowBuskingSpot.offTitleBar();
+            }
+
             nowBuskingSpot = null;
             channelName = null;
+            role = null;
 
             // delete
             if (mRtcEngine != null)
             {
-                // 지금 나가는 버튼을 안만들어서 임시로
-                deleteToken();
-
-                deleteChannel();
                 nowChannel = null;
                 IRtcEngine.Destroy();  // Place this call in ApplicationQuit
                 mRtcEngine = null;
@@ -268,7 +310,6 @@ public class AgoraManager : Singleton<AgoraManager>
     }
 
     #endregion
-
 
 
     private void OnApplicationQuit()

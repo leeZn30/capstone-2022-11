@@ -4,7 +4,7 @@ require('dotenv').config();
 
 // const APP_ID = process.env.APP_ID;
 // const APP_CERTIFICATE = process.env.APP_CERTIFICATE; // secondary
-const PORT = 8080;
+const PORT = 8082;
 
 const app = express();
 

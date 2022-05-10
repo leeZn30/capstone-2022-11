@@ -9,9 +9,7 @@ public class InteractiveObject : MonoBehaviour
     /**
      * 상호작용 종류
      * 0) 버스킹
-     * 1) 금주의 베스트 송
-     * 2) 금주의 베스트 아티스트
-     * 3) 순간이동기
+     * 1) 순간이동기
      * */
     [SerializeField] protected int InteractiveType;
 
