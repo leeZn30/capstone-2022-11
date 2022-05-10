@@ -6,7 +6,6 @@ using TMPro;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
 using System.Threading;
-using Cysharp.Threading.Tasks;
 using Unity.Jobs;
 using Unity.Collections;
 
@@ -173,17 +172,22 @@ public class MusicController : MusicWebRequest
     {
         if (type == "lyrics")
         {
+            contentText.text = currentSongSlotList[currentSongIndex].GetMusic().lyrics;
+            contentText.transform.parent.GetComponent<ScrollViewRect>().SetContentSize();
+    
             animator.SetBool("isContentOpen", true);
             animator.SetTrigger("OpenContent");
-            contentText.text = currentSongSlotList[currentSongIndex].GetMusic().lyrics;
+            
         }
         else if(type == "info")
         {
+            contentText.text = currentSongSlotList[currentSongIndex].GetMusic().info;
+            contentText.transform.parent.GetComponent<ScrollViewRect>().SetContentSize();
             animator.SetBool("isContentOpen", true);
             animator.SetTrigger("OpenContent");
-            contentText.text = currentSongSlotList[currentSongIndex].GetMusic().info;
+            
         }
-        contentText.transform.parent.GetComponent<ScrollViewRect>().SetContentSize();
+   
     }
     public void SetSongList(List<Music> _musics = null,bool play=false)
     {

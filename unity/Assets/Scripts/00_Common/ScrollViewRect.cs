@@ -26,9 +26,11 @@ public class ScrollViewRect : MonoBehaviour
         }
         else
         {
+            Canvas.ForceUpdateCanvases(); 
             for (int i = 0; i < cnt; i++)
             {
                 height += transform.GetChild(i).gameObject.GetComponent<RectTransform>().sizeDelta.y;
+                Debug.Log(height);
                
             }
         }
