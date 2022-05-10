@@ -183,6 +183,7 @@ public class MusicController : MusicWebRequest
             animator.SetTrigger("OpenContent");
             contentText.text = currentSongSlotList[currentSongIndex].GetMusic().info;
         }
+        contentText.transform.parent.GetComponent<ScrollViewRect>().SetContentSize();
     }
     public void SetSongList(List<Music> _musics = null,bool play=false)
     {
