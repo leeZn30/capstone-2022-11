@@ -17,24 +17,28 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public string roomName = "MetaBuskingPark";
 
+
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("Network object Start!");
+
         //���ӿ� �ʿ��� ���� (���� ����) ����
         PhotonNetwork.GameVersion = this.gameVersion;
-        //������ ������ ������ ���� ���� �õ�
-        PhotonNetwork.ConnectUsingSettings();
-        SceneManager.sceneLoaded += OnSceneLoaded;
 
-        this.joinButton.interactable = false;
-        this.connectionInfoText.text = "마스터 서버에 접속하는 중...";
-    }
-
-    // 체인을 걸어서 이 함수는 매 씬마다 호출된다.
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        Debug.Log("OnSceneLoaded: " + scene.name);
+        //설정한 정보로 마스터 서버 접속 시도
         PhotonNetwork.ConnectUsingSettings();
+
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            this.joinButton.interactable = false;
+            this.connectionInfoText.text = "마스터 서버에 접속하는 중...";
+        }
+        else
+        {
+            this.joinButton.interactable = true;
+            this.connectionInfoText.text = "온라인 : 마스터 서버와 연결 됨";
+        }
     }
 
 
@@ -42,7 +46,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         this.joinButton.interactable = true;
-        this.connectionInfoText.text = "�¶��� : ������ ������ ���� ��";
+        this.connectionInfoText.text = "온라인 : 마스터 서버와 연결 됨";
 
     }
 
@@ -51,7 +55,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         this.joinButton.interactable = false;
         this.connectionInfoText.text = "�������� : ������ ������ ������� ����\n ���� ��õ���... ";
-        //������ ������ ������ ���� ���� �õ�
+        //설정한 정보로 마스터 서버 접속 시도
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -65,7 +69,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsConnected)
         {
             //�뿡 �����Ѵ�.
-            this.connectionInfoText.text = "마스터 서버 접속 완료";
+            this.connectionInfoText.text = "룸에 접속 중..";
             //PhotonNetwork.JoinRandomRoom();
 
             // �� �����
