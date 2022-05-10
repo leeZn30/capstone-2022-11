@@ -2,9 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Net;
-using System.IO;
-using agora_utilities;
+using Cysharp.Threading.Tasks;
 
 [Serializable]
 public class TokenObject
@@ -53,5 +51,23 @@ public static class HelperClass
             Debug.LogWarning("deleteToken: url = " + url + " error:" + request.error);
             yield break;
         }
+    }
+
+    public static async UniTask<string> testToken(string url, string channel, string role, uint userId)
+    {
+        UnityWebRequest request = UnityWebRequest.Get(string.Format(
+         "{0}/rtc/{1}/{2}/uid/{3}/", url, channel, role, userId
+       ));
+        await request.SendWebRequest();
+
+        if (request.isNetworkError || request.isHttpError)
+        {
+            Debug.LogWarning("FetchToken: url = " + url + " error:" + request.error);
+            return null;
+        }
+
+        TokenObject tokenInfo = JsonUtility.FromJson<TokenObject>(request.downloadHandler.text);
+
+        return tokenInfo.token;
     }
 }

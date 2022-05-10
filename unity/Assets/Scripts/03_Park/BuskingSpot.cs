@@ -94,7 +94,7 @@ public class BuskingSpot : MonoBehaviourPun
             AgoraManager.Instance.channelName = null;
 
             // AgoraEngine unloaded
-            AgoraManager.Instance.unloadEngine();
+            AgoraManager.Instance.leaveChannel();
 
             if (player.GetComponent<PlayerControl>().isVideoPanelShown)
                 collision.transform.GetComponent<PlayerControl>().OffVideoPanel();

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 using agora_gaming_rtc;
+using Cysharp.Threading.Tasks;
 
 public class AgoraManager : Singleton<AgoraManager>
 {
@@ -41,10 +42,6 @@ public class AgoraManager : Singleton<AgoraManager>
     }
 
 
-    private void Update()
-    {
-    }
-
     // load agora engine
     public void loadEngine()
     {
@@ -57,12 +54,16 @@ public class AgoraManager : Singleton<AgoraManager>
             {
                 Debug.Log("Engine exists. Please unload it first!");
                 return;
+
+                if (nowChannel != null)
+                {
+                    Debug.Log("Channel leave first");
+                    leaveChannel();
+                }
             }
 
             // init engine
             mRtcEngine = IRtcEngine.GetEngine(appID);
-
-            isEngineLoaded = true;
 
             // multiChannel setting
             mRtcEngine.SetMultiChannelWant(true);
@@ -73,12 +74,15 @@ public class AgoraManager : Singleton<AgoraManager>
             // enable log
             mRtcEngine.SetLogFilter(LOG_FILTER.DEBUG | LOG_FILTER.INFO | LOG_FILTER.WARNING | LOG_FILTER.ERROR | LOG_FILTER.CRITICAL);
 
+
+            isEngineLoaded = true;
         }
     }
 
-    public async void setToken(string role)
+    public void setToken(string role) // async UniTask<IEnumerator>
     {
         StartCoroutine(HelperClass.FetchToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID, callback: getToken));
+        //return await HelperClass.testToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID, callback: getToken);
     }
 
     private void getToken(string token)
@@ -96,28 +100,33 @@ public class AgoraManager : Singleton<AgoraManager>
     public void callJoin(int mode)
     {
         StartCoroutine(join(mode));
+        //join(mode);
     }
 
-    private IEnumerator join(int mode)
+    private IEnumerator join(int mode) //IEnumerator
     {
         Debug.Log("calling join (AppID = " + appID + ")");
 
         if (mRtcEngine == null)
+            //return;
             yield break;
 
         if (mode == 0) // Busker
         {
+            Debug.Log("call Join Publisher");
+
             if (nowBuskingSpot != null)
                 nowBuskingSpot.callChangeUsed();
 
             role = "publisher";
+            //HelperClass.testToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID, callback: getToken);
             setToken("publisher");
             yield return new WaitForSeconds(0.05f);
 
             nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
             //nowChannel.ChannelOnReJoinChannelSuccess = onRejoinChannelSuccess;
             nowChannel.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
-            nowChannel.ChannelOnLeaveChannel = onLeaveChannel;
+            nowChannel.ChannelOnLeaveChannel = onBuskerLeaveChannel;
             mRtcEngine.OnWarning = (int warn, string msg) =>
             {
                 Debug.LogWarningFormat("Warning code:{0} msg:{1}", warn, IRtcEngine.GetErrorDescription(warn));
@@ -130,11 +139,13 @@ public class AgoraManager : Singleton<AgoraManager>
             nowChannel.JoinChannel(token: _token, info: null, uid: myUID, channelMediaOptions: new ChannelMediaOptions(false, false, true, true));
             nowChannel.Publish();
 
-            setBuskerVideoSurface(buskerVideo);
         }
-        else // Audience
+        else if (mode == 1)// Audience
         {
+            Debug.Log("call Join Audience");
+
             role = "audience";
+            //HelperClass.testToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID, callback: getToken);
             setToken("audience");
             yield return new WaitForSeconds(0.05f);
 
@@ -144,6 +155,7 @@ public class AgoraManager : Singleton<AgoraManager>
             nowChannel.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
             nowChannel.ChannelOnUserJoined = onBuskerJoined;
             nowChannel.ChannelOnUserOffLine = onBuskerOffline;
+            nowChannel.ChannelOnLeaveChannel = onAudienceLeaveChannel;
 
             mRtcEngine.OnWarning = (int warn, string msg) =>
             {
@@ -155,14 +167,12 @@ public class AgoraManager : Singleton<AgoraManager>
             mRtcEngine.EnableVideoObserver();
 
             nowChannel.JoinChannel(token: _token, info: null, uid: myUID, channelMediaOptions: new ChannelMediaOptions(true, true, false, false));
-
+        }
+        else
+        {
+            Debug.Log("Wrong join mode");
         }
      }
-
-    private void onReJoinChannelSuccess(string channelName, uint uid, int elapsed)
-    {
-
-    }
 
     // implement engine callbacks
     private void onJoinChannelSuccess(string channelName, uint uid, int elapsed)
@@ -170,16 +180,31 @@ public class AgoraManager : Singleton<AgoraManager>
         Debug.Log("JoinChannelSuccessHandler: uid = " + uid);
     }
 
-    private void onLeaveChannel(string channelId, RtcStats rtcStats)
+    private void onAudienceLeaveChannel(string channelId, RtcStats rtcStats)
     {
-        Debug.Log("Busker(Me) is leave");
+        Debug.Log("Audience(me) is leave because: " + rtcStats.duration);
 
-        deleteChannel();
+        Destroy(audienceVideo.GetComponent<VideoSurface>());
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
+        nowBuskingSpot.offTitleBar();
+
+        unloadEngine();
+    }
+
+
+    private void onBuskerLeaveChannel(string channelId, RtcStats rtcStats)
+    {
+        Debug.Log("Busker(Me) is leave because: " + rtcStats.duration);
+
+        nowChannel.Unpublish();
 
         Destroy(buskersmallVideo.GetComponent<VideoSurface>());
-        buskersmallVideo.gameObject.SetActive(false);
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
+
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+
+        unloadEngine();
     }
     
     private void onBuskerJoined(string channelId, uint uid, int elapsed)
@@ -192,11 +217,15 @@ public class AgoraManager : Singleton<AgoraManager>
 
     private void onBuskerOffline(string channelId, uint uid, USER_OFFLINE_REASON reason)
     {
-        Debug.Log("onLeaveBuskerInfo: uid = " + uid + " elapsed = " + reason + " nowChannel: " + channelId);
+        Debug.Log("onLeaveBuskerInfo: uid = " + uid + " reason = " + reason + " nowChannel: " + channelId);
 
+        /**
         Destroy(audienceVideo.GetComponent<VideoSurface>());
-        audienceVideo.gameObject.SetActive(false);
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
         nowBuskingSpot.offTitleBar();
+        **/
+
+        leaveChannel();
     }
 
     public void setAudicenVideoSurface(RawImage rawImage, string channelId, uint uid, int elapsed)
@@ -222,15 +251,11 @@ public class AgoraManager : Singleton<AgoraManager>
         return videoSurface;
     }
 
-    public void deleteChannel()
+    public void leaveChannel()
     {
-        if (nowChannel != null)
-        {
-            //mRtcEngine.LeaveChannel();
-            nowChannel.LeaveChannel();
-            nowChannel.ReleaseChannel();
-        }
+        nowChannel.LeaveChannel();
     }
+
 
     // unload agora engine
     public void unloadEngine()
@@ -239,23 +264,23 @@ public class AgoraManager : Singleton<AgoraManager>
         {
             Debug.Log("calling unloadEngine");
 
+            nowChannel.ReleaseChannel();
+
             if (role == "publisher")
             {
-                Destroy(buskersmallVideo.GetComponent<VideoSurface>());
-                GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
-                nowBuskingSpot.offTitleBar();
                 nowBuskingSpot.callChangeUsed();
-                deleteChannel();
+            }
+            else if (role == "audience")
+            {
+                nowBuskingSpot.offTitleBar();
             }
             else
             {
-                Destroy(audienceVideo.GetComponent<VideoSurface>());
-                GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
-                nowBuskingSpot.offTitleBar();
+                Debug.Log("No unload engine because Wrong role");
             }
 
-            nowBuskingSpot = null;
-            channelName = null;
+            mRtcEngine.DisableVideo();
+            mRtcEngine.DisableVideoObserver();
             role = null;
 
             // delete
@@ -266,6 +291,7 @@ public class AgoraManager : Singleton<AgoraManager>
                 mRtcEngine = null;
                 isEngineLoaded = false;
             }
+
         }
     }
 
@@ -314,7 +340,8 @@ public class AgoraManager : Singleton<AgoraManager>
 
     private void OnApplicationQuit()
     {
-        unloadEngine();
+        leaveChannel();
+        //unloadEngine();
     }
 
 

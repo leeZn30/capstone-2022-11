@@ -38,12 +38,6 @@ public class BuskerVideoPanel : MonoBehaviour
     // small Video Panel
     [SerializeField] private GameObject smallVideo;
 
-    private void OnEnable()
-    {
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -76,6 +70,7 @@ public class BuskerVideoPanel : MonoBehaviour
     public void setDevice()
     {
         AgoraManager.Instance.loadEngine();
+        StartButton.onClick.RemoveAllListeners(); // 지워주고 해야함
         StartButton.onClick.AddListener(StartBusking);
     }
 
@@ -85,6 +80,7 @@ public class BuskerVideoPanel : MonoBehaviour
         if (titleInput.text != "" && titleInput.text != null)
         {
             AgoraManager.Instance.callJoin(0);
+            
             if (AgoraManager.Instance.nowBuskingSpot != null)
             {
                 AgoraManager.Instance.nowBuskingSpot.callsetTitle(PhotonNetwork.LocalPlayer.NickName, titleInput.text);
@@ -97,11 +93,11 @@ public class BuskerVideoPanel : MonoBehaviour
             smallVideo.SetActive(true);
             AgoraManager.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
 
-            // 그만두기 버튼
+            // 그만두기 버튼 설정
             PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
-            player.OnInteractiveButton(1);
+            player.changeInteractiveButton(1);
             player.InteractiveButton.GetComponent<Button>().onClick.AddListener(
-                delegate { AgoraManager.Instance.unloadEngine(); });
+                delegate { AgoraManager.Instance.leaveChannel(); });
         }
     }
 

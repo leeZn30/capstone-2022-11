@@ -111,10 +111,20 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (isInteractiveAble)
         {
+            InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
             InteractiveButton.SetActive(false);
             isInteractiveAble = false;
         }
 
+    }
+
+    public void changeInteractiveButton(int type)
+    {
+        if (isInteractiveAble)
+        {
+            InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            InteractiveButton.GetComponent<Image>().sprite = buttonImages[type];
+        }
     }
 
     public void OnVideoPanel(int mode)
@@ -131,7 +141,10 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
                 case 1:
                     buskerPanel.SetActive(true);
+                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;
+                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;
                     buskerPanel.GetComponent<BuskerVideoPanel>().setDevice();
+                    isVideoPanelShown = true;
                     break;
 
                 default:

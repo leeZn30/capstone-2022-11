@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Photon.Realtime;
 using Photon.Pun;
 using TMPro;
+using UnityEngine.SceneManagement;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class NetworkManager : MonoBehaviourPunCallbacks
@@ -23,11 +24,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         PhotonNetwork.GameVersion = this.gameVersion;
         //������ ������ ������ ���� ���� �õ�
         PhotonNetwork.ConnectUsingSettings();
+        SceneManager.sceneLoaded += OnSceneLoaded;
 
         this.joinButton.interactable = false;
-        this.connectionInfoText.text = "������ ������ ������...";
-
+        this.connectionInfoText.text = "마스터 서버에 접속하는 중...";
     }
+
+    // 체인을 걸어서 이 함수는 매 씬마다 호출된다.
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Debug.Log("OnSceneLoaded: " + scene.name);
+        PhotonNetwork.ConnectUsingSettings();
+    }
+
 
     // ������ ���� ���� ������ �ڵ� ����
     public override void OnConnectedToMaster()
@@ -56,7 +65,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsConnected)
         {
             //�뿡 �����Ѵ�.
-            this.connectionInfoText.text = "�뿡 ����....";
+            this.connectionInfoText.text = "마스터 서버 접속 완료";
             //PhotonNetwork.JoinRandomRoom();
 
             // �� �����
@@ -65,7 +74,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         }
         else
         {
-            this.connectionInfoText.text = "�������� : ������ ������ ���� ���� \n �ٽ� ���� �õ��մϴ�.";
+            this.connectionInfoText.text = "방 참가 완료! 광장 이동 중..";
             //������ ������ ������ ���� ���� �õ�
             PhotonNetwork.ConnectUsingSettings();
         }
