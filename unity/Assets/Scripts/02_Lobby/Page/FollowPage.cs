@@ -363,7 +363,7 @@ public class FollowPage : Page
     private void OnDestroy()
     {
 
-        UserData.Instance.OnDeleteFollow -= SetInfoFollowTextOnDelete;
-        UserData.Instance.OnAddFollow -= SetInfoFollowTextOnAdd;
+        //UserData.Instance.OnDeleteFollow -= SetInfoFollowTextOnDelete;
+        //UserData.Instance.OnAddFollow -= SetInfoFollowTextOnAdd;
     }
 }
