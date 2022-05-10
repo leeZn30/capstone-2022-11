@@ -97,15 +97,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 273857813165819999, guid: 75c6749e5573e6e40b0c7f2202a48a40, type: 3}
       propertyPath: m_Type
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 273857813165819999, guid: 75c6749e5573e6e40b0c7f2202a48a40, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 802a3806f52f66147a96a8e66ab56e2d, type: 3}
+      objectReference: {fileID: 21300000, guid: bc07496b6ce6f514dbb46614c5d7c703, type: 3}
     - target: {fileID: 273857813165820066, guid: 75c6749e5573e6e40b0c7f2202a48a40, type: 3}
       propertyPath: m_Name
       value: add btn
+      objectReference: {fileID: 0}
+    - target: {fileID: 5343550856833340040, guid: 75c6749e5573e6e40b0c7f2202a48a40, type: 3}
+      propertyPath: m_text
+      value: "\uD314\uB85C\uC6B0"
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 75c6749e5573e6e40b0c7f2202a48a40, type: 3}

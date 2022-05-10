@@ -305,8 +305,6 @@ public class MusicWebRequest : MonoBehaviour
     protected bool getAudioStopFlag=false; 
 
 
-
-
     protected delegate void MusicHandler(AudioClip audioClip, bool play);//play- 바로 재생할것인지
     protected event MusicHandler OnGetClip;
 
@@ -326,45 +324,7 @@ public class MusicWebRequest : MonoBehaviour
         return audioClip;
     }
     */
-    protected IEnumerator testLoadUpload()
-    {
-        fp ff = new fp();
-        ff.filepath= "bucket-bsn0zi.s3.ap-northeast-2.amazonaws.com/Music/test00_4.wav";
-
-        Debug.Log("시작"); 
-        string json = JsonUtility.ToJson(ff);
-        using (UnityWebRequest www = UnityWebRequest.Get("http://211.48.30.231:80/api/media")) 
-        {
-            www.SetRequestHeader("token", UserData.Instance.Token);
-            www.SetRequestHeader("Content-Type", "application/json");
-            www.SetRequestHeader("accept", "text/plain");
-            www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
-
-            yield return www.SendWebRequest();
-            Debug.Log("끝");
-            
-            if (www.error == null)
-            {
-                if (www.isDone)
-                {
-
-                    OnGetClip(DownloadHandlerAudioClip.GetContent(www), true);
-                    //string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
-                    //Debug.Log("결과 " + jsonResult);
-
-                    //JsonData jsonData2 = JsonToObject(jsonResult);
-
-                }
-                //OnGetSongList(musics, play);
-
-            }
-            else
-            {
-                Debug.Log(www.error.ToString());
-            }
-        }
-        
-    }
+    
     protected IEnumerator POST_Delete(MusicID id, string listName)
     {
 
@@ -586,6 +546,7 @@ public class MusicWebRequest : MonoBehaviour
 
                         }
                     }
+
                     return new MusicList(musics, play);
                     //OnGetSongList(musics, play);
                     //Debug.Log("done");
@@ -1148,7 +1109,91 @@ public class MusicWebRequest : MonoBehaviour
             Debug.LogError(e);
         }
     }
+    protected async UniTask<User> GET_UserInfoAsync(string userId)
+    {
+        try
+        {
+            UserID us = new UserID();
+            us.userId = userId;
 
+            string json = "";
+            json = JsonUtility.ToJson(us);
+
+            Debug.Log("유저 정보 get json: " + json);
+
+            using (UnityWebRequest www = UnityWebRequest.Get(GlobalData.url + "/user/info"))
+            {
+
+                www.SetRequestHeader("Content-Type", "application/json");
+                www.SetRequestHeader("accept", "text/plain");
+                www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
+
+                await www.SendWebRequest();
+
+                if (www.error == null)
+                {
+                    if (www.isDone)
+                    {
+                        string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+
+                        JsonData jsonData = JsonToObject(jsonResult)["user"];
+                        Debug.Log("결과 " + jsonResult);
+                        User user = new User();
+
+                        user.character = (int)(jsonData["character"]);
+                        user.id = (string)(jsonData["id"]);
+                        user.nickname = (string)(jsonData["nickname"]);
+
+                        user.followerNum = (int)(jsonData["followerNum"]);
+                        user.followNum = (int)(jsonData["followNum"]);
+
+                        if (userId == UserData.Instance.user.id)
+                        {//본인 정보를 받아올 때만 선호장르와 팔로우 받기
+                            user.preferredGenres = new List<string>();
+                            user.follow = new List<string>();
+
+                            foreach (JsonData genre in jsonData["preferredGenres"])
+                            {
+                                user.preferredGenres.Add((string)genre);
+                            }
+                            foreach (JsonData f in jsonData["follow"])
+                            {
+                                user.follow.Add((string)f[0]);
+                            }
+                        }
+
+
+                        return user;
+                    }
+                }
+                else
+                {
+                    Debug.Log(www.error.ToString());
+                }
+                return null;
+            }
+        }
+        catch (UnityWebRequestException e)
+        {
+            if (e.ResponseCode == 400)
+            {
+                Popup.Instance.Open();
+                Debug.Log(e.ResponseCode + "[ GET_UserInfoAsync] 토큰 만료");
+
+            }
+            else
+            {
+                Debug.Log(e);
+            }
+            return null;
+        }
+        catch (Exception e)
+        {
+            Popup.Instance.Open();
+            Debug.LogError(e);
+            return null;
+        }
+    }
     JsonData JsonToObject(string json)
     {
         return JsonMapper.ToObject(json);

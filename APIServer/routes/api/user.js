@@ -10,7 +10,7 @@ const User = require('../../models/user');
 
 const router = express.Router();
 
-router.get('/checkid', async(req, res) =>{
+router.get('/check', async(req, res) =>{
     const {id, email} = req.body;
 
     if (id){

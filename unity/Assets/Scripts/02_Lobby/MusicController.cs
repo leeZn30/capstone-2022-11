@@ -52,6 +52,9 @@ public class MusicController : MusicWebRequest
     public Button repeatBtn;
     public TextMeshProUGUI contentText;
 
+    public GameObject[] noListObj;
+    public GameObject[] yesListObj;
+
     private Animator animator;
     private AudioClip audioClip;
 
@@ -212,9 +215,35 @@ public class MusicController : MusicWebRequest
                 currentSongSlotList.Add(ss);
             }
             scrollViewRect.SetContentSize(100);
+
+            if (_musics.Count != 0) {
+                StartGetAudioCoroution(tmpSongIndex, play);
+                SetActiveNoList(false);
+            }
+            else
+            {
+
+                SetActiveNoList(true);
+            }
             
-            StartGetAudioCoroution(tmpSongIndex, play);
-           
+        }
+    }
+    void SetActiveNoList(bool noList)
+    {
+        if (noListObj != null)
+        {
+            for(int i=0; i<noListObj.Length; i++)
+            {
+                noListObj[i].SetActive(noList);
+            }
+
+        }
+        if (yesListObj != null)
+        {
+            for (int i=0; i<yesListObj.Length; i++)
+            {
+                yesListObj[i].SetActive(!noList);
+            }
         }
     }
     void SongClickHandler(SongSlot ss)
@@ -232,6 +261,8 @@ public class MusicController : MusicWebRequest
         if (isAlreadyInit == false)
         {
             isAlreadyInit = true;
+
+            
 
             //info 오른쪽 오브젝트
             scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
@@ -309,6 +340,11 @@ public class MusicController : MusicWebRequest
         {
             currentSongSlotList[currentSongIndex].SetImage(new Color(1f, 1f, 1f));
         }
+        else
+        {
+            Debug.Log("오류!!!! 없는 음원 참조");
+            return;
+        }
         currentSongSlotList[newIdx].SetImage(new Color(0.8f, 0.8f, 0.8f));
         currentSongIndex = newIdx;
 
@@ -374,7 +410,6 @@ public class MusicController : MusicWebRequest
         }
         else
         {
-
             StartGetAudioCoroution(idx, play);
         }
     }

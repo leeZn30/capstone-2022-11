@@ -4,8 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-//using System.Windows.Forms;
-public class Lobby : MonoBehaviour
+using UnityEngine.Networking;
+using LitJson;
+using System;
+
+using Cysharp.Threading.Tasks;
+public class Lobby : MusicWebRequest
 {
     public Button settingBtn;
 
@@ -21,6 +25,8 @@ public class Lobby : MonoBehaviour
 
     public Character character;
     public TextMeshProUGUI userNickname;
+    public TextMeshProUGUI followNum;
+    public TextMeshProUGUI followerNum;
 
     void Start()
     {
@@ -36,15 +42,39 @@ public class Lobby : MonoBehaviour
         followPage.Close();
 
         characterSetPage.OnChangeCharacter += ChangeCharacter;
+        UserData.Instance.OnChangeFollow += UpdateFollow;
+        
+        GetUserData();
 
-        userNickname.text = UserData.Instance.user.GetName();
-        ChangeCharacter();
     }
+    void UpdateFollow()
+    {
+        Debug.Log("update follow");
+        followNum.text = UserData.Instance.user.followNum+"\nÆÈ·Î¿ì";
+        followerNum.text = UserData.Instance.user.followerNum + "\nÆÈ·Î¿ö";
 
+    }
+    async void GetUserData()
+    {
+        User us = await GET_UserInfoAsync(UserData.Instance.user.id);
+        if (us!=null)
+        {
+            UserData.Instance.user = us;
+            userNickname.text = UserData.Instance.user.GetName();
+            UpdateFollow();
+            ChangeCharacter();
+        }
+
+    }
     void ChangeCharacter()
     {
         Debug.Log(UserData.Instance.user.character);
         character.ChangeSprite(UserData.Instance.user.character);
+    }
+    
+    JsonData JsonToObject(string json)
+    {
+        return JsonMapper.ToObject(json);
     }
     // Update is called once per frame
     void Update()

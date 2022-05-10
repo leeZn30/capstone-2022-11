@@ -275,7 +275,7 @@ public class inputObject : MonoBehaviour
         string json = JsonUtility.ToJson(check);
 
         Debug.Log(json);
-        using (UnityWebRequest www = UnityWebRequest.Get(GlobalData.url + "/user/checkid"))
+        using (UnityWebRequest www = UnityWebRequest.Get(GlobalData.url + "/user/check"))
         {
 
             www.SetRequestHeader("Content-Type", "application/json");
