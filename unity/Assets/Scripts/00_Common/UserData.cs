@@ -10,23 +10,37 @@ public class User
     public string email;
     public string nickname;
     public int character;
-    public List<string> preferredGenres;
+    public int followNum;
+    public int followerNum;
+    public List<string> preferredGenres=new List<string>();
+    public List<string> follow = new List<string>();
 
-    public void SetUser(string id,string email,string nickname,int character, List<string> preferredGenres=null)
+
+    public void SetUser(string id,string email,string nickname,int character, List<string> preferredGenres=null, List<string> followIds = null)
     {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
         this.character = character;
         this.preferredGenres = preferredGenres;
+        this.follow = followIds;
+
+
+        if (preferredGenres == null)
+            this.preferredGenres = new List<string>();
+        if (followIds == null)
+            this.follow = new List<string>();
+        
     }
+
     public void Clear()
     {
         this.id = "";
         this.email = "";
         this.nickname = "";
         this.character = 0;
-        this.preferredGenres = null;
+        this.preferredGenres.Clear();
+        this.follow.Clear();
     }
     public string GetName()
     {
@@ -38,6 +52,13 @@ public class UserData : Singleton<UserData>
 
     public User user;
     public string Token;
+
+    public delegate void FollowHandler();
+    public event FollowHandler OnChangeFollow;
+
+    public delegate void FollowStateHandler(string id);
+    public event FollowStateHandler OnDeleteFollow;
+    public event FollowStateHandler OnAddFollow;
     public string id
     {
         get { return user.id; }    // _data ¹ÝÈ¯
@@ -53,7 +74,21 @@ public class UserData : Singleton<UserData>
         }
         DontDestroyOnLoad(gameObject);
     }
+    public void AddFollow(string id)
+    {
+        user.follow.Add(id);
+        user.followNum++;
+        OnChangeFollow?.Invoke();
+        OnAddFollow?.Invoke(id);
+    }
+    public void DelFollow(string id)
+    {
+        user.follow.Remove(id);
+        user.followNum--;
+        OnChangeFollow?.Invoke();
+        OnDeleteFollow?.Invoke(id);
 
+    }
     public void Clear()
     {
         Token = "";

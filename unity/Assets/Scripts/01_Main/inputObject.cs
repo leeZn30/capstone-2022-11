@@ -237,13 +237,14 @@ public class inputObject : MonoBehaviour
 
         var resultString = new string(Charsarr);
 
+        //전송
+        StartCoroutine(POST_EmailCode(inputField.text, resultString));
 
         sub_obj.setRegex_str("^" + resultString + "$");
         sub_obj.checkRegex();
-        isOkay = true;
 
-        changeUnderTextColor();
-        OnClickButton_(isOkay ? strs[3] : strs[2]);
+        
+        
         
     }
     public List<string> GetPreferredGenres()
@@ -322,6 +323,38 @@ public class inputObject : MonoBehaviour
         }
 
 
+
+    }
+    IEnumerator POST_EmailCode(string email, string key)
+    {
+        EmailKey emailKey = new EmailKey();
+        emailKey.email = email;
+        emailKey.key = key;
+        string json = JsonUtility.ToJson(emailKey);
+        using (UnityWebRequest request = UnityWebRequest.Post(GlobalData.url + "/auth/email", json))
+        {// 보낼 주소와 데이터 입력
+            byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
+            request.uploadHandler = new UploadHandlerRaw(jsonToSend);
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();//응답 기다리기
+
+            if (request.error == null)//가입 성공
+            {
+                isOkay = true;
+                //보내기 성공
+
+            }
+            else//보내기 실패
+            {
+                isOkay = false;
+                Debug.Log(request.error.ToString());
+
+            }
+            OnClickButton_(isOkay ? strs[3] : strs[2]);
+            changeUnderTextColor();
+        }
 
     }
     JsonData JsonToObject(string json)
