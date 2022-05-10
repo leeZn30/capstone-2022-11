@@ -305,11 +305,11 @@ public class MusicWebRequest : MonoBehaviour
     protected bool getAudioStopFlag=false; 
 
 
-    protected delegate void MusicHandler(AudioClip audioClip, bool play);//play- ¹Ù·Î Àç»ıÇÒ°ÍÀÎÁö
+    protected delegate void MusicHandler(AudioClip audioClip, bool play);//play- ë°”ë¡œ ì¬ìƒí• ê²ƒì¸ì§€
     protected event MusicHandler OnGetClip;
 
 
-    protected delegate void CharacterHandler(int character);//play- ¹Ù·Î Àç»ıÇÒ°ÍÀÎÁö
+    protected delegate void CharacterHandler(int character);//play- ë°”ë¡œ ì¬ìƒí• ê²ƒì¸ì§€
     protected event CharacterHandler ModifyCharacter;
 
     protected delegate void UploadHandler(bool success);
@@ -331,7 +331,7 @@ public class MusicWebRequest : MonoBehaviour
 
         string json = JsonUtility.ToJson(id);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/delete"+listName, json))
-        {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+        {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -339,7 +339,7 @@ public class MusicWebRequest : MonoBehaviour
             request.SetRequestHeader("token", UserData.Instance.Token);
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();//°á°ú ÀÀ´äÀÌ ¿Ã ¶§±îÁö ±â´Ù¸®±â
+            yield return request.SendWebRequest();//ê²°ê³¼ ì‘ë‹µì´ ì˜¬ ë•Œê¹Œì§€ ê¸°ë‹¤ë¦¬ê¸°
 
 
             if (request.error == null)
@@ -356,12 +356,15 @@ public class MusicWebRequest : MonoBehaviour
             }
         }
     }
+
+
+    //ìŒì› ë‹´ê¸°
     protected IEnumerator POST_AddMyList(MusicIDList idList, string listName="myList")
     {
 
         string json = JsonUtility.ToJson(idList);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/add"+listName, json))
-        {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+        {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -369,7 +372,7 @@ public class MusicWebRequest : MonoBehaviour
             request.SetRequestHeader("token", UserData.Instance.Token);
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();//°á°ú ÀÀ´äÀÌ ¿Ã ¶§±îÁö ±â´Ù¸®±â
+            yield return request.SendWebRequest();//ê²°ê³¼ ì‘ë‹µì´ ì˜¬ ë•Œê¹Œì§€ ê¸°ë‹¤ë¦¬ê¸°
 
 
             if (request.error == null)
@@ -388,7 +391,7 @@ public class MusicWebRequest : MonoBehaviour
 
         string json = JsonUtility.ToJson(_music);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/music", json))
-        {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+        {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -396,13 +399,13 @@ public class MusicWebRequest : MonoBehaviour
             request.SetRequestHeader("token", UserData.Instance.Token);
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();//°á°ú ÀÀ´äÀÌ ¿Ã ¶§±îÁö ±â´Ù¸®±â
+            yield return request.SendWebRequest();//ê²°ê³¼ ì‘ë‹µì´ ì˜¬ ë•Œê¹Œì§€ ê¸°ë‹¤ë¦¬ê¸°
 
 
             if (request.error == null)
             {
                 OnUploaded(true);
-                Debug.Log("¾÷·Îµå !" + _music.title+_music.locate+_music.imageLocate) ;
+                Debug.Log("ì—…ë¡œë“œ !" + _music.title+_music.locate+_music.imageLocate) ;
 
 
             }
@@ -415,7 +418,7 @@ public class MusicWebRequest : MonoBehaviour
     }
     protected IEnumerator POST_ModifiedChar(string _id, int _character)
     {
-        ModifiedChar mo = new ModifiedChar//ÇöÀç inputfield¿¡ ÀÛ¼ºµÈ °ª Å¬·¡½º·Î º¯È¯
+        ModifiedChar mo = new ModifiedChar//í˜„ì¬ inputfieldì— ì‘ì„±ëœ ê°’ í´ë˜ìŠ¤ë¡œ ë³€í™˜
         {
             id = _id,
             value = _character
@@ -425,7 +428,7 @@ public class MusicWebRequest : MonoBehaviour
 
         string json = JsonUtility.ToJson(mo);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/modifiedChar", json))
-        {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+        {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -433,7 +436,7 @@ public class MusicWebRequest : MonoBehaviour
             request.SetRequestHeader("token", UserData.Instance.Token);
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();//°á°ú ÀÀ´äÀÌ ¿Ã ¶§±îÁö ±â´Ù¸®±â
+            yield return request.SendWebRequest();//ê²°ê³¼ ì‘ë‹µì´ ì˜¬ ë•Œê¹Œì§€ ê¸°ë‹¤ë¦¬ê¸°
 
             
             if (request.error == null)
@@ -463,12 +466,12 @@ public class MusicWebRequest : MonoBehaviour
 
 
            using (UnityWebRequest request = UnityWebRequest.Post(url + "/media", formData))
-           {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+           {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
 
                 request.SetRequestHeader("token", UserData.Instance.Token);
              
 
-            yield return request.SendWebRequest();//°á°ú ÀÀ´äÀÌ ¿Ã ¶§±îÁö ±â´Ù¸®±â
+            yield return request.SendWebRequest();//ê²°ê³¼ ì‘ë‹µì´ ì˜¬ ë•Œê¹Œì§€ ê¸°ë‹¤ë¦¬ê¸°
          
             if (request.error != null)
             {
@@ -481,7 +484,7 @@ public class MusicWebRequest : MonoBehaviour
                 string jsonResult = System.Text.Encoding.UTF8.GetString(request.downloadHandler.data);
                 JsonData jsonData = JsonToObject(jsonResult);
                 Debug.Log(request.downloadHandler.text);
-                //·Îµù¾Ö´Ï¸ŞÀÌ¼Ç Á¾·á
+                //ë¡œë”©ì• ë‹ˆë©”ì´ì…˜ ì¢…ë£Œ
                 music.locate = (string)jsonData["locate"];
                 music.imageLocate= (string)jsonData["imageLocate"];
 
@@ -504,7 +507,7 @@ public class MusicWebRequest : MonoBehaviour
                 resultUrl = url + "/music/" + listName;
             }
 
-            Debug.Log(listName + " ¸®½ºÆ®: " + json);
+            Debug.Log(listName + " ë¦¬ìŠ¤íŠ¸: " + json);
 
             using (UnityWebRequest www = UnityWebRequest.Get(resultUrl))
             {
@@ -524,7 +527,7 @@ public class MusicWebRequest : MonoBehaviour
                     if (www.isDone)
                     {
                         string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
-                        Debug.Log("°á°ú " + jsonResult);
+                        Debug.Log("ê²°ê³¼ " + jsonResult);
 
                         JsonData jsonData2 = JsonToObject(jsonResult);
                         JsonData jsonData = jsonData2[listName];
@@ -561,14 +564,14 @@ public class MusicWebRequest : MonoBehaviour
         }
         catch (ArgumentNullException e )
         {
-            Debug.Log("search ¿äÃ» Ãë¼ÒµÊ");
+            Debug.Log("search ìš”ì²­ ì·¨ì†Œë¨");
             return null;
         }
         catch (UnityWebRequestException e)
         {
             if (e.ResponseCode == 400)
             {
-                Debug.Log(e.ResponseCode+" [GET_MusicListAsync] ÅäÅ« ¸¸·á");
+                Debug.Log(e.ResponseCode+" [GET_MusicListAsync] í† í° ë§Œë£Œ");
                 Popup.Instance.Open();
             }
             else
@@ -614,14 +617,14 @@ public class MusicWebRequest : MonoBehaviour
                 Debug.Log("get audio " + _filePath + audioType.ToString());
                 //getAudioWWW.SendWebRequest();
                 
-                await getAudioWWW.SendWebRequest();// UnityÀÇ Async Operation ÀÌ¶ó await °¡´ÉÇÏ´Ù.
+                await getAudioWWW.SendWebRequest();// Unityì˜ Async Operation ì´ë¼ await ê°€ëŠ¥í•˜ë‹¤.
                 //while (!getAudioWWW.isDone)
                 //{
                     //yield return new WaitForSecondsRealtime(0.01f);
                 //}
                 // var responseString = res.downloadHandler.text;
 
-                Debug.Log("get audio ³¡" + _filePath + audioType.ToString());
+                Debug.Log("get audio ë" + _filePath + audioType.ToString());
                 if (getAudioWWW.result == UnityWebRequest.Result.ConnectionError)
                 {
                     Debug.Log(getAudioWWW.error);
@@ -636,7 +639,7 @@ public class MusicWebRequest : MonoBehaviour
         }
         catch (ArgumentNullException e)
         {
-            Debug.Log("get audio ¿äÃ» Ãë¼ÒµÊ");
+            Debug.Log("get audio ìš”ì²­ ì·¨ì†Œë¨");
             return null;
         }
         catch (UnityWebRequestException e)
@@ -644,7 +647,7 @@ public class MusicWebRequest : MonoBehaviour
             if (e.ResponseCode == 400)
             {
                 Popup.Instance.Open();
-                Debug.Log(e.ResponseCode+"[GetAudioClipAsync] ÅäÅ« ¸¸·á");
+                Debug.Log(e.ResponseCode+"[GetAudioClipAsync] í† í° ë§Œë£Œ");
             }
             else
             {
@@ -687,7 +690,7 @@ public class MusicWebRequest : MonoBehaviour
                 Debug.Log("get audio " + _filePath + audioType.ToString());
             //getAudioWWW.SendWebRequest();
             flag = false;
-                getAudioWWW.SendWebRequest();// UnityÀÇ Async Operation ÀÌ¶ó await °¡´ÉÇÏ´Ù.
+                getAudioWWW.SendWebRequest();// Unityì˜ Async Operation ì´ë¼ await ê°€ëŠ¥í•˜ë‹¤.
                                                    while (!getAudioWWW.isDone)
                                                    {
                 if (flag == true) yield break;
@@ -695,7 +698,7 @@ public class MusicWebRequest : MonoBehaviour
                                                    }
                                                    // var responseString = res.downloadHandler.text;
 
-                Debug.Log("get audio ³¡" + _filePath + audioType.ToString());
+                Debug.Log("get audio ë" + _filePath + audioType.ToString());
                 if (getAudioWWW.result == UnityWebRequest.Result.ConnectionError)
                 {
                     Debug.Log(getAudioWWW.error);
@@ -738,7 +741,7 @@ public class MusicWebRequest : MonoBehaviour
                 json = JsonUtility.ToJson(musicTitle);
             }
 
-            Debug.Log("°î °Ë»ö json: " + json);
+            Debug.Log("ê³¡ ê²€ìƒ‰ json: " + json);
 
             using (UnityWebRequest www = UnityWebRequest.Get(url + "/music/"+type))
             {
@@ -755,7 +758,7 @@ public class MusicWebRequest : MonoBehaviour
                     if (www.isDone)
                     {
                         string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
-                        Debug.Log("°á°ú " + jsonResult);
+                        Debug.Log("ê²°ê³¼ " + jsonResult);
                         JsonData jsonData = JsonToObject(jsonResult);
 
 
@@ -791,7 +794,7 @@ public class MusicWebRequest : MonoBehaviour
         }
         catch (ArgumentNullException e)
         {
-            Debug.Log("search ¿äÃ» Ãë¼ÒµÊ");
+            Debug.Log("search ìš”ì²­ ì·¨ì†Œë¨");
             return null;
         }
         catch (UnityWebRequestException e)
@@ -799,7 +802,7 @@ public class MusicWebRequest : MonoBehaviour
             if (e.ResponseCode == 400)
             {
                 Popup.Instance.Open();
-                Debug.Log(e.ResponseCode+" [GET_SearchMusicTitleAsync] ÅäÅ« ¸¸·á");
+                Debug.Log(e.ResponseCode+" [GET_SearchMusicTitleAsync] í† í° ë§Œë£Œ");
             }
             else
             {
@@ -817,7 +820,7 @@ public class MusicWebRequest : MonoBehaviour
     {
         try
         {
-            //typeÀº recent, personalGenre, popular ÀÖÀ½
+            //typeì€ recent, personalGenre, popular ìˆìŒ
             using (UnityWebRequest www = UnityWebRequest.Get(url + "/music/" + type.ToString()))
             {
                 if(type==SpecificMusic.personalGenre)
@@ -870,7 +873,7 @@ public class MusicWebRequest : MonoBehaviour
         }
         catch (ArgumentNullException e)
         {
-            Debug.Log("get "+type+" List ¿äÃ» Ãë¼ÒµÊ");
+            Debug.Log("get "+type+" List ìš”ì²­ ì·¨ì†Œë¨");
             return null;
         }
         catch (UnityWebRequestException e)
@@ -878,7 +881,7 @@ public class MusicWebRequest : MonoBehaviour
             if (e.ResponseCode == 400)
             {
                 Popup.Instance.Open();
-                Debug.Log(e.ResponseCode+"[GET_SpecificMusicListAsync] ÅäÅ« ¸¸·á");
+                Debug.Log(e.ResponseCode+"[GET_SpecificMusicListAsync] í† í° ë§Œë£Œ");
             }
             else
             {
@@ -942,7 +945,7 @@ public class MusicWebRequest : MonoBehaviour
         }
         catch (ArgumentNullException e)
         {
-            Debug.Log("get "  + " List ¿äÃ» Ãë¼ÒµÊ");
+            Debug.Log("get "  + " List ìš”ì²­ ì·¨ì†Œë¨");
             return null;
         }
         catch (UnityWebRequestException e)
@@ -950,7 +953,7 @@ public class MusicWebRequest : MonoBehaviour
             if (e.ResponseCode == 400 || e.ResponseCode == 401)
             { 
                 Popup.Instance.Open();
-                Debug.Log(e.ResponseCode + "[GET_FollowSystemUserListAsync] ÅäÅ« ¸¸·á");
+                Debug.Log(e.ResponseCode + "[GET_FollowSystemUserListAsync] í† í° ë§Œë£Œ");
             }
             else
             {
@@ -974,7 +977,7 @@ public class MusicWebRequest : MonoBehaviour
             string json = "";
             json = JsonUtility.ToJson(userNickName);
 
-            Debug.Log("°î °Ë»ö json: " + json);
+            Debug.Log("ê³¡ ê²€ìƒ‰ json: " + json);
 
             using (UnityWebRequest www = UnityWebRequest.Get(url + "/user/search"))
             {
@@ -991,7 +994,7 @@ public class MusicWebRequest : MonoBehaviour
                     if (www.isDone)
                     {
                         string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
-                        Debug.Log("°á°ú " + jsonResult);
+                        Debug.Log("ê²°ê³¼ " + jsonResult);
                         
                         JsonData jsonData = JsonToObject(jsonResult)["user"];
 
@@ -1024,7 +1027,7 @@ public class MusicWebRequest : MonoBehaviour
         }
         catch (ArgumentNullException e)
         {
-            Debug.Log("search ¿äÃ» Ãë¼ÒµÊ");
+            Debug.Log("search ìš”ì²­ ì·¨ì†Œë¨");
             return null;
         }
         catch (UnityWebRequestException e)
@@ -1032,7 +1035,7 @@ public class MusicWebRequest : MonoBehaviour
             if (e.ResponseCode == 400)
             {
                 Popup.Instance.Open();
-                Debug.Log(e.ResponseCode + "[ GET_SearchUserAsync] ÅäÅ« ¸¸·á");
+                Debug.Log(e.ResponseCode + "[ GET_SearchUserAsync] í† í° ë§Œë£Œ");
             }
             else
             {
@@ -1085,18 +1088,18 @@ public class MusicWebRequest : MonoBehaviour
         }
         catch (ArgumentNullException e)
         {
-            Debug.Log("follow ¿äÃ» Ãë¼ÒµÊ");
+            Debug.Log("follow ìš”ì²­ ì·¨ì†Œë¨");
         }
         catch (UnityWebRequestException e)
         {
             if (e.ResponseCode == 400 || e.ResponseCode == 401)
             {
                 Popup.Instance.Open();
-                Debug.Log(e.ResponseCode + "[POST_FollowUserAsync] ÅäÅ« ¸¸·á");
+                Debug.Log(e.ResponseCode + "[POST_FollowUserAsync] í† í° ë§Œë£Œ");
             }
             else if (e.ResponseCode == 450)
             {
-                //ÀÌ¹Ì ÆÈ·Î¿ìÇÑ À¯Àú
+                //ì´ë¯¸ íŒ”ë¡œìš°í•œ ìœ ì €
 
             }
             else
@@ -1119,7 +1122,7 @@ public class MusicWebRequest : MonoBehaviour
             string json = "";
             json = JsonUtility.ToJson(us);
 
-            Debug.Log("À¯Àú Á¤º¸ get json: " + json);
+            Debug.Log("ìœ ì € ì •ë³´ get json: " + json);
 
             using (UnityWebRequest www = UnityWebRequest.Get(GlobalData.url + "/user/info"))
             {
@@ -1137,7 +1140,7 @@ public class MusicWebRequest : MonoBehaviour
                         string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
 
                         JsonData jsonData = JsonToObject(jsonResult)["user"];
-                        Debug.Log("°á°ú " + jsonResult);
+                        Debug.Log("ê²°ê³¼ " + jsonResult);
                         User user = new User();
 
                         user.character = (int)(jsonData["character"]);
@@ -1148,7 +1151,7 @@ public class MusicWebRequest : MonoBehaviour
                         user.followNum = (int)(jsonData["followNum"]);
 
                         if (userId == UserData.Instance.user.id)
-                        {//º»ÀÎ Á¤º¸¸¦ ¹Ş¾Æ¿Ã ¶§¸¸ ¼±È£Àå¸£¿Í ÆÈ·Î¿ì ¹Ş±â
+                        {//ë³¸ì¸ ì •ë³´ë¥¼ ë°›ì•„ì˜¬ ë•Œë§Œ ì„ í˜¸ì¥ë¥´ì™€ íŒ”ë¡œìš° ë°›ê¸°
                             user.preferredGenres = new List<string>();
                             user.follow = new List<string>();
 
@@ -1178,7 +1181,7 @@ public class MusicWebRequest : MonoBehaviour
             if (e.ResponseCode == 400)
             {
                 Popup.Instance.Open();
-                Debug.Log(e.ResponseCode + "[ GET_UserInfoAsync] ÅäÅ« ¸¸·á");
+                Debug.Log(e.ResponseCode + "[ GET_UserInfoAsync] í† í° ë§Œë£Œ");
 
             }
             else

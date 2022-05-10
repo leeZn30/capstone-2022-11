@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;	// UnityWebRequest»ç¿ëÀ» À§ÇØ¼­ Àû¾îÁØ´Ù.
+using UnityEngine.Networking;	// UnityWebRequestì‚¬ìš©ì„ ìœ„í•´ì„œ ì ì–´ì¤€ë‹¤.
 
 
 public class NetworkTest : MonoBehaviour
@@ -33,7 +33,7 @@ public class NetworkTest : MonoBehaviour
         
         string json = JsonUtility.ToJson(auth);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/auth", json))
-        {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+        {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
             request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();

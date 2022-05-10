@@ -42,6 +42,11 @@ public class SubMusicController : MusicWebRequest
 
                 StartCoroutine(POST_AddMyList(iDList));
                 StartCoroutine(messageOn());
+
+                //현재 플레이중인 재생목록이라면 추가
+                List<Music> ms = new List<Music>();
+                ms.Add(music);
+                MusicController.Instance.AddNewMusics("myList", ms);
             }
         });       
         playBtn.onClick.AddListener(delegate {
@@ -75,6 +80,7 @@ public class SubMusicController : MusicWebRequest
         {
             GetAudioAsync(music.locate);
         }
+
         if (slot.isSearchSlot)
         {
             subController.SetActive(false);
@@ -93,7 +99,6 @@ public class SubMusicController : MusicWebRequest
         }
         AudioClipPlay a = await GetAudioClipAsync(path, true);
         SetAudioClip(a.audioClip, a.play);
-        Debug.Log("d");
     }
     public void SetAudioClip(AudioClip ac, bool play)
     {
@@ -130,18 +135,20 @@ public class SubMusicController : MusicWebRequest
     }
     public void Reset()
     {
+        
+        messageObj.SetActive(false);
+        subController.SetActive(false);
+        music = null;
+
         if (audioSource.clip != null)
         {
-            messageObj.SetActive(false);
-            subController.SetActive(false);
-            music = null;
-
             audioSource.Stop();
-            audioSource.clip = null;
             audioSource.time = 0;
-            OnChanged(null);
 
         }
+        audioSource.clip = null;
+        OnChanged?.Invoke(null);
+
 
     }
     public void SetTime(float value)

@@ -94,7 +94,7 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
     }
     IEnumerator GetTexture(string _path)
     {
-        Debug.Log("image load ½Ãµµ" + _path);
+        Debug.Log("image load ì‹œë„" + _path);
         UnityWebRequest www = UnityWebRequestTexture.GetTexture("https://"+_path);
         yield return www.SendWebRequest();
         

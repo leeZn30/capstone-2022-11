@@ -12,7 +12,7 @@ using Unity.Collections;
 public class MusicController : MusicWebRequest
 {
     
-
+    //ì‹±ê¸€í†¤ íŒ¨í„´ ì ìš©
     private static MusicController instance;
     public static MusicController Instance
     {
@@ -63,7 +63,7 @@ public class MusicController : MusicWebRequest
 
     //public  List<Music> musicList;
 
-    public string currentListName;//ÇöÀç ¼±ÅÃµÈ Àç»ı¸ñ·Ï
+    public string currentListName;//í˜„ì¬ ì„ íƒëœ ì¬ìƒëª©ë¡
     public int currentSongIndex = 0;
     public int tmpSongIndex = 0;
 
@@ -124,14 +124,14 @@ public class MusicController : MusicWebRequest
         {
             
             if (audioSource.isPlaying == true && isCurrentSongFinish == false)
-            {//Àç»ı»óÅÂÀÏ ¶§
+            {//ì¬ìƒìƒíƒœì¼ ë•Œ
                 if ((int)audioSource.time == (int)audioSource.clip.length)
-                {//Àç»ıÀÌ ³¡³ª¸é
+                {//ì¬ìƒì´ ëë‚˜ë©´
                     
                     
                     if (RepeatMode.OneRepeat != repeatMode)
                     {
-                        Debug.Log("ÀÚ¿¬ Àç»ı ³¡");
+                        Debug.Log("ìì—° ì¬ìƒ ë");
                         isCurrentSongFinish = true;
                         AutoPlayNextMusic();
                     }
@@ -140,7 +140,7 @@ public class MusicController : MusicWebRequest
             }
 
             if (audioSource.isPlaying == true && playState == PlayState.Pause)
-            {//Àç»ı½ÃÅ°±â
+            {//ì¬ìƒì‹œí‚¤ê¸°
                 subMusicController.Pause();
                 //Debug.Log("Play");
                 playState = PlayState.Play;
@@ -154,7 +154,7 @@ public class MusicController : MusicWebRequest
 
             }
             else if(audioSource.isPlaying ==false && playState == PlayState.Play)
-            {//ÁßÁö½ÃÅ°±â
+            {//ì¤‘ì§€ì‹œí‚¤ê¸°
                 //Debug.Log("Pause");
                 playState = PlayState.Pause;
                 StopCoroutine(enumerator);
@@ -250,12 +250,18 @@ public class MusicController : MusicWebRequest
                 yesListObj[i].SetActive(!noList);
             }
         }
+
+        if (noList)
+        {
+            titleTexts[1].text = "None";
+            artistTexts[1].text = "None";
+        } 
     }
     void SongClickHandler(SongSlot ss)
     {
         int newIndex = currentSongSlotList.IndexOf(ss);
 
-        if (newIndex == currentSongIndex) return;//ÇöÀç Àç»ıÁßÀÎ À½¿øÀÌ¸é ÆĞ½º
+        if (newIndex == currentSongIndex) return;//í˜„ì¬ ì¬ìƒì¤‘ì¸ ìŒì›ì´ë©´ íŒ¨ìŠ¤
 
 
         StartGetAudioCoroution(newIndex, true);
@@ -269,11 +275,11 @@ public class MusicController : MusicWebRequest
 
             
 
-            //info ¿À¸¥ÂÊ ¿ÀºêÁ§Æ®
+            //info ì˜¤ë¥¸ìª½ ì˜¤ë¸Œì íŠ¸
             scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
             currentSongSlotList = new List<SongSlot>();
 
-            //°Ñ
+            //ê²‰
             animator = GetComponent<Animator>();
             audioSource = GetComponent<AudioSource>();
             audioSource.loop = false;
@@ -311,7 +317,7 @@ public class MusicController : MusicWebRequest
             playState = PlayState.Pause;
             enumerator = MoveSlider();
 
-            //¸®½º³Ê
+            //ë¦¬ìŠ¤ë„ˆ
             OnGetClip += SetAudioClip;
             
 
@@ -345,15 +351,15 @@ public class MusicController : MusicWebRequest
         {
             currentSongSlotList[currentSongIndex].SetImage(new Color(1f, 1f, 1f));
         }
-        else
+        if (currentSongSlotList.Count <= newIdx)
         {
-            Debug.Log("¿À·ù!!!! ¾ø´Â À½¿ø ÂüÁ¶");
+            Debug.Log("ì˜¤ë¥˜!!!! ì—†ëŠ” ìŒì› ì°¸ì¡°");
             return;
         }
         currentSongSlotList[newIdx].SetImage(new Color(0.8f, 0.8f, 0.8f));
         currentSongIndex = newIdx;
 
-        //À½¿ø ¹Ş¾Æ¿À±â
+        //ìŒì› ë°›ì•„ì˜¤ê¸°
         GetAudioAsync(currentSongSlotList[currentSongIndex].GetMusic().locate,play);
         /*
         if (audioLoadIEnum != null)
@@ -365,7 +371,7 @@ public class MusicController : MusicWebRequest
         audioLoadIEnum = GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, play);
         StartCoroutine(audioLoadIEnum);
         */
-        //³¡
+        //ë
 
         audioSource.Stop();
         audioSource.time = 0;
@@ -420,10 +426,11 @@ public class MusicController : MusicWebRequest
     }
     void ClickPrevButton()
     {
+        if (currentSongSlotList != null && currentSongSlotList.Count == 0) return;
         int newIdx=0;
         if (randomToggle.isOn == true)
         {
-            //·£´ı »Ì±â
+            //ëœë¤ ë½‘ê¸°
             newIdx = PickRandomIndex();
         }
         else
@@ -435,17 +442,18 @@ public class MusicController : MusicWebRequest
     }
     void ClickNextButton()
     {
+        if (currentSongSlotList!=null && currentSongSlotList.Count == 0) return;
         int newIdx = 0;
         if (randomToggle.isOn == true)
         {
-            //·£´ı »Ì±â
+            //ëœë¤ ë½‘ê¸°
             newIdx = PickRandomIndex();
         }
         else
         {
             newIdx = (currentSongIndex + 1) % currentSongSlotList.Count;
         }
-        //Àç»ı
+        //ì¬ìƒ
         StartGetAudioCoroution(newIdx,true);
 
     }
@@ -466,7 +474,7 @@ public class MusicController : MusicWebRequest
         int nextIdx = PickRandomIndex();
 
         if (randomToggle.isOn==false)
-        {//·£´ı¸ğµå°¡ ¾Æ´Ï¶ó¸é
+        {//ëœë¤ëª¨ë“œê°€ ì•„ë‹ˆë¼ë©´
             nextIdx = (currentSongIndex + 1) % currentSongSlotList.Count;
         }
 
@@ -476,7 +484,7 @@ public class MusicController : MusicWebRequest
         {
             if (nextIdx == 0)
             {
-                //Àç»ı¸ñ·ÏÀÇ ³¡¿¡ µµ´ŞÇÏ¿© Àç»ı Á¾·áÇÏ°í ¸Ç¾Õ À½¿øÀ¸·Î ÀÌµ¿
+                //ì¬ìƒëª©ë¡ì˜ ëì— ë„ë‹¬í•˜ì—¬ ì¬ìƒ ì¢…ë£Œí•˜ê³  ë§¨ì• ìŒì›ìœ¼ë¡œ ì´ë™
                 if (currentSongSlotList != null)
                 {
                     StartGetAudioCoroution(0, false);
@@ -499,8 +507,8 @@ public class MusicController : MusicWebRequest
     }
 
     public void SetAudioClip(AudioClip ac, bool play)
-    {//OnGetClip ¸®½º³Ê°¡ È£ÃâµÇ¸é ÇÔ¼ö ½ÇÇà
-        Debug.Log("¿Àµğ¿À ±³Ã¼");
+    {//OnGetClip ë¦¬ìŠ¤ë„ˆê°€ í˜¸ì¶œë˜ë©´ í•¨ìˆ˜ ì‹¤í–‰
+        Debug.Log("ì˜¤ë””ì˜¤ êµì²´");
 
         audioClip = ac;
         audioSource.clip = audioClip;
@@ -517,7 +525,9 @@ public class MusicController : MusicWebRequest
 
     void OnValueChange(float value)
     {
+        
         if (audioSource == null) return;
+        if (audioSource.clip == null) return;
 
         audioSource.time = Mathf.Max(Mathf.Min(audioClip.length *value, audioClip.length), 0);
 
@@ -589,6 +599,86 @@ public class MusicController : MusicWebRequest
                 images[i].sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f));
         }
     }
+    public void AddNewMusics(string listName,  List<Music> _musics)
+    {//í˜„ì¬ ì¬ìƒëª©ë¡ì— ìŒì›ì„ ì¶”ê°€í–ˆì„ ë•Œ ì‹¤ì‹œê°„ ë°˜ì˜ë˜ë„ë¡
+        if (_musics != null)
+        {
+            if (currentListName == listName)
+            {
+                bool wasZero = false;
+                if (currentSongSlotList.Count == 0)
+                {
+                    wasZero = true;
 
-    
+                }
+
+                SongSlot ss;
+                GameObject _obj = null;
+                for (int i = 0; i < _musics.Count; i++)
+                {
+                    _obj = Instantiate(Resources.Load("Prefabs/SongSlot/SongSlot2") as GameObject, scrollViewObject.transform);
+                    ss = _obj.GetComponent<SongSlot>();
+                    ss.SetMusic(_musics[i]);
+                    ss.OnClickSlot += SongClickHandler;
+
+                    currentSongSlotList.Add(ss);
+                }
+                scrollViewRect.SetContentSize(100);
+
+                if (wasZero == true)
+                {
+                    if (_musics.Count != 0)
+                    {
+                        SetActiveNoList(false);
+                        StartGetAudioCoroution(0, false);
+
+                    }
+
+                }
+            }
+        }
+    }
+    public void DelNewMusic(string listName,int idx ,Music _music)
+    {//í˜„ì¬ ì¬ìƒëª©ë¡ì— ìŒì›ì„ ì¶”ê°€í–ˆì„ ë•Œ ì‹¤ì‹œê°„ ë°˜ì˜ë˜ë„ë¡
+        if (_music != null)
+        {
+            if (currentListName == listName)
+            {
+                Debug.Log(idx+" "+currentSongIndex);
+                if (currentSongIndex == idx)
+                {
+                    Stop();
+                    audioSource.clip = null;
+
+                    Destroy(currentSongSlotList[idx].gameObject);
+                    currentSongSlotList.RemoveAt(idx);
+                    if (currentSongSlotList.Count == 0)
+                    {
+                        SetActiveNoList(true);
+
+                    }
+                    else
+                    {
+                        StartGetAudioCoroution(idx%currentSongSlotList.Count, false);
+                        Debug.Log(idx % currentSongSlotList.Count);
+                    }
+                }
+                else
+                {
+                    if(currentSongIndex > idx)
+                    {
+                        currentSongIndex--;
+                    }
+                    Destroy(currentSongSlotList[idx].gameObject);
+                    currentSongSlotList.RemoveAt(idx);
+                }
+
+                
+                scrollViewRect.SetContentSize(100);
+
+            }
+        }
+    }
+
+
 }

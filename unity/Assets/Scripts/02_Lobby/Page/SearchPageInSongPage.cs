@@ -42,7 +42,7 @@ public class SearchPageInSongPage : Page
 
 
     override public void Init()
-    {//¿À¹ö¶óÀÌµù
+    {//ì˜¤ë²„ë¼ì´ë”©
         if(isAlreadyInit==false)
         {
             isAlreadyInit = true;
@@ -73,22 +73,22 @@ public class SearchPageInSongPage : Page
             typeBtn.onClick.AddListener(delegate
             {
                
-                if (searchTypeText.text=="Á¦¸ñ °Ë»ö")
+                if (searchTypeText.text=="ì œëª© ê²€ìƒ‰")
                 {
-                    searchTypeText.text = "°¡¼ö °Ë»ö";
+                    searchTypeText.text = "ê°€ìˆ˜ ê²€ìƒ‰";
                 }
-                else if(searchTypeText.text == "°¡¼ö °Ë»ö")
+                else if(searchTypeText.text == "ê°€ìˆ˜ ê²€ìƒ‰")
                 {
-                    searchTypeText.text = "Àå¸£ °Ë»ö";
+                    searchTypeText.text = "ì¥ë¥´ ê²€ìƒ‰";
                 }
-                else if (searchTypeText.text == "Àå¸£ °Ë»ö")
+                else if (searchTypeText.text == "ì¥ë¥´ ê²€ìƒ‰")
                 {
-                    searchTypeText.text = "Á¦¸ñ °Ë»ö";
+                    searchTypeText.text = "ì œëª© ê²€ìƒ‰";
                 }
             });
             searchField.onSubmit.AddListener(delegate {
                
-                SearchAsync(searchTypeText.text=="Á¦¸ñ °Ë»ö"?"title":(searchTypeText.text == "°¡¼ö °Ë»ö"?"artist":"category")); 
+                SearchAsync(searchTypeText.text=="ì œëª© ê²€ìƒ‰"?"title":(searchTypeText.text == "ê°€ìˆ˜ ê²€ìƒ‰"?"artist":"category")); 
             });
 
         }
@@ -109,14 +109,20 @@ public class SearchPageInSongPage : Page
     {
         MusicIDList iDList = new MusicIDList();
         iDList.musicList = new List<string>();
+
+        List<Music> ms = new List<Music>();
         for (int i = 0; i < selectedSlots.Count; i++)
         {
             selectedSlots[i].isSelected = false;
             iDList.musicList.Add(selectedSlots[i].GetMusic().id);
+            ms.Add(selectedSlots[i].GetMusic());
         }
         selectedSlots.Clear();
         OnOffBtnObject();
+
         StartCoroutine(POST_AddMyList(iDList));
+        MusicController.Instance.AddNewMusics("myList", ms);
+
     }
     private void CancelSelect()
     {
@@ -133,7 +139,7 @@ public class SearchPageInSongPage : Page
         searchObj.SetActive(true);
     }
     override public void Load()
-    {//¿À¹ö¶óÀÌµù
+    {//ì˜¤ë²„ë¼ì´ë”©
         searchField.text = "";
         LoadSongs();
         Debug.Log("search Page Load");
@@ -205,7 +211,7 @@ public class SearchPageInSongPage : Page
         }
     }
     override public  void Reset()
-    {//¿À¹ö¶óÀÌµù
+    {//ì˜¤ë²„ë¼ì´ë”©
         Debug.Log("search Page Reset");
 
         Init();

@@ -14,7 +14,7 @@ public class ListPageInSongPage : Page
     public Button delBtn;
     public Button putBtn;
     public GameObject scrollViewObject;
-    public GameObject delCheckPanel;//¿Ã¡ﬂ ªË¡¶ √º≈© ∆«≥⁄
+    public GameObject delCheckPanel;//Ïù¥Ï§ë ÏÇ≠Ï†ú Ï≤¥ÌÅ¨ ÌåêÎÑ¨
     public Button delCancelBtn;
     public Button deldelBtn;
 
@@ -81,10 +81,10 @@ public class ListPageInSongPage : Page
 
             MusicID id = new MusicID();
             id.musicId = ss.GetMusic().id;
-
+            MusicController.Instance.DelNewMusic(listName, songSlots.IndexOf(ss), ss.GetMusic());
             songSlots.Remove(ss);
             Destroy(ss.gameObject);
-
+            
             StartCoroutine(POST_Delete(id, listName));
             
         }
@@ -94,7 +94,7 @@ public class ListPageInSongPage : Page
         if (isEditMode==true)
         {
             isEditMode = false;
-            editText.text = "∆Ì¡˝";
+            editText.text = "Ìé∏Ïßë";
             for(int i=0; i<songSlots.Count; i++)
             {
                 songSlots[i].delBtn.gameObject.SetActive(false);
@@ -108,7 +108,7 @@ public class ListPageInSongPage : Page
         else
         {
             isEditMode = true;
-            editText.text = "√Îº“";
+            editText.text = "Ï∑®ÏÜå";
             for (int i = 0; i < songSlots.Count; i++)
             {
                 songSlots[i].delBtn.gameObject.SetActive(true);
@@ -123,7 +123,7 @@ public class ListPageInSongPage : Page
 
     }
     public void Open(string listName, string content)
-    {//ø¿πˆ∑Œµ˘
+    {//Ïò§Î≤ÑÎ°úÎî©
         Init();
         gameObject.SetActive(true);
         contentText.text = content;
@@ -134,9 +134,9 @@ public class ListPageInSongPage : Page
     }
 
     async void GetSongList(string _listName)
-    {//idø° µ˚∂Û æÀ∏¬¿∫ ¿Áª˝∏Ò∑œ¿ª ∫“∑Øø¿¥¬ «‘ºˆ
+    {//idÏóê Îî∞Îùº ÏïåÎßûÏùÄ Ïû¨ÏÉùÎ™©Î°ùÏùÑ Î∂àÎü¨Ïò§Îäî Ìï®Ïàò
 
-        if (songSlots != null)//≈◊Ω∫∆ÆøÎ ƒ⁄µÂ
+        if (songSlots != null)//ÌÖåÏä§Ìä∏Ïö© ÏΩîÎìú
         {
             listName = _listName;
             MusicList ml= await GET_MusicListAsync(_listName);
@@ -180,7 +180,7 @@ public class ListPageInSongPage : Page
     override public void Reset()
     {
         Debug.Log("list reset");
-        //¿Áª˝∏Ò∑œ √ ±‚»≠
+        //Ïû¨ÏÉùÎ™©Î°ù Ï¥àÍ∏∞Ìôî
         Init();
 
         //musicList.Clear();
@@ -197,9 +197,9 @@ public class ListPageInSongPage : Page
                 }
             }
         }
-        //√ ±‚»≠
+        //Ï¥àÍ∏∞Ìôî
         contentText.text = "";
-        editText.text = "∆Ì¡˝";
+        editText.text = "Ìé∏Ïßë";
         editObject.SetActive(false);
         isEditMode = false;
     }

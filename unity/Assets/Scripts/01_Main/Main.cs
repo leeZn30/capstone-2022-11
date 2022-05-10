@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.Networking;	// UnityWebRequest»ç¿ëÀ» À§ÇØ¼­ Àû¾îÁØ´Ù.
+using UnityEngine.Networking;	// UnityWebRequestì‚¬ìš©ì„ ìœ„í•´ì„œ ì ì–´ì¤€ë‹¤.
 using LitJson;
 
 [System.Serializable]
@@ -60,7 +60,7 @@ public class Main : MonoBehaviour
         StartCoroutine(POST_EmailCode(email,code));
     }
     void OnClickLoginButton()
-    {//·Î±×ÀÎ ¹öÆ°ÀÌ ´­·ÈÀ» ¶§ 
+    {//ë¡œê·¸ì¸ ë²„íŠ¼ì´ ëˆŒë ¸ì„ ë•Œ 
         if (timewaitter != null)
         {
             StopCoroutine(timewaitter);
@@ -77,23 +77,23 @@ public class Main : MonoBehaviour
     IEnumerator Login_UnityWebRequestPOST()
     {
         animator.SetBool("isLoading", true);
-        Auth auth = new Auth//ÇöÀç inputfield¿¡ ÀÛ¼ºµÈ °ª Å¬·¡½º·Î º¯È¯
+        Auth auth = new Auth//í˜„ì¬ inputfieldì— ì‘ì„±ëœ ê°’ í´ë˜ìŠ¤ë¡œ ë³€í™˜
         {
             id = id_input.text,
             password = password_input.text
         };
-        Debug.Log("·Î±×ÀÎ ½Ãµµ : " + id_input.text + " " + password_input.text);
+        Debug.Log("ë¡œê·¸ì¸ ì‹œë„ : " + id_input.text + " " + password_input.text);
 
 
         string json = JsonUtility.ToJson(auth);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/auth", json))
-        {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+        {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
             request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();//°á°ú ÀÀ´äÀÌ ¿Ã ¶§±îÁö ±â´Ù¸®±â
+            yield return request.SendWebRequest();//ê²°ê³¼ ì‘ë‹µì´ ì˜¬ ë•Œê¹Œì§€ ê¸°ë‹¤ë¦¬ê¸°
 
 
             if (timewaitter != null)
@@ -102,7 +102,7 @@ public class Main : MonoBehaviour
             }
             animator.SetBool("isLoading", false);
 
-            if (request.error == null)//·Î±×ÀÎ ¼º°ø
+            if (request.error == null)//ë¡œê·¸ì¸ ì„±ê³µ
             {
                 if (request.isDone)
                 {   
@@ -110,7 +110,7 @@ public class Main : MonoBehaviour
 
 
                     JsonData jsonData = JsonToObject(jsonResult);
-                    Debug.Log("°á°ú " + jsonData[1]);
+                    Debug.Log("ê²°ê³¼ " + jsonData[1]);
                     User user = new User();
              
                     user.SetUser((string)(jsonData[1]["id"]),
@@ -126,7 +126,7 @@ public class Main : MonoBehaviour
 
                 SceneManager.LoadScene("02_Lobby");
             }
-            else//·Î±×ÀÎ ½ÇÆĞ
+            else//ë¡œê·¸ì¸ ì‹¤íŒ¨
             {
                 if (request.responseCode == 400)
                 {
@@ -146,31 +146,31 @@ public class Main : MonoBehaviour
     }
     IEnumerator Join_UnityWebRequestPOST(User user)
     {
-        //join ·Îµù ¾Ö´Ï¸ŞÀÌ¼Ç
+        //join ë¡œë”© ì• ë‹ˆë©”ì´ì…˜
         join.LoadingJoin();
 
         string json = JsonUtility.ToJson(user);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/user", json))
-        {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+        {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
             request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();//ÀÀ´ä ±â´Ù¸®±â
+            yield return request.SendWebRequest();//ì‘ë‹µ ê¸°ë‹¤ë¦¬ê¸°
             if (timewaitter != null)
             {
                 StopCoroutine(timewaitter);
             }
 
-            if (request.error == null)//°¡ÀÔ ¼º°ø
+            if (request.error == null)//ê°€ì… ì„±ê³µ
             {
 
                 Debug.Log(request.downloadHandler.text);
-                //join ¼º°ø
+                //join ì„±ê³µ
                 join.SuccessJoin();
             }
-            else//·Î±×ÀÎ ½ÇÆĞ
+            else//ë¡œê·¸ì¸ ì‹¤íŒ¨
             {
 
                 Debug.Log(request.error.ToString());
@@ -188,21 +188,21 @@ public class Main : MonoBehaviour
         emailKey.key = key;
         string json = JsonUtility.ToJson(emailKey);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/auth/email", json))
-        {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+        {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
             request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();//ÀÀ´ä ±â´Ù¸®±â
+            yield return request.SendWebRequest();//ì‘ë‹µ ê¸°ë‹¤ë¦¬ê¸°
 
-            if (request.error == null)//°¡ÀÔ ¼º°ø
+            if (request.error == null)//ê°€ì… ì„±ê³µ
             {
 
-                //join ¼º°ø
+                //join ì„±ê³µ
 
             }
-            else//·Î±×ÀÎ ½ÇÆĞ
+            else//ë¡œê·¸ì¸ ì‹¤íŒ¨
             {
 
                 Debug.Log(request.error.ToString());

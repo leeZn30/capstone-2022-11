@@ -31,7 +31,7 @@ public class Lobby : MusicWebRequest
     void Start()
     {
         
-        //¹öÆ° ÀÌº¥Æ® µî·Ï
+        //ë²„íŠ¼ ì´ë²¤íŠ¸ ë“±ë¡
         settingBtn.onClick.AddListener(delegate { lobbySetting.Open(); });
         openSongPageBtn.onClick.AddListener(delegate { songPage.Open(); });
         characterSetBtn.onClick.AddListener(delegate { characterSetPage.Open(); });
@@ -50,8 +50,8 @@ public class Lobby : MusicWebRequest
     void UpdateFollow()
     {
         Debug.Log("update follow");
-        followNum.text = UserData.Instance.user.followNum+"\nÆÈ·Î¿ì";
-        followerNum.text = UserData.Instance.user.followerNum + "\nÆÈ·Î¿ö";
+        followNum.text = UserData.Instance.user.followNum+"\níŒ”ë¡œìš°";
+        followerNum.text = UserData.Instance.user.followerNum + "\níŒ”ë¡œì›Œ";
 
     }
     async void GetUserData()
