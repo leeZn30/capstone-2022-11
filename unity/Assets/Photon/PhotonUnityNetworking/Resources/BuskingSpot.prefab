@@ -227,7 +227,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af8dff003e6dd4e43addb339736d3391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomNum: 0
+  objectTarget: {fileID: 0}
+  micAudioSource: {fileID: 0}
   isUsed: 0
 --- !u!114 &-555076778938142243
 MonoBehaviour:
@@ -247,7 +248,8 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 8103585340042333315}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

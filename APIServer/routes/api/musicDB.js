@@ -5,7 +5,7 @@ const auth = require('../../middleware/auth');
 
 const router = express.Router();
 
-router.get('/title', async(req, res) =>{
+router.get('/', async(req, res) =>{
     const {title} = req.body;
     const filter = [
         {$match : {title : {$regex: title}}},
@@ -69,7 +69,7 @@ router.get('/artist', async(req, res) =>{
         Music.aggregate(filter).then((music) => {
             console.log(music)
             res.status(200).json(music);
-        })
+        });
 
     } catch (e) {
         console.log(e);

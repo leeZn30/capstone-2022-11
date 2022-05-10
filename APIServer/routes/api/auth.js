@@ -70,4 +70,21 @@ router.post('/email', (req, res)=>{
 //     res.json("로그아웃 했습니다.")
 // })
 
+router.post('/modifiedChar', auth, async(req, res) => {
+    const id = req.user.id;
+    const {value} = req.body;
+
+    console.log(id)
+    console.log(req.user.character);
+
+    User.findOne({id: id}).then((user)=> {
+        console.log(user);
+        user.character = value;
+        user.save();
+        res.status(200).json({
+            character : user.character
+        })
+    })
+})
+
 module.exports = router;

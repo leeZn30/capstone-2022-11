@@ -4,10 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;
-using UnityEngine.EventSystems;
 
 [System.Serializable]
-public class SongSlot : MonoBehaviour, IPointerDownHandler
+public class SongSlot : MonoBehaviour
 {
     
     [SerializeField]
@@ -16,20 +15,9 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
     public TextMeshProUGUI titleText;
     public TextMeshProUGUI artistText;
     public Toggle toggle;
-    public Button delBtn;
     protected Image backImage;
     private bool select = false;
 
-    public delegate void DeleteHandler(SongSlot ss);
-    public event DeleteHandler OnDeleteButtonClick;
-
-    public delegate void ClickHandler(SongSlot ss);
-    public event ClickHandler OnClickSlot;
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        OnClickSlot(this);
-    }
     private void Awake()
     {
         backImage = GetComponent<Image>();
@@ -38,12 +26,6 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
     {
         if(toggle!=null)
             toggle.isOn = false;
-        if (delBtn != null)
-        {
-            delBtn.gameObject.SetActive(false);
-            delBtn.onClick.AddListener(delegate{ OnDeleteButtonClick(this); });
-        }
-            
     }
     public bool isSelected
     {

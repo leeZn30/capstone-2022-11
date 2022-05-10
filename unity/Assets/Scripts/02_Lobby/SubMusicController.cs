@@ -9,7 +9,6 @@ public class SubMusicController : MusicWebRequest
     public delegate void SongHandler(string currentPath);
     public event SongHandler OnChanged;
 
-    private IEnumerator audioLoadIEnum;
 
     // Start is called before the first frame update
     void Start()
@@ -21,23 +20,8 @@ public class SubMusicController : MusicWebRequest
     {
 
         OnChanged(path);
-        //if (audioLoadIEnum != null)
-        //    StopCoroutine(audioLoadIEnum);
-        //audioLoadIEnum = GetAudioCilpUsingWebRequest(path, true);
-        //StartCoroutine(audioLoadIEnum);
-        GetAudioAsync(path);
+        StartCoroutine(GetAudioCilpUsingWebRequest(path, true));
 
-    }
-    async void GetAudioAsync(string path)
-    {
-        if (getAudioWWW != null)
-        {
-            getAudioWWW.Dispose();
-            //StopCoroutine(audioLoadIEnum);
-        }
-        AudioClipPlay a = await GetAudioClicpAsync(path, true);
-        SetAudioClip(a.audioClip, a.play);
-        Debug.Log("d");
     }
     public void SetAudioClip(AudioClip ac, bool play)
     {

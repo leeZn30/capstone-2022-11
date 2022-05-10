@@ -14,24 +14,38 @@ public class ListPageInSongPage : Page
     public Button delBtn;
     public Button putBtn;
     public GameObject scrollViewObject;
-    public GameObject delCheckPanel;//이중 삭제 체크 판넬
-    public Button delCancelBtn;
-    public Button deldelBtn;
 
     [SerializeField]
     private List<SongSlot> songSlots;
     private ScrollViewRect scrollViewRect;
 
     private bool isEditMode=false;
-
+    private GraphicRaycaster gr;
 
     private TextMeshProUGUI editText;
     private GameObject editObject;
 
     private string listName;
-    private SongSlot deleteCheckSlot;
     private void Update()
     {
+        if (isEditMode)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                var ped = new PointerEventData(null);
+                ped.position = Input.mousePosition;
+                List<RaycastResult> results = new List<RaycastResult>();
+                gr.Raycast(ped, results);
+
+                if (results.Count <= 0) return;
+                // 이벤트 처리부분
+                if (results[0].gameObject.name != "SongSlot(Clone)") return;
+
+                SongSlot ss = results[0].gameObject.GetComponent<SongSlot>();
+                ss.isSelected = !ss.isSelected;
+            }
+            
+        }
 
     }
     void Start()
@@ -45,50 +59,48 @@ public class ListPageInSongPage : Page
         {
             isAlreadyInit = true;
 
-
+            gr = GetComponent<GraphicRaycaster>();
             isEditMode = false;
             scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
             //musicList = new List<Music>();
             songSlots = new List<SongSlot>();
             editBtn.onClick.AddListener(OnEditMode);
-
+            delBtn.onClick.AddListener(DeleteMusic);
             editText = editBtn.gameObject.GetComponentInChildren<TextMeshProUGUI>();
             editObject = editBtn.gameObject.transform.GetChild(1).gameObject;
 
-            delCancelBtn.onClick.AddListener(delegate { delCheckPanel.SetActive(false); });
-            deldelBtn.onClick.AddListener(delegate { Delete(deleteCheckSlot); });
-            OnGetSongList += LoadSongList;
+           OnGetSongList += LoadSongList;
         }
 
     }
 
-    void Delete(SongSlot ss)
+    void DeleteMusic()
     {
-        if (ss == null) return;
 
         if (isEditMode == true)
         {
-            if (listName == "uploadList")
-            {
-                if (delCheckPanel.activeSelf == false)
-                {
-                    deleteCheckSlot = ss;
-                    delCheckPanel.SetActive(true);
-                    return;
-                }
-                delCheckPanel.SetActive(false);
+            MusicIDList idList = new MusicIDList();
+            idList.musicList = new List<string>();
 
+            SongSlot[] childList = scrollViewObject.GetComponentsInChildren<SongSlot>();
+            for (int i= songSlots.Count-1; i>=0; i--)
+            {
+                if (songSlots[i].isSelected == true)
+                {
+                    Debug.Log(i);
+                    idList.musicList.Add(songSlots[i].GetMusic().id);
+                    songSlots.RemoveAt(i);
+                    Destroy(childList[i+1].gameObject);
+                }
             }
 
-            MusicID id = new MusicID();
-            id.musicId = ss.GetMusic().id;
-
-            songSlots.Remove(ss);
-            Destroy(ss.gameObject);
-
-            StartCoroutine(POST_Delete(id, listName));
-            
+            if (idList.musicList.Count > 0)
+            {
+                StartCoroutine(POST_Delete(idList, listName));
+            }
         }
+
+        OnEditMode();
     }
     void OnEditMode()
     {
@@ -98,27 +110,16 @@ public class ListPageInSongPage : Page
             editText.text = "편집";
             for(int i=0; i<songSlots.Count; i++)
             {
-                songSlots[i].delBtn.gameObject.SetActive(false);
-                /*
                 if (songSlots[i].isSelected == true)
                 {
                     songSlots[i].isSelected = false;
-                }*/
+                }
             }
         }
         else
         {
             isEditMode = true;
             editText.text = "취소";
-            for (int i = 0; i < songSlots.Count; i++)
-            {
-                songSlots[i].delBtn.gameObject.SetActive(true);
-                /*
-                if (songSlots[i].isSelected == true)
-                {
-                    songSlots[i].isSelected = false;
-                }*/
-            }
         }
         editObject.SetActive(isEditMode);
 
@@ -160,20 +161,14 @@ public class ListPageInSongPage : Page
                 _obj = Instantiate(Resources.Load("Prefabs/SongSlot/SongSlot") as GameObject, scrollViewObject.transform);
                 songSlot = _obj.GetComponent<SongSlot>();
                 songSlot.SetMusic(_musicList[i]);
-                songSlot.OnDeleteButtonClick += Delete;
-                songSlot.OnClickSlot += SongClickHandler;
                 songSlots.Add(songSlot);
-                
 
             }
             scrollViewRect.SetContentSize(100);
         }
 
     }
-    private void SongClickHandler(SongSlot ss)
-    {
-        MusicController.Instance.StartGetListCoroution(listName, songSlots.IndexOf(ss), true);
-    }
+
     override public void Reset()
     {
         Debug.Log("list reset");
