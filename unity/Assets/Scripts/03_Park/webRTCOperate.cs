@@ -167,7 +167,7 @@ public class webRTCOperate : Singleton<webRTCOperate>
         receivePC.OnTrack = (RTCTrackEvent e) => {
             if (e.Track.Kind == TrackKind.Video)
             {
-                otherRawImageSmall
+              //  otherRawImageSmall
             }
         };
         // {
