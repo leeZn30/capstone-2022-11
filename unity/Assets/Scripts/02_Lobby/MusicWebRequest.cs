@@ -1231,6 +1231,59 @@ public class MusicWebRequest : MonoBehaviour
             return null;
         }
     }
+
+    protected async UniTask POST_AddPlayCount(string musicId)
+    {
+        try
+        {
+            MusicID mi = new MusicID();
+            mi.musicId = musicId;
+
+            string json = "";
+            json = JsonUtility.ToJson(mi);
+
+            Debug.Log(musicId+ "재생 수 추가 요청");
+            using (UnityWebRequest www = UnityWebRequest.Post(url + "/music/play" , json))
+            {
+
+                www.SetRequestHeader("Content-Type", "application/json");
+                www.SetRequestHeader("accept", "text/plain");
+                www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
+
+                await www.SendWebRequest();
+
+                if (www.error == null)
+                {
+
+                }
+                else
+                {
+                    Debug.Log(www.error.ToString());
+
+                }
+            }
+        }
+        catch (ArgumentNullException e)
+        {
+            Debug.Log("재생 증가 요청 취소됨");
+        }
+        catch (UnityWebRequestException e)
+        {
+            if (e.ResponseCode == 400 || e.ResponseCode == 401)
+            {
+                Popup.Instance.Open();
+                Debug.Log(e.ResponseCode + "[POST_FollowUserAsync] 토큰 만료");
+            }
+            else
+            {
+                Debug.Log(e);
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+        }
+    }
     JsonData JsonToObject(string json)
     {
         return JsonMapper.ToObject(json);

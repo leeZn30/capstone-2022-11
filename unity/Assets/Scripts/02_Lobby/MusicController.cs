@@ -72,6 +72,7 @@ public class MusicController : MusicWebRequest
 
     private IEnumerator enumerator;
     private bool isCurrentSongFinish=false;
+    private bool isCleanListen=false;
     PlayState playState;
 
     //
@@ -112,6 +113,7 @@ public class MusicController : MusicWebRequest
     {
         if (audioSource.clip != null)
             audioSource.Pause();
+        isCleanListen = false;
     }
     private void Update()
     {
@@ -127,8 +129,21 @@ public class MusicController : MusicWebRequest
                     if (RepeatMode.OneRepeat != repeatMode)
                     {
                         Debug.Log("자연 재생 끝");
+                        if (isCleanListen == true)
+                        {
+                            PostPlayCountPlus(currentSongSlotList[currentSongIndex].GetMusic().id);
+                        }
+                        isCleanListen = false;
                         isCurrentSongFinish = true;
                         AutoPlayNextMusic();
+                    }
+                    else
+                    {//한곡 재생 모드라면
+                        if (isCleanListen == true)
+                        {
+                            PostPlayCountPlus(currentSongSlotList[currentSongIndex].GetMusic().id);
+                        }
+                        isCleanListen = true;
                     }
 
                 }
@@ -286,6 +301,9 @@ public class MusicController : MusicWebRequest
             {
                 pauseplayBtns[i].onClick.AddListener(delegate {
                     if (audioSource.clip != null) {
+                        //완전히 들었는지 false
+                        isCleanListen = false;
+
                         ChangeState(!audioSource.isPlaying);
                     }
                 });
@@ -391,14 +409,14 @@ public class MusicController : MusicWebRequest
             getAudioWWW.Dispose();
             //StopCoroutine(audioLoadIEnum);
         }
-        //CancellationTokenSource cts;
-        //UniTask t=new UniTask<AudioClipPlay> (GetAudioClicpAsync(path, play),cts)
-        //var thread = new Thread(() => UniTask.RunOnThreadPool<AudioClipPlay>(GetAudioClicpAsync(path, play)));
-        //AudioClipPlay a = await UniTask.RunOnThreadPool<AudioClipPlay>(() => GetAudioClicpAsync(path, play));
         AudioClipPlay a = await GetAudioClipAsync(path, play);
-        //t.Wait();
+
         if(a!=null)
             SetAudioClip(a.audioClip, a.play);
+    }
+    async void PostPlayCountPlus(string msID)
+    {
+        await POST_AddPlayCount(msID);
     }
     public async void StartGetListCoroution(string name, int idx, bool play)
     {     
@@ -419,7 +437,9 @@ public class MusicController : MusicWebRequest
         }
     }
     void ClickPrevButton()
-    {
+    {   //완전히 들었는지 false
+        isCleanListen = false;
+
         if (currentSongSlotList != null && currentSongSlotList.Count == 0) return;
         int newIdx=0;
         if (randomToggle.isOn == true)
@@ -436,6 +456,9 @@ public class MusicController : MusicWebRequest
     }
     void ClickNextButton()
     {
+        //완전히 들었는지 false
+        isCleanListen = false;
+
         if (currentSongSlotList!=null && currentSongSlotList.Count == 0) return;
         int newIdx = 0;
         if (randomToggle.isOn == true)
@@ -509,6 +532,8 @@ public class MusicController : MusicWebRequest
 
         isCurrentSongFinish = false;
 
+        //완전히 건들지 않고 들었는지 초기화
+        isCleanListen = true;
 
         ChangeState(play);
 
@@ -523,6 +548,7 @@ public class MusicController : MusicWebRequest
         if (audioSource == null) return;
         if (audioSource.clip == null) return;
 
+        isCleanListen = false;
         audioSource.time = Mathf.Max(Mathf.Min(audioClip.length *value, audioClip.length), 0);
 
         if (audioSource.isPlaying == true)

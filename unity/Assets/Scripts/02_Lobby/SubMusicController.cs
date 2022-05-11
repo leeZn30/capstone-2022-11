@@ -22,6 +22,11 @@ public class SubMusicController : MusicWebRequest
     public delegate void SongHandler(PlaySongSlot ss);
     public event SongHandler OnChanged;
 
+    public delegate void SongPlayHandler(bool isPlay);
+    public event SongPlayHandler OnChangePlayState;
+
+
+
     private Music music;
     private IEnumerator audioLoadIEnum;
 
@@ -92,13 +97,15 @@ public class SubMusicController : MusicWebRequest
     }
     async void GetAudioAsync(string path)
     {
+        playBtnImage.sprite = Resources.Load<Sprite>("Image/UI/pause");
         if (getAudioWWW != null)
         {
             getAudioWWW.Dispose();
             //StopCoroutine(audioLoadIEnum);
         }
         AudioClipPlay a = await GetAudioClipAsync(path, true);
-        SetAudioClip(a.audioClip, a.play);
+        if (a != null)
+            SetAudioClip(a.audioClip, a.play);
     }
     public void SetAudioClip(AudioClip ac, bool play)
     {
@@ -124,6 +131,7 @@ public class SubMusicController : MusicWebRequest
                 GetAudioAsync(music.locate);
         }
         MusicController.Instance.Stop();
+        OnChangePlayState?.Invoke(true);
     }
     public void Pause()
     {
@@ -131,6 +139,7 @@ public class SubMusicController : MusicWebRequest
         {
             audioSource.Pause();
             playBtnImage.sprite = Resources.Load<Sprite>("Image/UI/play");
+            OnChangePlayState?.Invoke(false);
         }
     }
     public void Reset()

@@ -4979,6 +4979,10 @@ PrefabInstance:
       value: id
       objectReference: {fileID: 0}
     - target: {fileID: 3548226455596383563, guid: 57f81a7a4db57e5468a15be2e57032ff, type: 3}
+      propertyPath: type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3548226455596383563, guid: 57f81a7a4db57e5468a15be2e57032ff, type: 3}
       propertyPath: regex_str
       value: ^([a-z]){1}([a-z0-9]){5,10}$
       objectReference: {fileID: 0}

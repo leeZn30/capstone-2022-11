@@ -52,7 +52,7 @@ router.post('/', auth, function(req, res){
             
             //음악, 이미지 파일 다른 폴더로 업로드
             const extension = path.extname(part.filename);
-            var params = {}
+            var params = {} 
             //파일 확장자 확인
             if(extension === '.mp3' || extension === '.wav') {
                 const musicKey = 'Music/' + filename + extension;

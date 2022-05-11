@@ -26,7 +26,7 @@ public class FileOpenDialog : MonoBehaviour
         switch (type)
         {
             case Type.Music:
-                OpenDialog.Filter = "오디오 파일 (*.wav, *.mp3, *.ogg) | *.wav; *.mp3 *.ogg;";
+                OpenDialog.Filter = "오디오 파일 (*.wav, *.mp3, *.ogg) | *.wav; *.mp3; *.ogg;";
                 break;
             case Type.Image:
                 OpenDialog.Filter = "이미지 파일 (*.jpg, *.png) | *.jpg; *.png;";

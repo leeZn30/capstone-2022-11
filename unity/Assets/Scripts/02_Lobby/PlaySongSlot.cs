@@ -50,7 +50,7 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
             slider.OnPointDown += StopSlider;
             
         }
-
+        isPlaying = false;
         MusicController.Instance.subMusicController.OnChanged += Off;
 
 
@@ -87,21 +87,33 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
     private void Off(PlaySongSlot ss)
     {
 
-        if (ss == this) {
+        if (ss == this)
+        {
+            if (isSet == false)
+            {//처음 선택된 슬롯일 때
+                MusicController.Instance.subMusicController.OnChangePlayState += OnChangedPlayState;
+            }
             isSet = true;
-            isPlaying = true;
             ChangeBtnImage();
-            return; 
+            return;
         }
-        isSet = false;
-        isPlaying = false;
-        if(slider!=null)
-            slider.gameObject.SetActive(false);
-        if (imageBackObject!=null)
-            imageBackObject.SetActive(false);
+        else
+        {//선택되지않은 슬롯중에서
+            if (isSet == true)
+            {
+                //바로 이전에 선택되었던 슬롯일때
+                MusicController.Instance.subMusicController.OnChangePlayState -= OnChangedPlayState;
+            }
 
-        ChangeBtnImage();
+            isSet = false;
+            isPlaying = false;
+            if (slider != null)
+                slider.gameObject.SetActive(false);
+            if (imageBackObject != null)
+                imageBackObject.SetActive(false);
 
+            ChangeBtnImage();
+        }
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -150,6 +162,11 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
         }
         
     }
+    void OnChangedPlayState(bool isPlay)
+    {
+        isPlaying = isPlay;
+        ChangeBtnImage();
+    }
     public void ChangeBtnImage()
     {
         if (playImage == null) return;
@@ -174,6 +191,10 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
         {
             slider.OnPointUp -= OnValueChange;
             slider.OnPointDown -= StopSlider;
+        }
+        if (isSet == true)
+        {
+            MusicController.Instance.subMusicController.OnChangePlayState -= OnChangedPlayState;
         }
 
     }

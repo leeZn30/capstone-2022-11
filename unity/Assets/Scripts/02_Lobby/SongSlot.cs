@@ -94,13 +94,12 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
     }
     IEnumerator GetTexture(string _path)
     {
-        Debug.Log("image load 시도" + _path);
         UnityWebRequest www = UnityWebRequestTexture.GetTexture("https://"+_path);
         yield return www.SendWebRequest();
         
         if (www.result != UnityWebRequest.Result.Success)
         {
-            Debug.Log(www.error);
+            Debug.Log("GetTextrue : "+www.error);
         }
         else
         {

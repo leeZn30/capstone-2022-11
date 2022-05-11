@@ -9,6 +9,7 @@ public class ScrollViewRect : MonoBehaviour
     // 스크롤 뷰와 관련된 수정을 하기 위해 가지고 있는 변수 
     RectTransform rect;
     public bool isGrid;
+    public int gridRowCount=4;
 
     void Awake () {
 
@@ -22,7 +23,7 @@ public class ScrollViewRect : MonoBehaviour
 
         if (gameObject.GetComponent<GridLayoutGroup>() is GridLayoutGroup gl)
         {
-            height += gl.cellSize.y * ((int)(cnt/4)+(cnt%4 !=0 ?1 :0)) + gl.spacing.y*((int)(cnt / 4) + (cnt % 4 != 0 ? 1 : 0));
+            height += gl.cellSize.y * ((int)(cnt/ gridRowCount) +(cnt% gridRowCount != 0 ?1 :0)) + gl.spacing.y*((int)(cnt / gridRowCount) + (cnt % gridRowCount != 0 ? 1 : 0));
         }
         else
         {
@@ -30,7 +31,6 @@ public class ScrollViewRect : MonoBehaviour
             for (int i = 0; i < cnt; i++)
             {
                 height += transform.GetChild(i).gameObject.GetComponent<RectTransform>().sizeDelta.y;
-                Debug.Log(height);
                
             }
         }

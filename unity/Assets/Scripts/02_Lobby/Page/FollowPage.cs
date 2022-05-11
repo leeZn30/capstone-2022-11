@@ -23,7 +23,7 @@ public class FollowPage : Page
 
     public GameObject followUserScrollViewObject;
     public GameObject searchedUserScrollViewObject;
-
+    public GameObject[] noListObjects;
 
     private List<UserSlot> followUserSlots;
     private List<UserSlot> searchedUserSlots;
@@ -178,7 +178,12 @@ public class FollowPage : Page
             RemoveSlots(FollowSystemType.uploadList);
             if (_musics.Count == 0)
             {//올린 음원이 없습니다.
-              
+                
+                SetNoListObject(FollowSystemType.uploadList, true);
+            }
+            else
+            {
+                SetNoListObject(FollowSystemType.uploadList, false);
             }
             GameObject _obj = null;
             PlaySongSlot slot;
@@ -266,6 +271,11 @@ public class FollowPage : Page
                 }
 
             }
+            if (_users.Count == 0)
+                SetNoListObject(type, true);
+            else
+                SetNoListObject(type, false);
+
             if (type == FollowSystemType.searched)
                 searchedUserScrollViewObject.GetComponent<ScrollViewRect>().SetContentSize();
             else
@@ -345,6 +355,14 @@ public class FollowPage : Page
         }
 
     }
+    void SetNoListObject(FollowSystemType ft, bool on)
+    {
+        if (ft == FollowSystemType.follow)
+            noListObjects[(int)ft].GetComponent<TextMeshProUGUI>().text = "팔로우한 유저가 없습니다.";
+        else if (ft == FollowSystemType.follower)
+            noListObjects[(int)ft].GetComponent<TextMeshProUGUI>().text = "팔로워가 없습니다.";
+        noListObjects[(int)ft].SetActive(on);
+    }
     override public void Load()
     {
         LoadUserProfile();//내 프로필 로드
@@ -359,6 +377,7 @@ public class FollowPage : Page
         RemoveSlots(FollowSystemType.searched);
         RemoveSlots(FollowSystemType.follow);
         RemoveSlots(FollowSystemType.uploadList);
+
     }
     private void OnDestroy()
     {

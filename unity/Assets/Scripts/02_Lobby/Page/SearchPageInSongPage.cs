@@ -156,7 +156,6 @@ public class SearchPageInSongPage : Page
             PlaySongSlot _searchedSlot;
             for (int i=0; i < currentMusics.Count; i++)
             {
-                Debug.Log(currentMusics[i].id);
                 _obj = Instantiate(Resources.Load("Prefabs/SongSlot/SearchedSlot") as GameObject,scrollViewObject.transform);
                 _searchedSlot = _obj.GetComponent<PlaySongSlot>();
                 _searchedSlot.SetMusic(currentMusics[i]);
