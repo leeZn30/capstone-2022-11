@@ -82,11 +82,13 @@ public class ListPageInSongPage : Page
             MusicID id = new MusicID();
             id.musicId = ss.GetMusic().id;
             MusicController.Instance.DelNewMusic(listName, songSlots.IndexOf(ss), ss.GetMusic());
+
+            StartCoroutine(POST_Delete(id, listName));
+            StartCoroutine(POST_DeleteFromBucket(ss.GetMusic().locate));
+
             songSlots.Remove(ss);
             Destroy(ss.gameObject);
-            
-            StartCoroutine(POST_Delete(id, listName));
-            
+
         }
     }
     void OnEditMode()

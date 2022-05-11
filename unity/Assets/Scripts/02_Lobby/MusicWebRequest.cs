@@ -239,6 +239,10 @@ public class MusicTitle
 {
     public string title;
 }
+public class MusicLocate
+{
+    public string locate;
+}
 public class MusicArtist
 {
     public string artist;
@@ -346,6 +350,36 @@ public class MusicWebRequest : MonoBehaviour
             {
 
                 Debug.Log(request.downloadHandler.text);
+
+
+            }
+            else
+            {
+                Debug.Log(request.error.ToString());
+
+            }
+        }
+    }
+    //버킷에서 음원 삭제
+    protected IEnumerator POST_DeleteFromBucket(string fileName)
+    {
+
+        MusicLocate musicLocate = new MusicLocate();
+        musicLocate.locate = fileName;
+
+        string json = JsonUtility.ToJson(musicLocate);
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/media/delete" , json))
+        {// 보낼 주소와 데이터 입력
+
+            request.uploadHandler = new UploadHandlerRaw(new System.Text.UTF8Encoding().GetBytes(json));
+            request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
+
+            if (request.error == null)
+            {
+
 
 
             }

@@ -93,8 +93,9 @@ router.post('/', auth, function(req, res){
 //Delete
 router.post('/delete',(req,res) =>{
     //삭제할 file
-    const delete_filename = req.body.filename;
+    var delete_filename = req.body.locate;
     //파일 확장자
+    delete_filename=path.basename(delete_filename);
     const extension = path.extname(delete_filename);
     var params = {}
     //파일 확장자 확인
