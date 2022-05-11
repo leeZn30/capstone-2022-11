@@ -99,10 +99,10 @@ router.post('/delete',(req,res) =>{
     var params = {}
     //파일 확장자 확인
     if(extension === '.mp3' || extension === '.wav') {
-        params = {Bucket: "bucket-bsn0zi", Key: "Music/" + delete_filename};
+        params = {Bucket: BUCKET_NAME, Key: "Music/" + delete_filename};
     }
     else if(extension === '.jpg' || extension === '.png') {
-        params = {Bucket: "bucket-bsn0zi", Key: "Image/" + delete_filename};
+        params = {Bucket: BUCKET_NAME, Key: "Image/" + delete_filename};
     }
     else
         return res.status(400).json({msg: "올바르지 않은 파일입니다."});
