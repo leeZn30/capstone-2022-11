@@ -606,7 +606,12 @@ public class MusicWebRequest : MonoBehaviour
             if (e.ResponseCode == 400)
             {
                 Debug.Log(e.ResponseCode+" [GET_MusicListAsync] 토큰 만료");
-                Popup.Instance.Open();
+                Popup.Instance.Open(0);
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
             }
             else
             {
@@ -649,14 +654,8 @@ public class MusicWebRequest : MonoBehaviour
             using (getAudioWWW = UnityWebRequestMultimedia.GetAudioClip("https://"+_filePath, audioType))
             {
                 Debug.Log("get audio " + _filePath + audioType.ToString());
-                //getAudioWWW.SendWebRequest();
-                
+
                 await getAudioWWW.SendWebRequest();// Unity의 Async Operation 이라 await 가능하다.
-                //while (!getAudioWWW.isDone)
-                //{
-                    //yield return new WaitForSecondsRealtime(0.01f);
-                //}
-                // var responseString = res.downloadHandler.text;
 
                 Debug.Log("get audio 끝" + _filePath + audioType.ToString());
                 if (getAudioWWW.result == UnityWebRequest.Result.ConnectionError)
@@ -680,8 +679,13 @@ public class MusicWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400)
             {
-                Popup.Instance.Open();
+                Popup.Instance.Open(0);
                 Debug.Log(e.ResponseCode+"[GetAudioClipAsync] 토큰 만료");
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
             }
             else
             {
@@ -695,57 +699,6 @@ public class MusicWebRequest : MonoBehaviour
             return null;
         }
     }
-    /*
-    protected bool flag;
-
-    protected IEnumerator GetAudioCilpUsingWebRequest(string _filePath, bool play)
-    {
-
-
-            AudioType audioType = AudioType.MPEG;
-
-            string type = _filePath.Substring(_filePath.Length - 3);
-            if (type == "wav")
-            {
-                audioType = AudioType.WAV;
-            }
-            else if (type == "mp3")
-            {
-
-                audioType = AudioType.MPEG;
-            }
-            else if (type == "ogg")
-            {
-                audioType = AudioType.OGGVORBIS;
-            }
-
-            using (getAudioWWW = UnityWebRequestMultimedia.GetAudioClip("https://" + _filePath, audioType))
-            {
-                Debug.Log("get audio " + _filePath + audioType.ToString());
-            //getAudioWWW.SendWebRequest();
-            flag = false;
-                getAudioWWW.SendWebRequest();// Unity의 Async Operation 이라 await 가능하다.
-                                                   while (!getAudioWWW.isDone)
-                                                   {
-                if (flag == true) yield break;
-                                                   yield return new WaitForSecondsRealtime(0.01f);
-                                                   }
-                                                   // var responseString = res.downloadHandler.text;
-
-                Debug.Log("get audio 끝" + _filePath + audioType.ToString());
-                if (getAudioWWW.result == UnityWebRequest.Result.ConnectionError)
-                {
-                    Debug.Log(getAudioWWW.error);
-                }
-                else
-                {
-                    //return new AudioClipPlay(DownloadHandlerAudioClip.GetContent(getAudioWWW), play);
-                    OnGetClip(DownloadHandlerAudioClip.GetContent(getAudioWWW), play);
-                }
-            }
-
-    }
-    */
 
     protected async UniTask<MusicList> GET_SearchMusicTitleAsync(string type, string value)
     {
@@ -835,8 +788,13 @@ public class MusicWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400)
             {
-                Popup.Instance.Open();
+                Popup.Instance.Open(0);
                 Debug.Log(e.ResponseCode+" [GET_SearchMusicTitleAsync] 토큰 만료");
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
             }
             else
             {
@@ -914,8 +872,13 @@ public class MusicWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400)
             {
-                Popup.Instance.Open();
+                Popup.Instance.Open(0);
                 Debug.Log(e.ResponseCode+"[GET_SpecificMusicListAsync] 토큰 만료");
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
             }
             else
             {
@@ -986,8 +949,13 @@ public class MusicWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400 || e.ResponseCode == 401)
             { 
-                Popup.Instance.Open();
+                Popup.Instance.Open(0);
                 Debug.Log(e.ResponseCode + "[GET_FollowSystemUserListAsync] 토큰 만료");
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
             }
             else
             {
@@ -1068,8 +1036,13 @@ public class MusicWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400)
             {
-                Popup.Instance.Open();
+                Popup.Instance.Open(0);
                 Debug.Log(e.ResponseCode + "[ GET_SearchUserAsync] 토큰 만료");
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
             }
             else
             {
@@ -1128,13 +1101,18 @@ public class MusicWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400 || e.ResponseCode == 401)
             {
-                Popup.Instance.Open();
+                Popup.Instance.Open(0);
                 Debug.Log(e.ResponseCode + "[POST_FollowUserAsync] 토큰 만료");
             }
             else if (e.ResponseCode == 450)
             {
                 //이미 팔로우한 유저
 
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
             }
             else
             {
@@ -1214,9 +1192,14 @@ public class MusicWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400)
             {
-                Popup.Instance.Open();
+                Popup.Instance.Open(0);
                 Debug.Log(e.ResponseCode + "[ GET_UserInfoAsync] 토큰 만료");
 
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
             }
             else
             {
@@ -1226,7 +1209,6 @@ public class MusicWebRequest : MonoBehaviour
         }
         catch (Exception e)
         {
-            Popup.Instance.Open();
             Debug.LogError(e);
             return null;
         }
@@ -1271,8 +1253,13 @@ public class MusicWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400 || e.ResponseCode == 401)
             {
-                Popup.Instance.Open();
+                Popup.Instance.Open(0);
                 Debug.Log(e.ResponseCode + "[POST_FollowUserAsync] 토큰 만료");
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
             }
             else
             {

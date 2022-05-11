@@ -138,6 +138,11 @@ public class Main : MonoBehaviour
                     }
                     wrong_obj.SetActive(true);
                 }
+                else if (request.responseCode == 0)
+                {
+                    wrongText.text = "서버와의 연결이 끊어졌습니다.";
+                    wrong_obj.SetActive(true);
+                }
                 Debug.Log(request.error);
             }
         }

@@ -4136,6 +4136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 1
+  gridRowCount: 4
 --- !u!114 &256606393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8741,7 +8742,7 @@ GameObject:
   - component: {fileID: 535310434}
   - component: {fileID: 535310433}
   m_Layer: 5
-  m_Name: setting back
+  m_Name: token back
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13169,6 +13170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 0
+  gridRowCount: 4
 --- !u!1 &810444665
 GameObject:
   m_ObjectHideFlags: 0
@@ -15408,7 +15410,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &969848175
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17593,6 +17595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 0
+  gridRowCount: 4
 --- !u!114 &1116844397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19301,6 +19304,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 0
+  gridRowCount: 4
 --- !u!1 &1219103543
 GameObject:
   m_ObjectHideFlags: 0
@@ -19396,6 +19400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 0
+  gridRowCount: 4
 --- !u!1 &1221941655
 GameObject:
   m_ObjectHideFlags: 0
@@ -23324,7 +23329,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchorMin.x
@@ -23332,15 +23337,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_LocalPosition.x
@@ -23372,11 +23377,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 285
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -105
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -24601,7 +24606,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 979d9b0bc2f879745b541e7e85cc7580, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tokenPanel: {fileID: 535310431}
+  text: {fileID: 92505871}
+  Panel: {fileID: 535310431}
   button: {fileID: 117941819}
 --- !u!1 &1579353653
 GameObject:
@@ -26225,6 +26231,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 1
+  gridRowCount: 4
 --- !u!1 &1666570313
 GameObject:
   m_ObjectHideFlags: 0
@@ -29379,6 +29386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 0
+  gridRowCount: 4
 --- !u!1 &1802217958
 GameObject:
   m_ObjectHideFlags: 0
@@ -31162,6 +31170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 0
+  gridRowCount: 4
 --- !u!1 &1891886980
 GameObject:
   m_ObjectHideFlags: 0
@@ -32930,6 +32939,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 1
+  gridRowCount: 4
 --- !u!114 &2004912065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33122,6 +33132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 0
+  gridRowCount: 4
 --- !u!114 &2030263863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35764,7 +35775,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchorMin.x
@@ -35772,15 +35783,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 0
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_LocalPosition.x
@@ -35812,11 +35823,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 105
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -105
       objectReference: {fileID: 0}
     - target: {fileID: 9157759202623181790, guid: 0a1f3a7ebb8820f449993bb00f7e4493, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
