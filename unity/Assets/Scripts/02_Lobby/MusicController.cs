@@ -35,7 +35,7 @@ public class MusicController : MusicWebRequest
     public SubMusicController subMusicController;
 
 
-
+    public TMP_Dropdown dropdown;
     public Button openBtn;
     public Image[] images;
     public Button[] pauseplayBtns;
@@ -115,11 +115,6 @@ public class MusicController : MusicWebRequest
     }
     private void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            //StartCoroutine(testLoadUpload());
-        }
         if (audioSource.clip != null)
         {
             
@@ -319,10 +314,9 @@ public class MusicController : MusicWebRequest
 
             //리스너
             OnGetClip += SetAudioClip;
-            
 
-            StartGetListCoroution("myList", 0, false);
-            
+            dropdown.onValueChanged.AddListener(OnChangeDropDown);
+            StartGetListCoroution("uploadList", 0, false);
             cts = new CancellationTokenSource();
         }
     }
@@ -679,6 +673,20 @@ public class MusicController : MusicWebRequest
             }
         }
     }
+    public void SetOptions(List<string> listNames)
+    {
+        if (listNames == null) return;
 
+        List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
 
+        for (int i = 0; i < listNames.Count; ++i)
+            options.Add(new TMP_Dropdown.OptionData(listNames[i].ToString()));
+
+        dropdown.options = options;
+    }
+
+    void OnChangeDropDown(int value)
+    {
+        StartGetListCoroution(dropdown.options[value].text, 0, true);
+    }
 }

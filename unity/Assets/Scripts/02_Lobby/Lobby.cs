@@ -63,6 +63,14 @@ public class Lobby : MusicWebRequest
             userNickname.text = UserData.Instance.user.GetName();
             UpdateFollow();
             ChangeCharacter();
+
+
+            //재생목록리스트 업데이트
+            //임시로 고정 데이터입력
+            List<string> listNames = new List<string>();
+            listNames.Add("uploadList");
+            listNames.Add("myList");
+            MusicController.Instance.SetOptions(listNames);
         }
 
     }

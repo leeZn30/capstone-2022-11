@@ -641,13 +641,7 @@ MonoBehaviour:
   btn_content: 
   under_content: 
   regex_str: 
-  strs:
-  - "\uB304\uC2A4"
-  - "\uBC1C\uB77C\uB4DC"
-  - "\uD31D"
-  - "\uB7A9/\uD799\uD569"
-  - "\uC778\uB514\uC74C\uC545"
-  - "\uB85D/\uBA54\uD0C8"
+  strs: []
   nameText: {fileID: 664709139987669153}
   btn: {fileID: 0}
   inputField: {fileID: 0}

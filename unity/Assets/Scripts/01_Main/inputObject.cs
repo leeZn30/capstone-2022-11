@@ -75,6 +75,20 @@ public class inputObject : MonoBehaviour
 
             isOkay = true;
         }
+        if (key == "fav2")
+        {
+
+            toggles = GetComponentsInChildren<Toggle>();
+            toggleTexts = new TextMeshProUGUI[toggles.Length];
+            for (int i = 0; i < toggles.Length; i++)
+            {
+                toggleTexts[i] = toggles[i].GetComponentInChildren<TextMeshProUGUI>();
+                toggleTexts[i].text = GlobalData.Genre[i];
+                toggles[i].isOn = false;
+            }
+
+            isOkay = true;
+        }
 
         nameText.text = name_content;
 
