@@ -212,7 +212,7 @@ router.post('/deleteList', auth, async (req, res)=> {
         await User.updateOne({id:id}, {$unset:{[listName] : ""}});
 
         User.findOne({id:id}).then((user) => {
-            res.status(200).json({user: user})
+            res.status(200).json({user: user.listName})
         })
     }
 })
@@ -241,7 +241,7 @@ router.post('/addSong', auth, async (req, res)=> {
     }
 
     User.findOne({id:id}).then((user) => {
-        res.status(200).json({user: user})
+        res.status(200).json({user: user[listName]})
     })
 })
 
@@ -253,7 +253,7 @@ router.post('/deleteSong', auth, async (req, res)=> {
     await User.updateOne({id: id}, {$pull: { [listName]: musicId}});
 
     User.findOne({id:id}).then((user) => {
-        res.status(200).json({user: user})
+        res.status(200).json({user: user[listName]})
     })
 })
 
