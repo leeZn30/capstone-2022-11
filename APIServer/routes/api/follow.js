@@ -28,11 +28,8 @@ router.post('/', auth, async(req, res)=>{
     let duplicate = false;
 
     await User.findOne({id:id}).then((user)=>{
-        for (let i = 0; i < user.follow.length; i++){
-            if (user.follow[i][0] === userId) {
-                duplicate = true;
-                break;
-            }
+        if (user.follow.includes(userId)) {
+            duplicate = true;
         }
     })
 
