@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const config = require('../../config/index');
 const { JWT_SECRET } = config;
 
-const Music = require('../../models/music');
 const User = require('../../models/user');
 
 const router = express.Router();
@@ -76,7 +75,7 @@ router.get('/info', async(req, res)=>{
         }];
 
     User.aggregate(filter).then((user)=>{
-        console.log(user)
+        // console.log(user)
         res.status(200).json({user: user[0]})
     })
 })
@@ -102,7 +101,7 @@ router.get('/search', auth, async(req, res)=>{
         }];
 
     User.aggregate(filter).then((user)=>{
-        console.log(user)
+        // console.log(user)
         res.status(200).json({user:user})
     })
 })
@@ -146,11 +145,11 @@ router.post('/modifiedChar', auth, async(req, res) => {
     const id = req.user.id;
     const {value} = req.body;
 
-    console.log(id)
-    console.log(req.user.character);
+    // console.log(id)
+    // console.log(req.user.character);
 
     User.findOne({id: id}).then((user)=> {
-        console.log(user);
+        // console.log(user);
         user.character = value;
         user.save();
         res.status(200).json({
@@ -205,12 +204,17 @@ router.post('/deleteList', auth, async (req, res)=> {
     const {listName} = req.body;
     const id = req.user.id;
 
-    await User.updateOne({id: id}, {$pull: { listName: listName}});
-    await User.updateOne({id:id}, {$unset:{[listName] : ""}});
+    if (listName === "uploadList") {
+        res.status(440).json({message:"업로드 리스트는 삭제 못함."})
+    }
+    else {
+        await User.updateOne({id: id}, {$pull: { listName: listName}});
+        await User.updateOne({id:id}, {$unset:{[listName] : ""}});
 
-    User.findOne({id:id}).then((user) => {
-        res.status(200).json({user: user})
-    })
+        User.findOne({id:id}).then((user) => {
+            res.status(200).json({user: user})
+        })
+    }
 })
 
 router.post('/addSong', auth, async (req, res)=> {
