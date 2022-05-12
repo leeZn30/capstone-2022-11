@@ -56,8 +56,8 @@ CapsuleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.035752952, y: 0.73293734}
-  m_Size: {x: 1.5720485, y: 3.4658747}
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.63518715, y: 1.2716502}
   m_Direction: 0
 --- !u!50 &749579043475033279
 Rigidbody2D:
@@ -176,6 +176,7 @@ MonoBehaviour:
   videoPanel: {fileID: 0}
   ChatPanel: {fileID: 0}
   buskerPanel: {fileID: 0}
+  cameraDistance: 10
 --- !u!114 &6924849003541504941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -418,8 +419,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -1.5}
-  m_SizeDelta: {x: 10, y: 1}
+  m_AnchoredPosition: {x: 0, y: -0.94}
+  m_SizeDelta: {x: 1, y: 0.28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &3411959940462939075
 MeshRenderer:
@@ -440,7 +441,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  - {fileID: 7779101192413030801, guid: 2b9508251aebd2741b2d6a8859447dc9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -484,8 +485,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Ayeoni
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2b9508251aebd2741b2d6a8859447dc9, type: 2}
+  m_sharedMaterial: {fileID: 7779101192413030801, guid: 2b9508251aebd2741b2d6a8859447dc9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -509,8 +510,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 8
-  m_fontSizeBase: 8
+  m_fontSize: 2.14
+  m_fontSizeBase: 2.14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -752,7 +753,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.5, y: 3}
+  m_AnchoredPosition: {x: 0.5, y: 1.34}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &6767721522010426706
@@ -914,8 +915,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9107051597972033875}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.3, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 1}
   m_Children:
   - {fileID: 2859850322758261214}
   - {fileID: 1625893610151055235}
