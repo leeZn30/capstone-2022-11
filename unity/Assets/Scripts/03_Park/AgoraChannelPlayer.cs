@@ -22,7 +22,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     // User 정보
     [Header("User 정보")]
     [SerializeField] private uint myUID;
-    [SerializeField] private string role;
+    public string role;
 
     // BuskingZone 정보
     [Header("BuskingZone 정보")]
@@ -45,20 +45,18 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             Debug.Log("calling Channel mode = " + mode);
             if (mode == 0) // Busker
             {
+                role = "publisher";
+
                 if (nowBuskingSpot != null)
                     nowBuskingSpot.callChangeUsed(buskerNickname, title);
 
-                role = "publisher";
                 channelToken = await HelperClass.FetchToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID);
 
                 nowChannel = AgoraEngine.mRtcEngine.CreateChannel(channelName);
                 nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
                 nowChannel.ChannelOnJoinChannelSuccess = OnJoinChannelSuccess;
-                //nowChannel.ChannelOnUserJoined = OnUserJoinedHandler;
                 nowChannel.ChannelOnLeaveChannel = OnBuskerLeaveChannel;
-                //nowChannel.ChannelOnUserOffLine = OnUserLeftHandler;
-                //nowChannel.ChannelOnRemoteVideoStats = OnRemoteVideoStatsHandler;
 
                 publish();
 
@@ -67,11 +65,11 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             }
             else if (mode == 1) //Audience
             {
-                
+                role = "audience";
+
                 if (nowBuskingSpot != null)
                     nowBuskingSpot.onTitleBar();
 
-                role = "audience";
                 channelToken = await HelperClass.FetchToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID);
 
                 nowChannel = AgoraEngine.mRtcEngine.CreateChannel(channelName);

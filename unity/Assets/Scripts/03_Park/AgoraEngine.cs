@@ -14,7 +14,7 @@ public class AgoraEngine : MonoBehaviour
         }
 
         mRtcEngine.SetMultiChannelWant(true);
-        //mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
+        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         if (mRtcEngine == null)
         {

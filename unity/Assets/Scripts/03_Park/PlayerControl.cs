@@ -41,8 +41,6 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (this.photonView.IsMine)
         {
-            Camera.main.orthographicSize = cameraDistance;
-
             InteractiveButton = FindObjectOfType<Canvas>().transform.Find("InteractiveButton").gameObject;
             videoPanel = FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject;
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
