@@ -100,6 +100,21 @@ router.get('/category', async(req, res) =>{
     }
 })
 
+router.get('/uploadList', async(req,res) => {
+    const {userId} = req.body;
+
+    User.findOne({id:userId}).then(async (user) => {
+        for (let i = 0; i < user.uploadList.length; i++){
+            await Music.findOne({id: user.uploadList[i].musicID}).then((music) => {
+                if (!music) {
+                    User.updateOne({id: userId}, {$pull: { uploadList: {musicID: musicId}}});
+                }
+            })
+        }
+        res.status(200).json({uploadList: user.uploadList});
+    })
+})
+
 router.get('/recent', async(req, res)=> {
     const recent = await Music.find().sort({"created" : -1}).limit(10);
     // console.log(recent);
@@ -133,7 +148,7 @@ router.post('/', auth, async(req, res) => {
         // console.log(user);
         const id = userID + "_" + user.totalNum;
         const userNickname = user.nickname;
-        // console.log(id)
+        // console.log(id);
 
         const newMusic = new Music({
             locate, imageLocate, title, id, userID, userNickname, lyrics, category, info
