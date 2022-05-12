@@ -243,6 +243,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         Destroy(audienceVideo.GetComponent<VideoSurface>());
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
 
+        buskerUid = 0;
         isFoundBusker = false;
         role = null;
         nowChannel = null;
