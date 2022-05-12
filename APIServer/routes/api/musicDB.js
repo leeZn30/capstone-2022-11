@@ -114,25 +114,6 @@ router.get('/personalGenre', auth, async(req, res)=>{
     })
 })
 
-router.get('/uploadList', async(req,res) => {
-    const {userId} = req.body;
-    let musicInfo = [];
-
-    User.findOne({id:userId}).then(async (user) => {
-        for (let i = 0; i < user.uploadList.length; i++){
-            await Music.findOne({id: user.uploadList[i].musicID}).then((music) => {
-                if (music) {
-                    musicInfo.push(music);
-                }
-                else {
-                    User.updateOne({id: userId}, {$pull: { uploadList: {musicID: musicId}}});
-                }
-            })
-        }
-        res.status(200).json({uploadList: musicInfo})
-    })
-})
-
 router.post('/', auth, async(req, res) => {
     const {locate ,imageLocate, title, category, lyrics, info} = req.body;
 
