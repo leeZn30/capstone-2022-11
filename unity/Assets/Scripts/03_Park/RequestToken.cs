@@ -20,25 +20,6 @@ public class channelInfo
 
 public static class HelperClass
 {
-    public static IEnumerator FetchToken(string url, string channel, string role, uint userId, Action<string> callback = null)
-    {
-        UnityWebRequest request = UnityWebRequest.Get(string.Format(
-          "{0}/rtc/{1}/{2}/uid/{3}/", url, channel, role, userId
-        ));
-        yield return request.SendWebRequest();
-
-        if (request.isNetworkError || request.isHttpError)
-        {
-            Debug.LogWarning("FetchToken: url = " + url + " error:" + request.error);
-            callback(null);
-            yield break;
-        }
-
-        TokenObject tokenInfo = JsonUtility.FromJson<TokenObject>(request.downloadHandler.text);
-
-        callback(tokenInfo.token);
-    }
-
     public static IEnumerator deleteToken(string url, string channel)
     {
         UnityWebRequest request = UnityWebRequest.Get(string.Format(
@@ -53,7 +34,7 @@ public static class HelperClass
         }
     }
 
-    public static async UniTask<string> testToken(string url, string channel, string role, uint userId)
+    public static async UniTask<string> FetchToken(string url, string channel, string role, uint userId)
     {
         UnityWebRequest request = UnityWebRequest.Get(string.Format(
          "{0}/rtc/{1}/{2}/uid/{3}/", url, channel, role, userId

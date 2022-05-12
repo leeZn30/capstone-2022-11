@@ -79,19 +79,6 @@ public class AgoraManager : Singleton<AgoraManager>
         }
     }
 
-    public void setToken(string role) // async UniTask<IEnumerator>
-    {
-        StartCoroutine(HelperClass.FetchToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID, callback: getToken));
-        //return await HelperClass.testToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID, callback: getToken);
-    }
-
-    private void getToken(string token)
-    {
-        _token = token;
-
-        Debug.Log("Received token: " + _token);
-    }
-
     public void deleteToken()
     {
         StartCoroutine(HelperClass.deleteToken(url: "localhost:8082", channel: channelName));
@@ -99,17 +86,17 @@ public class AgoraManager : Singleton<AgoraManager>
 
     public void callJoin(int mode)
     {
-        StartCoroutine(join(mode));
-        //join(mode);
+        //StartCoroutine(join(mode));
+        join(mode);
     }
 
-    private IEnumerator join(int mode) //IEnumerator
+    private async UniTask join(int mode) //IEnumerator
     {
         Debug.Log("calling join (AppID = " + appID + ")");
 
         if (mRtcEngine == null)
-            //return;
-            yield break;
+            return;
+            //yield break;
 
         if (mode == 0) // Busker
         {
@@ -119,9 +106,7 @@ public class AgoraManager : Singleton<AgoraManager>
                 nowBuskingSpot.callChangeUsed();
 
             role = "publisher";
-            //HelperClass.testToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID, callback: getToken);
-            setToken("publisher");
-            yield return new WaitForSeconds(0.05f);
+             _token = await HelperClass.FetchToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID);
 
             nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
             //nowChannel.ChannelOnReJoinChannelSuccess = onRejoinChannelSuccess;
@@ -145,9 +130,7 @@ public class AgoraManager : Singleton<AgoraManager>
             Debug.Log("call Join Audience");
 
             role = "audience";
-            //HelperClass.testToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID, callback: getToken);
-            setToken("audience");
-            yield return new WaitForSeconds(0.05f);
+            _token = await HelperClass.FetchToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID);
 
             nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
             nowChannel.MuteLocalVideoStream(true);
