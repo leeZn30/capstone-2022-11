@@ -236,7 +236,15 @@ public class AgoraManager : Singleton<AgoraManager>
 
     public void leaveChannel()
     {
-        nowChannel.LeaveChannel();
+        if (nowChannel != null)
+        {
+            nowChannel.LeaveChannel();
+            Debug.Log("Leaving channel: " + channelName);
+        }
+        else
+        {
+            Debug.LogWarning("Channel: " + channelName + " hasn't been created yet.");
+        }
     }
 
 

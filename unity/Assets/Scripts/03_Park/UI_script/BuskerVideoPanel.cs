@@ -69,7 +69,7 @@ public class BuskerVideoPanel : MonoBehaviour
 
     public void setDevice()
     {
-        AgoraManager.Instance.loadEngine();
+        //AgoraManager.Instance.loadEngine();
         StartButton.onClick.RemoveAllListeners(); // 지워주고 해야함
         StartButton.onClick.AddListener(StartBusking);
     }
@@ -79,25 +79,24 @@ public class BuskerVideoPanel : MonoBehaviour
     {
         if (titleInput.text != "" && titleInput.text != null)
         {
-            AgoraManager.Instance.callJoin(0);
-            
-            if (AgoraManager.Instance.nowBuskingSpot != null)
-            {
-                AgoraManager.Instance.nowBuskingSpot.callsetTitle(PhotonNetwork.LocalPlayer.NickName, titleInput.text);
-            }
+            AgoraChannelPlayer.Instance.callJoin(0, PhotonNetwork.LocalPlayer.NickName, titleInput.text);
+            //AgoraManager.Instance.callJoin(0);
+
+            AgoraChannelPlayer.Instance.nowBuskingSpot.onTitleBar();
 
             // Busker 화면 없애기
             gameObject.SetActive(false);
             smallVideo.transform.localPosition = new Vector3(-700, 350, 0);
             smallVideo.GetComponent<Button>().enabled = false;
             smallVideo.SetActive(true);
-            AgoraManager.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
+            //AgoraManager.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
+            AgoraChannelPlayer.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
 
             // 그만두기 버튼 설정
             PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
             player.changeInteractiveButton(1);
-            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(
-                delegate { AgoraManager.Instance.leaveChannel(); });
+            //player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraManager.Instance.leaveChannel(); });
+            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
         }
     }
 
