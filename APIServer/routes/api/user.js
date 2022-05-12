@@ -54,7 +54,7 @@ router.get('/musicList', auth, async(req,res) => {
     const {listName} = req.body;
 
     User.findOne({id:id}).then(async (user) => {
-        res.status(200).json({musicList: user[listName]})
+        res.status(200).json({music: user[listName]})
     })
 })
 
@@ -241,7 +241,7 @@ router.post('/addSong', auth, async (req, res)=> {
     }
 
     User.findOne({id:id}).then((user) => {
-        res.status(200).json({user: user[listName]})
+        res.status(200).json({music: user[listName]})
     })
 })
 
@@ -253,7 +253,7 @@ router.post('/deleteSong', auth, async (req, res)=> {
     await User.updateOne({id: id}, {$pull: { [listName]: musicId}});
 
     User.findOne({id:id}).then((user) => {
-        res.status(200).json({user: user[listName]})
+        res.status(200).json({music: user[listName]})
     })
 })
 
