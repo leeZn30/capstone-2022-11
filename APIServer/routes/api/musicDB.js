@@ -80,9 +80,16 @@ router.get('/artist', async(req, res) =>{
 router.get('/category', async(req, res) =>{
     const {category} = req.body;
 
+    const filter = [
+        {$match : {category : category}},
+        {
+            $sort: {
+                playedNum: -1
+            }
+        }];
+
     try{
-        Music.find({category:category}).then((music) => {
-            console.log(music)
+        Music.aggregate(filter).then((music) => {
             res.status(200).json(music);
         })
 
