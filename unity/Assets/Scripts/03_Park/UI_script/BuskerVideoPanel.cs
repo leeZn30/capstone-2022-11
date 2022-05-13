@@ -84,7 +84,7 @@ public class BuskerVideoPanel : MonoBehaviour
             // Busker 화면 없애기
             gameObject.SetActive(false);
             smallVideo.transform.localPosition = new Vector3(-700, 350, 0);
-            smallVideo.GetComponent<Button>().enabled = false;
+            //smallVideo.GetComponent<Button>().enabled = false;
             smallVideo.SetActive(true);
             AgoraChannelPlayer.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
 

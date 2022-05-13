@@ -50,7 +50,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
                 if (nowBuskingSpot != null)
                     nowBuskingSpot.callChangeUsed(buskerNickname, title);
 
-                channelToken = await HelperClass.FetchToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID);
+                channelToken = await HelperClass.FetchToken(url: "http://localhost:8082", channel: channelName, role: role, userId: myUID);
 
                 nowChannel = AgoraEngine.mRtcEngine.CreateChannel(channelName);
                 nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -70,7 +70,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
                 if (nowBuskingSpot != null)
                     nowBuskingSpot.onTitleBar();
 
-                channelToken = await HelperClass.FetchToken(url: "localhost:8082", channel: channelName, role: role, userId: myUID);
+                channelToken = await HelperClass.FetchToken(url: "http://localhost:8082", channel: channelName, role: role, userId: myUID);
 
                 nowChannel = AgoraEngine.mRtcEngine.CreateChannel(channelName);
                 nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);

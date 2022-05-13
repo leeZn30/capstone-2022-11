@@ -24,7 +24,11 @@ public class BigVideoPanel : MonoBehaviour
     private void OnDisable()
     {
         emoticonPanel.SetActive(false);
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+
+        if (AgoraChannelPlayer.Instance.role != "publisher")
+        {
+            GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
+            GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+        }
     }
 }

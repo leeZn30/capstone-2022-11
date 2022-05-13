@@ -11,5 +11,5 @@ public static class GlobalData
     {
         "¾øÀ½","´í½º","¹ß¶óµå","ÆË","·¦/ÈüÇÕ","ÀÎµğÀ½¾Ç","·Ï/¸ŞÅ»"
     };
-    public static readonly string url = "http://localhost:8080/api";
+    public static readonly string url = "http://localhost:8080/api"; //http://metabusking.c.cs.kookmin.ac.kr/api
 }
