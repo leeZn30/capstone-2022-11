@@ -25,19 +25,13 @@ router.post('/', auth, async(req, res)=>{
     const {userId, userNickname} = req.body;
     const id = req.user.id;
     const nickname = req.user.nickname;
-    let userList = [];
     let duplicate = false;
 
     await User.findOne({id:id}).then((user)=>{
-        userList = user.follow;
-    })
-
-    for (let i = 0; i < userList.length; i++){
-        if (userList[i][0] === userId) {
+        if (user.follow.includes(userId)) {
             duplicate = true;
-            break;
         }
-    }
+    })
 
     if (duplicate) {
         res.status(450).json({msg:"already exist"})

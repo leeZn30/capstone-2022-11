@@ -20,7 +20,8 @@ router.get('/title', async(req, res) =>{
                 "lyrics" : 1,
                 "info" : 1,
                 "created" : 1,
-                "length": {"$strLenCP": "$title"}
+                "length": {"$strLenCP": "$title"},
+                "playedNum": 1
             }
         },
         {
@@ -31,7 +32,7 @@ router.get('/title', async(req, res) =>{
 
     try{
         Music.aggregate(filter).then((music) => {
-            console.log(music.length)
+            // console.log(music.length)
             res.status(200).json(music);
         });
 
@@ -67,7 +68,7 @@ router.get('/artist', async(req, res) =>{
 
     try{
         Music.aggregate(filter).then((music) => {
-            console.log(music)
+            // console.log(music)
             res.status(200).json(music);
         })
 
@@ -80,9 +81,16 @@ router.get('/artist', async(req, res) =>{
 router.get('/category', async(req, res) =>{
     const {category} = req.body;
 
+    const filter = [
+        {$match : {category : category}},
+        {
+            $sort: {
+                playedNum: -1
+            }
+        }];
+
     try{
-        Music.find({category:category}).then((music) => {
-            console.log(music)
+        Music.aggregate(filter).then((music) => {
             res.status(200).json(music);
         })
 
@@ -92,9 +100,24 @@ router.get('/category', async(req, res) =>{
     }
 })
 
+router.get('/uploadList', async(req,res) => {
+    const {userId} = req.body;
+
+    User.findOne({id:userId}).then(async (user) => {
+        for (let i = 0; i < user.uploadList.length; i++){
+            await Music.findOne({id: user.uploadList[i].musicID}).then((music) => {
+                if (!music) {
+                    User.updateOne({id: userId}, {$pull: { uploadList: {musicID: musicId}}});
+                }
+            })
+        }
+        res.status(200).json({uploadList: user.uploadList});
+    })
+})
+
 router.get('/recent', async(req, res)=> {
     const recent = await Music.find().sort({"created" : -1}).limit(10);
-    console.log(recent);
+    // console.log(recent);
     res.status(200).json({recent: recent});
 })
 
@@ -107,29 +130,10 @@ router.get('/personalGenre', auth, async(req, res)=>{
     const userId = req.user.id;
 
     User.findOne({id:userId}).then((user)=>{
-        console.log(user.preferredGenres);
+        // console.log(user.preferredGenres);
         Music.find({category:user.preferredGenres}).sort({playedNum: -1}).limit(20).then((music)=>{
             res.status(200).json({personalGenre:music})
         })
-    })
-})
-
-router.get('/uploadList', async(req,res) => {
-    const {userId} = req.body;
-    let musicInfo = [];
-
-    User.findOne({id:userId}).then(async (user) => {
-        for (let i = 0; i < user.uploadList.length; i++){
-            await Music.findOne({id: user.uploadList[i].musicID}).then((music) => {
-                if (music) {
-                    musicInfo.push(music);
-                }
-                else {
-                    User.updateOne({id: userId}, {$pull: { uploadList: {musicID: musicId}}});
-                }
-            })
-        }
-        res.status(200).json({uploadList: musicInfo})
     })
 })
 
@@ -138,13 +142,13 @@ router.post('/', auth, async(req, res) => {
 
     const userID = req.user.id;
 
-    console.log(userID);
+    // console.log(userID);
 
     User.findOne({id: userID}).then((user)=> {
-        console.log(user);
+        // console.log(user);
         const id = userID + "_" + user.totalNum;
         const userNickname = user.nickname;
-        console.log(id)
+        // console.log(id);
 
         const newMusic = new Music({
             locate, imageLocate, title, id, userID, userNickname, lyrics, category, info
@@ -180,11 +184,8 @@ router.post('/', auth, async(req, res) => {
 router.post('/play', async(req, res) => {
     const {id} = req.body;
 
-    await Music.updateOne({id: id}, {$inc: { playedNum: 1}})
-    Music.find({id:id}).then((music)=>{
-        console.log(music)
-    })
-    res.status(200).json({"message":"OK"})
+    await Music.updateOne({id: id}, {$inc: { playedNum: 1}});
+    res.status(200).json({"message":"OK"});
 })
 
 module.exports = router;
