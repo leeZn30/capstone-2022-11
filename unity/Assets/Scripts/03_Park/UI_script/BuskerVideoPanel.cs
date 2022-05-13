@@ -92,6 +92,7 @@ public class BuskerVideoPanel : MonoBehaviour
             PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
             player.changeInteractiveButton(1);
             player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
+            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { player.OffInteractiveButton(); });
 
             AgoraChannelPlayer.Instance.nowBuskingSpot.callInsideUserJoin(AgoraChannelPlayer.Instance.channelName);
 

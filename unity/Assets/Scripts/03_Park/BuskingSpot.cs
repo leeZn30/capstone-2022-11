@@ -104,6 +104,7 @@ public class BuskingSpot : MonoBehaviourPun
         {
             localuser.GetComponent<PlayerControl>().OnVideoPanel(0);
             AgoraChannelPlayer.Instance.callJoin(1);
+            localuser.GetComponent<PlayerControl>().OnInteractiveButton(2);
         }
     }
 

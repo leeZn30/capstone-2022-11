@@ -8,20 +8,33 @@ using TMPro;
 public class Chat : MonoBehaviourPunCallbacks
 {
     public TextMeshProUGUI msgList;
-    public TMP_InputField ifSendMsg;
+    //public TMP_InputField ifSendMsg;
+
+    public string emojimsg;
+
+    public string channelName;
+
+    public void OnEnable()
+    {
+        channelName = AgoraChannelPlayer.Instance.channelName;
+    }
+
 
     public void OnSendChatMsg()
     {
         string msg = string.Format("[{0}]  {1}"
                                    ,UserData.Instance.user.nickname // PhotonNetwork.LocalPlayer.NickName
-                                   , ifSendMsg.text);
-        photonView.RPC("ReceiveMsg", RpcTarget.Others, msg);
-        ReceiveMsg(msg);
+                                   , emojimsg);
+
+        
+        photonView.RPC("ReceiveMsg", RpcTarget.AllBuffered, msg, channelName);
+        //ReceiveMsg(msg, channelName);
     }
 
     [PunRPC]
-    void ReceiveMsg(string msg)
+    void ReceiveMsg(string msg, string _channel)
     {
-        msgList.text += "\n" + msg;
+        if (_channel == channelName)
+            msgList.text += "\n" + msg;
     }
 }

@@ -7,6 +7,7 @@ public class BigVideoPanel : MonoBehaviour
 {
     [SerializeField] private GameObject shutButton;
     [SerializeField] private SmallVideoPanel smallVideoPanel;
+    [SerializeField] private GameObject emoticonPanel;
 
     // Start is called before the first frame update
     void Start()
@@ -22,14 +23,8 @@ public class BigVideoPanel : MonoBehaviour
 
     private void OnDisable()
     {
+        emoticonPanel.SetActive(false);
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
-    }
-
-
-    public void ScaleDownPanel()
-    {
-        this.gameObject.SetActive(false);
-        FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject.SetActive(true);
     }
 }

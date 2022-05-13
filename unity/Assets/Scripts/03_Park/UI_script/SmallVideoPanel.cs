@@ -11,8 +11,8 @@ public class SmallVideoPanel : MonoBehaviour
 
     private void Start()
     {
-        initPosition = transform.localPosition;
-        initSize = transform.localScale;
+        initPosition = new Vector3(0, 290, 0);
+        initSize = new Vector3(-1, -1, 1);
     }
 
 
@@ -37,7 +37,7 @@ public class SmallVideoPanel : MonoBehaviour
         for (float time = 0; time < duration; time += Time.deltaTime)
         {
             transform.localScale = Vector3.Lerp(initialScale, upScale, duration);
-            transform.localPosition = new Vector3(-230, 0, 0);
+            transform.localPosition = new Vector3(-380, 0, 0);
             yield return null;
         }
     }

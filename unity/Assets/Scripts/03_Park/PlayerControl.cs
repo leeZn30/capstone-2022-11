@@ -156,7 +156,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         if (isVideoPanelShown)
         {
             ChatPanel.GetComponent<Chat>().msgList.text = "";
-            ChatPanel.GetComponent<Chat>().ifSendMsg.text = "";
+            ChatPanel.GetComponent<Chat>().emojimsg = "";
             videoPanel.SetActive(false);
             isVideoPanelShown = false;
         }
