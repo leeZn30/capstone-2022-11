@@ -6,26 +6,36 @@ using Photon.Pun;
 
 public class InteractiveObject : MonoBehaviour
 {
+    //ê¸°ì¡´ parentì„ ì§€ì •í•˜ëŠ” ê²ƒìœ¼ë¡œ ë°”ê¿ˆ/
+    public GameObject componentObj;
     /**
-     * »óÈ£ÀÛ¿ë Á¾·ù
-     * 0) ¹ö½ºÅ·
-     * 1) ¼ø°£ÀÌµ¿±â
+     * ìƒí˜¸ì‘ìš© ì¢…ë¥˜
+     * 0) ë²„ìŠ¤í‚¹
+     * 1) ìˆœê°„ì´ë™ê¸°
      * */
     [SerializeField] protected int InteractiveType;
 
+    private BuskingSpot buskingSpot;
     private void OnTriggerEnter2D(Collider2D collision)
     {
+
+        if (componentObj == null) return;
+
         GameObject player = GameManager.instance.myPlayer;
         if (player.GetComponent<PhotonView>().IsMine && collision.gameObject == player)
         {
             switch (InteractiveType)
             {
                 case 0:
-                    if (!GetComponentInParent<BuskingSpot>().isUsed)
+                    if (componentObj.TryGetComponent<BuskingSpot>(out buskingSpot))
                     {
-                        player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
-                        player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
-                            delegate { player.GetComponent<PlayerControl>().OnVideoPanel(1);});
+
+                        if (!buskingSpot.isUsed)
+                        {
+                            player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
+                            player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
+                                delegate { player.GetComponent<PlayerControl>().OnVideoPanel(1); });
+                        }                      
                     }
                     break;
 
