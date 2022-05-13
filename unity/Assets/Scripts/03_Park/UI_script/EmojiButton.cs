@@ -27,7 +27,7 @@ public class EmojiButton : MonoBehaviourPun
         else if (player.GetComponent<PhotonView>().IsMine && this.GetComponentInParent<EmoticonPanel>().mode == 1)
         {
             GameObject ChatPanel = this.GetComponentInParent<EmoticonPanel>().ChatPanel;
-            ChatPanel.GetComponent<Chat>().ifSendMsg.text = "<sprite=" + emojiNum + ">";
+            ChatPanel.GetComponent<Chat>().emojimsg = "<sprite=" + emojiNum + ">";
             ChatPanel.GetComponent<Chat>().OnSendChatMsg();
         }
     }

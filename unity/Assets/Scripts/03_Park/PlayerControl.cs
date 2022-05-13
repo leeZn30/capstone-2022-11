@@ -41,8 +41,6 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (this.photonView.IsMine)
         {
-            Camera.main.orthographicSize = cameraDistance;
-
             InteractiveButton = FindObjectOfType<Canvas>().transform.Find("InteractiveButton").gameObject;
             videoPanel = FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject;
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
@@ -111,10 +109,20 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (isInteractiveAble)
         {
+            InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
             InteractiveButton.SetActive(false);
             isInteractiveAble = false;
         }
 
+    }
+
+    public void changeInteractiveButton(int type)
+    {
+        if (isInteractiveAble)
+        {
+            InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            InteractiveButton.GetComponent<Image>().sprite = buttonImages[type];
+        }
     }
 
     public void OnVideoPanel(int mode)
@@ -131,7 +139,10 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
                 case 1:
                     buskerPanel.SetActive(true);
+                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;
+                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;
                     buskerPanel.GetComponent<BuskerVideoPanel>().setDevice();
+                    isVideoPanelShown = true;
                     break;
 
                 default:
@@ -145,7 +156,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         if (isVideoPanelShown)
         {
             ChatPanel.GetComponent<Chat>().msgList.text = "";
-            ChatPanel.GetComponent<Chat>().ifSendMsg.text = "";
+            ChatPanel.GetComponent<Chat>().emojimsg = "";
             videoPanel.SetActive(false);
             isVideoPanelShown = false;
         }

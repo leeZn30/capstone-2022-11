@@ -15,6 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/03_Park.unity
     guid: a2d298ed4b056204fa2634812ccb73a7
   - enabled: 0
-    path: Assets/Samples/WebRTC/2.4.0-exp.6/Example/MultiplePeerConnections/MultiplePeerConnections.unity
-    guid: ad11cc7c597c0e94d8cf4db5a3ebde11
+    path: 
+    guid: 00000000000000000000000000000000
   m_configObjects: {}
