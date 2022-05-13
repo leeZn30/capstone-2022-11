@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Text.RegularExpressions;//Á¤±ÔÇ¥Çö½Ä
+using System.Text.RegularExpressions;//ì •ê·œí‘œí˜„ì‹
 using LitJson;
 using UnityEngine.Networking;
 
@@ -13,7 +13,7 @@ public class inputObject : MonoBehaviour
 
 
 
-    public int type;//0:Áßº¹Ã¼Å©   1:regex Ã¼Å©(no ¹öÆ°)   2:regexÃ¼Å©(¹öÆ° o)   3: toggle ¼±ÅÃ
+    public int type;//0:ì¤‘ë³µì²´í¬   1:regex ì²´í¬(no ë²„íŠ¼)   2:regexì²´í¬(ë²„íŠ¼ o)   3: toggle ì„ íƒ
     public string key;
     public string name_content;
     public string btn_content;
@@ -75,6 +75,20 @@ public class inputObject : MonoBehaviour
 
             isOkay = true;
         }
+        if (key == "fav2")
+        {
+
+            toggles = GetComponentsInChildren<Toggle>();
+            toggleTexts = new TextMeshProUGUI[toggles.Length];
+            for (int i = 0; i < toggles.Length; i++)
+            {
+                toggleTexts[i] = toggles[i].GetComponentInChildren<TextMeshProUGUI>();
+                toggleTexts[i].text = GlobalData.Genre[i];
+                toggles[i].isOn = false;
+            }
+
+            isOkay = true;
+        }
 
         nameText.text = name_content;
 
@@ -117,10 +131,10 @@ public class inputObject : MonoBehaviour
 
     }
     void changeUnderTextColor()
-    {//¿Ï·á »óÈ²¿¡ µû¶ó »ö ¹Ù²Ù´Â ÇÔ¼ö
+    {//ì™„ë£Œ ìƒí™©ì— ë”°ë¼ ìƒ‰ ë°”ê¾¸ëŠ” í•¨ìˆ˜
         if (isOkay)
         { 
-            underText.text = "¿Ï·á";
+            underText.text = "ì™„ë£Œ";
             underText.color = new Color(0f, 255f, 0f);
         }
         else
@@ -133,8 +147,8 @@ public class inputObject : MonoBehaviour
     bool checkRegex()
     {
         isOkay = false;
-        //Á¶°ÇÀ» È®ÀÎÇÏ°í ¾Ë¸ÂÀº ¸Ş½ÃÁö¸¦ º¸¿©ÁÖµµ·Ï ÇÏ´Â ÇÔ¼ö
-        //Áö±İÀº ÀÓ½Ã·Î ±âº» ¸Ş½ÃÁö°¡ ³ª¿Àµµ·Ï ÇÔ
+        //ì¡°ê±´ì„ í™•ì¸í•˜ê³  ì•Œë§ì€ ë©”ì‹œì§€ë¥¼ ë³´ì—¬ì£¼ë„ë¡ í•˜ëŠ” í•¨ìˆ˜
+        //ì§€ê¸ˆì€ ì„ì‹œë¡œ ê¸°ë³¸ ë©”ì‹œì§€ê°€ ë‚˜ì˜¤ë„ë¡ í•¨
         if (inputField != null)
         {
             if (key == "email")
@@ -185,10 +199,10 @@ public class inputObject : MonoBehaviour
 
         switch (type)
         {
-                //0:Áßº¹Ã¼Å©   1:regex Ã¼Å©(no ¹öÆ°)   2:regexÃ¼Å©(¹öÆ° o)   3: toggle ¼±ÅÃ
+                //0:ì¤‘ë³µì²´í¬   1:regex ì²´í¬(no ë²„íŠ¼)   2:regexì²´í¬(ë²„íŠ¼ o)   3: toggle ì„ íƒ
                 case 0:
 
-                    if (key == "email" && btn_text.text!=btn_content)//º¸³»±â ´Ü°è¶ó¸é
+                    if (key == "email" && btn_text.text!=btn_content)//ë³´ë‚´ê¸° ë‹¨ê³„ë¼ë©´
                     {
                         EmailAuth();
                     }
@@ -200,7 +214,7 @@ public class inputObject : MonoBehaviour
                     return;
 
                 case 2:
-                    //È®ÀÎ ÆË¾÷¶ç¿ì°í regexÃ¼Å©
+                    //í™•ì¸ íŒì—…ë„ìš°ê³  regexì²´í¬
                     if (regex_str != "")
                     {
                         if (checkRegex())
@@ -215,7 +229,7 @@ public class inputObject : MonoBehaviour
 
         }
         if (strs.Length > 0)
-        {//°á°ú ÆË¾÷ÀÌ ¶ß´Â ¿ÀºêÁ§Æ®¶ó¸é
+        {//ê²°ê³¼ íŒì—…ì´ ëœ¨ëŠ” ì˜¤ë¸Œì íŠ¸ë¼ë©´
             OnClickButton_(isOkay ? strs[1] : strs[0]);
         }
 
@@ -225,7 +239,7 @@ public class inputObject : MonoBehaviour
     {
         if (key != "email") return;
 
-        //ÀÌ¸ŞÀÏ Àü¼ÛÇÏ°í
+        //ì´ë©”ì¼ ì „ì†¡í•˜ê³ 
         var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var Charsarr = new char[6];
         var random = new System.Random();
@@ -237,7 +251,7 @@ public class inputObject : MonoBehaviour
 
         var resultString = new string(Charsarr);
 
-        //Àü¼Û
+        //ì „ì†¡
         StartCoroutine(POST_EmailCode(inputField.text, resultString));
 
         sub_obj.setRegex_str("^" + resultString + "$");
@@ -290,7 +304,7 @@ public class inputObject : MonoBehaviour
                 {
                     if (key == "email")
                     {                       
-                        btn_text.text = "ÀÎÁõ ÄÚµå";
+                        btn_text.text = "ì¸ì¦ ì½”ë“œ";
                     }
                     else if (key == "id")
                     {
@@ -307,7 +321,7 @@ public class inputObject : MonoBehaviour
             }
             else
             {
-                if (www.responseCode == 400) {//Áßº¹
+                if (www.responseCode == 400) {//ì¤‘ë³µ
                     isOkay = false;
                     if (key == "email") {
                         
@@ -332,21 +346,21 @@ public class inputObject : MonoBehaviour
         emailKey.key = key;
         string json = JsonUtility.ToJson(emailKey);
         using (UnityWebRequest request = UnityWebRequest.Post(GlobalData.url + "/auth/email", json))
-        {// º¸³¾ ÁÖ¼Ò¿Í µ¥ÀÌÅÍ ÀÔ·Â
+        {// ë³´ë‚¼ ì£¼ì†Œì™€ ë°ì´í„° ì…ë ¥
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
             request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
-            yield return request.SendWebRequest();//ÀÀ´ä ±â´Ù¸®±â
+            yield return request.SendWebRequest();//ì‘ë‹µ ê¸°ë‹¤ë¦¬ê¸°
 
-            if (request.error == null)//°¡ÀÔ ¼º°ø
+            if (request.error == null)//ê°€ì… ì„±ê³µ
             {
                 isOkay = true;
-                //º¸³»±â ¼º°ø
+                //ë³´ë‚´ê¸° ì„±ê³µ
 
             }
-            else//º¸³»±â ½ÇÆĞ
+            else//ë³´ë‚´ê¸° ì‹¤íŒ¨
             {
                 isOkay = false;
                 Debug.Log(request.error.ToString());

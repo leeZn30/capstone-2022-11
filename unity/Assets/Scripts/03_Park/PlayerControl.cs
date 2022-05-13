@@ -8,34 +8,34 @@ using UnityEngine.UI;
 public class PlayerControl : MonoBehaviourPunCallbacks
 {
 
-    // ÇÃ·¹ÀÌ¾î ¼³Á¤
-    float moveSpeed = 10f;
+    // í”Œë ˆì´ì–´ ì„¤ì •
+    float moveSpeed = 6f;
     public bool isMoveAble = true;
     public bool isUIActable = true;
 
-    // »óÈ£ÀÛ¿ë ¹öÆ°
+    // ìƒí˜¸ì‘ìš© ë²„íŠ¼
     [SerializeField] bool isInteractiveAble = false;
     public GameObject InteractiveButton;
     [SerializeField] Sprite[] buttonImages;
 
-    // ºñµğ¿À
+    // ë¹„ë””ì˜¤
     public bool isVideoPanelShown = false;
     public GameObject videoPanel;
 
-    // ÀÌ¸ğÆ¼ÄÜ ÄÚ·çÆ¾ ½ÇÇà¿©ºÎ
+    // ì´ëª¨í‹°ì½˜ ì½”ë£¨í‹´ ì‹¤í–‰ì—¬ë¶€
     private bool isEmojiRunning = false;
     private Coroutine runningEmojiCorutine;
 
-    // Ã¤ÆÃ
+    // ì±„íŒ…
     [SerializeField] GameObject ChatPanel;
 
     // BusketPanel
     [SerializeField] private GameObject buskerPanel;
 
-    // ÁÜ ÀÎ/ÁÜ ¾Æ¿ô
+    // ì¤Œ ì¸/ì¤Œ ì•„ì›ƒ
     private float wheelSpeed = 10;
     [SerializeField] private float cameraDistance = 10;
-
+    private Vector2 mapSize;
     // Start is called before the first frame update
     void Start()
     {
@@ -62,28 +62,61 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (this.photonView.IsMine)
         {
-            if (Input.GetKey(KeyCode.UpArrow))
+
+
+            if (Input.GetKey(KeyCode.W))
             {
-                gameObject.transform.Translate(Vector3.up * moveSpeed * Time.deltaTime);
+                Debug.DrawRay(gameObject.transform.position, Vector3.up * 0.3f, Color.green);
+                RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.up, 0.3f, LayerMask.GetMask("CantPassObj"));
+
+                if (hit.collider == null)
+                {
+                    gameObject.transform.Translate(Vector3.up * moveSpeed * Time.deltaTime);
+                }
+
             }
 
-            if (Input.GetKey(KeyCode.DownArrow))
+            if (Input.GetKey(KeyCode.S))
             {
-                gameObject.transform.Translate(Vector3.down * moveSpeed * Time.deltaTime);
+                Debug.DrawRay(gameObject.transform.position, Vector3.down * 0.3f, Color.green);
+                RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.down, 0.3f, LayerMask.GetMask("CantPassObj"));
+                if (hit.collider == null)
+                {
+                    gameObject.transform.Translate(Vector3.down  * moveSpeed * Time.deltaTime);
+                }
+                
+
+
+               
             }
 
-            if (Input.GetKey(KeyCode.RightArrow))
+            if (Input.GetKey(KeyCode.D))
             {
-                gameObject.transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
+                Debug.DrawRay(gameObject.transform.position, Vector3.right * 0.3f, Color.green);
+                RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.right, 0.3f,LayerMask.GetMask("CantPassObj"));
+                if (hit.collider == null)
+                {
+                    gameObject.transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
+                }
             }
 
-            if (Input.GetKey(KeyCode.LeftArrow))
+            if (Input.GetKey(KeyCode.A))
             {
-                gameObject.transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
+                Debug.DrawRay(gameObject.transform.position, Vector3.left * 0.3f, Color.green);
+                RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.left, 0.3f, LayerMask.GetMask("CantPassObj"));
+                if (hit.collider == null)
+                {
+                    gameObject.transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
+                }
+                
+
+                
             }
 
-            cameraDistance = Input.GetAxis("Mouse ScrollWheel") * wheelSpeed * Time.deltaTime;
-            Camera.main.orthographicSize = cameraDistance;
+
+
+            //cameraDistance = Input.GetAxis("Mouse ScrollWheel") * wheelSpeed * Time.deltaTime;
+            //Camera.main.orthographicSize = cameraDistance;
 
         }
     }
@@ -91,10 +124,10 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     public void OnInteractiveButton(int type)
     {
         /**
-         * 0) ¹ö½ºÅ·
-         * 1) ¹ö½ºÅ· ±×¸¸µÎ±â
-         * 2) ¹ö½ºÄ¿ ÆÈ·Î¿ì
-         * 3) ¼ø°£ÀÌµ¿±â
+         * 0) ë²„ìŠ¤í‚¹
+         * 1) ë²„ìŠ¤í‚¹ ê·¸ë§Œë‘ê¸°
+         * 2) ë²„ìŠ¤ì»¤ íŒ”ë¡œìš°
+         * 3) ìˆœê°„ì´ë™ê¸°
          * **/
 
         if (!isInteractiveAble)
@@ -162,13 +195,13 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         }
     }
 
-    // ¹æ¼Û ÃÊ±â¼³Á¤
+    // ë°©ì†¡ ì´ˆê¸°ì„¤ì •
     public void initBusking()
     {
-        // Ä³¸¯ÅÍ À§Ä¡ µî
+        // ìºë¦­í„° ìœ„ì¹˜ ë“±
     }
 
-    // -------------- ÀÌ¸ğÁö µ¿±âÈ­ °ü·Ã ÇÔ¼öµé -------------
+    // -------------- ì´ëª¨ì§€ ë™ê¸°í™” ê´€ë ¨ í•¨ìˆ˜ë“¤ -------------
     public IEnumerator sendEmoji(int emojiNum)
     {
         GameObject bubble = transform.GetChild(1).gameObject;

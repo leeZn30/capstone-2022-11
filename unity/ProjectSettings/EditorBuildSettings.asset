@@ -16,5 +16,9 @@ EditorBuildSettings:
     guid: a2d298ed4b056204fa2634812ccb73a7
   - enabled: 0
     path: 
-    guid: 00000000000000000000000000000000
+    guid: ad11cc7c597c0e94d8cf4db5a3ebde11
+  - enabled: 1
+    path: Assets/Scenes/Park test scene.unity
+    guid: 3142d77aa6465ef4bb51b58b78240823
+
   m_configObjects: {}

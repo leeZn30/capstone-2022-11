@@ -182,10 +182,13 @@ router.post('/', auth, async(req, res) => {
 })
 
 router.post('/play', async(req, res) => {
-    const {id} = req.body;
+    const {musicId} = req.body;
 
-    await Music.updateOne({id: id}, {$inc: { playedNum: 1}});
-    res.status(200).json({"message":"OK"});
+    await Music.updateOne({id: musicId}, {$inc: { playedNum: 1}})
+    Music.find({id:musicId}).then((music)=>{
+        console.log(music)
+    })
+    res.status(200).json({"message":"OK"})
 })
 
 module.exports = router;

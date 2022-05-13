@@ -15,7 +15,7 @@ public class LobbySetting : Page
 
     }
     override public void Init()
-    {//¼³Á¤Ã¢ ÃÊ±â¼¼ÆÃ and ±âÁ¸ ¼³Á¤ ºÒ·¯¿À±â
+    {//ì„¤ì •ì°½ ì´ˆê¸°ì„¸íŒ… and ê¸°ì¡´ ì„¤ì • ë¶ˆëŸ¬ì˜¤ê¸°
         gotoMainSceneBtn.onClick.AddListener(LogoutAndClose);
     }
 
