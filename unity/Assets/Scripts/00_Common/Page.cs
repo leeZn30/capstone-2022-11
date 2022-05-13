@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 public class Page : MusicWebRequest
-{//»ó¼Ó¿ë Å¬·¡½º
+{//ìƒì†ìš© í´ë˜ìŠ¤
     public Button exitBtn; 
     protected bool isAlreadyInit = false;
     // Start is called before the first frame update
@@ -30,26 +30,26 @@ public class Page : MusicWebRequest
     }
 
     virtual public void Init()
-    {//ÇØ´ç ÆäÀÌÁö ÀÌº¥Æ®¸®½º³Ê, °´Ã¼ µî·Ï
+    {//í•´ë‹¹ í˜ì´ì§€ ì´ë²¤íŠ¸ë¦¬ìŠ¤ë„ˆ, ê°ì²´ ë“±ë¡
 
     }
     virtual public void Load()
-    {//ÇØ´ç ÆäÀÌÁö ÃÊ±âÈ­ÇÏ±â
+    {//í•´ë‹¹ í˜ì´ì§€ ì´ˆê¸°í™”í•˜ê¸°
 
     }
     public void Close()
     {
         Init();
 
-        //ÃÊ±âÈ­
+        //ì´ˆê¸°í™”
         Reset();
 
-        //´İ±â
+        //ë‹«ê¸°
         MusicController.Instance.subMusicController.Reset();
         gameObject.SetActive(false);
     }
     virtual public void Reset()
-    {//ÇØ´ç ÆäÀÌÁö ÃÊ±âÈ­ÇÏ±â
+    {//í•´ë‹¹ í˜ì´ì§€ ì´ˆê¸°í™”í•˜ê¸°
 
     }
 }

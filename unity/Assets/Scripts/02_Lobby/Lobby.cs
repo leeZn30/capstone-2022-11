@@ -31,7 +31,7 @@ public class Lobby : MusicWebRequest
     void Start()
     {
         
-        //��ư �̺�Ʈ ���
+        //버튼 이벤트 등록
         settingBtn.onClick.AddListener(delegate { lobbySetting.Open(); });
         openSongPageBtn.onClick.AddListener(delegate { songPage.Open(); });
         characterSetBtn.onClick.AddListener(delegate { characterSetPage.Open(); });
@@ -50,8 +50,8 @@ public class Lobby : MusicWebRequest
     void UpdateFollow()
     {
         Debug.Log("update follow");
-        followNum.text = UserData.Instance.user.followNum+"\n�ȷο�";
-        followerNum.text = UserData.Instance.user.followerNum + "\n�ȷο�";
+        followNum.text = UserData.Instance.user.followNum+"\n팔로우";
+        followerNum.text = UserData.Instance.user.followerNum + "\n팔로워";
 
     }
     async void GetUserData()
@@ -63,6 +63,14 @@ public class Lobby : MusicWebRequest
             userNickname.text = UserData.Instance.user.GetName();
             UpdateFollow();
             ChangeCharacter();
+
+
+            //재생목록리스트 업데이트
+            //임시로 고정 데이터입력
+            List<string> listNames = new List<string>();
+            listNames.Add("uploadList");
+            listNames.Add("myList");
+            MusicController.Instance.SetOptions(listNames);
         }
 
     }

@@ -11,7 +11,7 @@ public class UserSlot : MonoBehaviour, IPointerDownHandler
 
     public TextMeshProUGUI userName;
 
-    public Button button;//del ¹öÆ°, Ãß°¡¹öÆ°, µÑ´Ù µÉ ¼ö ÀÖÀ½. searchslot ¿©ºÎ¿¡ µû¶ó ÆÇ´Ü
+    public Button button;//del ë²„íŠ¼, ì¶”ê°€ë²„íŠ¼, ë‘˜ë‹¤ ë  ìˆ˜ ìˆìŒ. searchslot ì—¬ë¶€ì— ë”°ë¼ íŒë‹¨
 
     public delegate void ClickHandler(UserSlot us);
     public event ClickHandler OnClickAddButton;
@@ -33,12 +33,12 @@ public class UserSlot : MonoBehaviour, IPointerDownHandler
         if (type == FollowPage.FollowSystemType.follower)
             button.gameObject.SetActive(false);
         else if(type== FollowPage.FollowSystemType.searched) {
-            //°Ë»öµÈ ½½·ÔÀÏ ¶§,
+            //ê²€ìƒ‰ëœ ìŠ¬ë¡¯ì¼ ë•Œ,
 
-            //°Ë»öµÈ ½½·ÔÀÇ À¯Àúid°¡ ÆÈ·Î¿ìÃë¼ÒµÈ ¾ÆÀÌµğ ÀÏ¶§ ÆÈ·Î¿ì falseÃ³¸®
+            //ê²€ìƒ‰ëœ ìŠ¬ë¡¯ì˜ ìœ ì €idê°€ íŒ”ë¡œìš°ì·¨ì†Œëœ ì•„ì´ë”” ì¼ë•Œ íŒ”ë¡œìš° falseì²˜ë¦¬
             UserData.Instance.OnDeleteFollow += SetUserFollowFalse;
 
-            //°Ë»öµÈ ½½·ÔÀÇ À¯Àúid°¡ ÆÈ·Î¿ìµÈ ¾ÆÀÌµğ ÀÏ¶§ ÆÈ·Î¿ì trueÃ³¸®
+            //ê²€ìƒ‰ëœ ìŠ¬ë¡¯ì˜ ìœ ì €idê°€ íŒ”ë¡œìš°ëœ ì•„ì´ë”” ì¼ë•Œ íŒ”ë¡œìš° trueì²˜ë¦¬
             UserData.Instance.OnAddFollow += SetUserFollowTrue;
 
         }
@@ -77,18 +77,18 @@ public class UserSlot : MonoBehaviour, IPointerDownHandler
     void ClickButton()
     {
         if (type==FollowPage.FollowSystemType.searched)
-        {   //°Ë»öµÈ ½½·ÔÀÌ¸é
+        {   //ê²€ìƒ‰ëœ ìŠ¬ë¡¯ì´ë©´
             
             if (isFollow==false)
-            {//Ãß°¡µÇ¾îÀÖÁö¾ÊÀ¸¸é Ãß°¡¹öÆ° ±â´É
-                Debug.Log(user.id + " ÆÈ·Î¿ì");
+            {//ì¶”ê°€ë˜ì–´ìˆì§€ì•Šìœ¼ë©´ ì¶”ê°€ë²„íŠ¼ ê¸°ëŠ¥
+                Debug.Log(user.id + " íŒ”ë¡œìš°");
                 if(OnClickAddButton!=null)
                     OnClickAddButton(this);
                 Follow = true;
             }
             else
-            {//Ãß°¡µÇ¾îÀÖÀ¸¸é Ãë¼Ò¹öÆ° ±â´É
-                Debug.Log(user.id + " ÆÈ·Î¿ì Ãë¼Ò");
+            {//ì¶”ê°€ë˜ì–´ìˆìœ¼ë©´ ì·¨ì†Œë²„íŠ¼ ê¸°ëŠ¥
+                Debug.Log(user.id + " íŒ”ë¡œìš° ì·¨ì†Œ");
                 if (OnClickDelButton != null)
                     OnClickDelButton(this);
                 Follow = false;
@@ -96,8 +96,8 @@ public class UserSlot : MonoBehaviour, IPointerDownHandler
             }
         }
         else
-        {   //³» ÆÈ·Î¿ì, ÆÈ·Î¿ö ¸ñ·Ï ½½·ÔÀÌ¸é
-            //Ãë¼Ò¹öÆ° ±â´É
+        {   //ë‚´ íŒ”ë¡œìš°, íŒ”ë¡œì›Œ ëª©ë¡ ìŠ¬ë¡¯ì´ë©´
+            //ì·¨ì†Œë²„íŠ¼ ê¸°ëŠ¥
             if (OnClickDelButton != null)
                 OnClickDelButton(this);
             Follow = false;

@@ -56,7 +56,7 @@ app.get('/upload',function(req, res){
 
 app.use('/api/user', usersRouters);
 app.use('/api/auth', authRouters);
-app.use('/api/media', mediaRouter);
+app.use('/media', mediaRouter);
 app.use('/api/music', musicRouter);
 app.use('/api/follow', followRouter);
 

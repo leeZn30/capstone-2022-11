@@ -17,7 +17,7 @@ public class FileOpenDialog : MonoBehaviour
     {
         OpenDialog = new VistaOpenFileDialog();
         //OpenDialog.FilterIndex = 3;
-        OpenDialog.Title = "ÆÄÀÏ Å½»ö±â";
+        OpenDialog.Title = "íŒŒì¼ íƒìƒ‰ê¸°";
         
     }
     public string FileOpen(Type type)
@@ -26,10 +26,10 @@ public class FileOpenDialog : MonoBehaviour
         switch (type)
         {
             case Type.Music:
-                OpenDialog.Filter = "¿Àµğ¿À ÆÄÀÏ (*.wav, *.mp3, *.ogg) | *.wav; *.mp3 *.ogg;";
+                OpenDialog.Filter = "ì˜¤ë””ì˜¤ íŒŒì¼ (*.wav, *.mp3, *.ogg) | *.wav; *.mp3; *.ogg;";
                 break;
             case Type.Image:
-                OpenDialog.Filter = "ÀÌ¹ÌÁö ÆÄÀÏ (*.jpg, *.png) | *.jpg; *.png;";
+                OpenDialog.Filter = "ì´ë¯¸ì§€ íŒŒì¼ (*.jpg, *.png) | *.jpg; *.png;";
                 break;
         }
         
