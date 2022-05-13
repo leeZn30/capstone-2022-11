@@ -23,11 +23,11 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    uploadList: {
+    listName: {
         type: Array,
-        default: []
+        default: ["uploadList"]
     },
-    myList: {
+    uploadList: {
         type: Array,
         default: []
     },
@@ -50,8 +50,8 @@ const UserSchema = new mongoose.Schema({
     follower: {
         type: Array,
         default: []
-    }
-});
+    },
+}, {strict:false});
 
 const User = mongoose.model("user", UserSchema);
 

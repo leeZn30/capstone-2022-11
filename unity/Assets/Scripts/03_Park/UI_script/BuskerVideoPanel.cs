@@ -6,7 +6,6 @@ using TMPro;
 using agora_gaming_rtc;
 using Photon.Pun;
 
-
 public class BuskerVideoPanel : MonoBehaviour
 {
     // 카메라 관련
@@ -37,12 +36,6 @@ public class BuskerVideoPanel : MonoBehaviour
 
     // small Video Panel
     [SerializeField] private GameObject smallVideo;
-
-    private void OnEnable()
-    {
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -75,7 +68,7 @@ public class BuskerVideoPanel : MonoBehaviour
 
     public void setDevice()
     {
-        AgoraManager.Instance.loadEngine();
+        StartButton.onClick.RemoveAllListeners(); // 지워주고 해야함
         StartButton.onClick.AddListener(StartBusking);
     }
 
@@ -84,27 +77,26 @@ public class BuskerVideoPanel : MonoBehaviour
     {
         if (titleInput.text != "" && titleInput.text != null)
         {
-            AgoraManager.Instance.callJoin(0);
-            if (AgoraManager.Instance.nowBuskingSpot != null)
-            {
-                AgoraManager.Instance.nowBuskingSpot.callsetTitle(PhotonNetwork.LocalPlayer.NickName, titleInput.text);
-            }
+            AgoraChannelPlayer.Instance.callJoin(0, PhotonNetwork.LocalPlayer.NickName, titleInput.text);
+
+            AgoraChannelPlayer.Instance.nowBuskingSpot.onTitleBar();
 
             // Busker 화면 없애기
             gameObject.SetActive(false);
             smallVideo.transform.localPosition = new Vector3(-700, 350, 0);
-            smallVideo.GetComponent<Button>().enabled = false;
+            //smallVideo.GetComponent<Button>().enabled = false;
             smallVideo.SetActive(true);
-            AgoraManager.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
+            AgoraChannelPlayer.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
 
-            // 그만두기 버튼
+            // 그만두기 버튼 설정
             PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
-            player.OnInteractiveButton(1);
-            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(
-                delegate { AgoraManager.Instance.unloadEngine(); });
+            player.changeInteractiveButton(1);
+            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
+            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { player.OffInteractiveButton(); });
+
+            AgoraChannelPlayer.Instance.nowBuskingSpot.callInsideUserJoin(AgoraChannelPlayer.Instance.channelName);
+
         }
     }
-
-
 
 }
