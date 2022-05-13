@@ -174,7 +174,7 @@ MonoBehaviour:
   InteractiveButton: {fileID: 0}
   buttonImages:
   - {fileID: 21300000, guid: c21d6bce7f055224ba6c286cac114bf5, type: 3}
-  - {fileID: 21300000, guid: 8a86d699ee409064fae4782ad32bf828, type: 3}
+  - {fileID: 21300000, guid: 8c092b00160f2724a9ee4c73c1163cd9, type: 3}
   - {fileID: 21300000, guid: 864e927c550b4904f8386aa005664184, type: 3}
   - {fileID: 21300000, guid: f43a9983497e19d4fb168479fc87dde3, type: 3}
   isVideoPanelShown: 0
@@ -918,7 +918,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &664319642644840337
 RectTransform:
   m_ObjectHideFlags: 0
