@@ -5840,6 +5840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isGrid: 0
+  gridRowCount: 4
 --- !u!1 &1887246290
 GameObject:
   m_ObjectHideFlags: 0
