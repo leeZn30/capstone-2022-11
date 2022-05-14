@@ -9,18 +9,15 @@ const User = require('../../models/user');
 const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
+
 //body-Parser
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
-//액세스 키 담긴 파일 로드
-const dirPath = path.join(__dirname, '/aws.config.json')
-AWS.config.loadFromPath(dirPath);
-//config update 후 s3 생성
-const s3 = new AWS.S3()
-
 const { BUCKET_NAME } = config
 const { AWS_BUCKET_URL } = config
+const { AWS_BUCKET_ACCESS_KEY_ID } = config
+const { AWS_BUCKET_SECERET_ACCESS_KEY } = config
 
 
 router.get('/*', (req,res)=>{
@@ -30,6 +27,12 @@ router.get('/*', (req,res)=>{
 
 //Upload
 router.post('/', auth, function(req, res){
+    //버킷 액세스 키 업로드
+    AWS.config.update({
+        region:'ap-northeast-2',
+        accessKeyId: AWS_BUCKET_ACCESS_KEY_ID,
+        secretAccessKey: AWS_BUCKET_SECERET_ACCESS_KEY,
+    })
     const userid = req.user.id;
     let totalNum = 0;
     let musicLocate = "";
@@ -54,7 +57,7 @@ router.post('/', auth, function(req, res){
             const extension = path.extname(part.filename);
             var params = {} 
             //파일 확장자 확인
-            if(extension === '.mp3' || extension === '.wav') {
+            if(extension === '.mp3' || extension === '.wav' || extension === '.ogg') {
                 const musicKey = 'Music/' + filename + extension;
                 params = {Bucket: BUCKET_NAME, Key: musicKey, Body: part, ContentType: 'audio/mpeg'};
                 musicLocate = AWS_BUCKET_URL + "/" + musicKey;
@@ -92,6 +95,11 @@ router.post('/', auth, function(req, res){
 
 //Delete
 router.post('/delete',(req,res) =>{
+    //액세스 키 담긴 파일 로드
+    const dirPath = path.join(__dirname, '/aws.config.json')
+    AWS.config.loadFromPath(dirPath);
+    //config update 후 s3 생성
+    const s3 = new AWS.S3()
     //삭제할 file
     var delete_filename = req.body.locate;
     //파일 확장자
