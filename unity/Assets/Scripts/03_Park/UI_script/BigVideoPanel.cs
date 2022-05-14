@@ -6,11 +6,13 @@ using UnityEngine.UI;
 public class BigVideoPanel : MonoBehaviour
 {
     [SerializeField] private GameObject shutButton;
+    [SerializeField] private SmallVideoPanel smallVideoPanel;
+    [SerializeField] private GameObject emoticonPanel;
 
     // Start is called before the first frame update
     void Start()
     {
-        shutButton.GetComponent<Button>().onClick.AddListener(ScaleDownPanel);
+        shutButton.GetComponent<Button>().onClick.AddListener(smallVideoPanel.ScaleDownPanle);
     }
 
     private void OnEnable()
@@ -19,10 +21,14 @@ public class BigVideoPanel : MonoBehaviour
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;
     }
 
-
-    public void ScaleDownPanel()
+    private void OnDisable()
     {
-        this.gameObject.SetActive(false);
-        FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject.SetActive(true);
+        emoticonPanel.SetActive(false);
+
+        if (AgoraChannelPlayer.Instance.role != "publisher")
+        {
+            GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
+            GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+        }
     }
 }

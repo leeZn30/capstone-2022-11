@@ -55,7 +55,7 @@ router.post('/', auth, function(req, res){
             
             //음악, 이미지 파일 다른 폴더로 업로드
             const extension = path.extname(part.filename);
-            var params = {}
+            var params = {} 
             //파일 확장자 확인
             if(extension === '.mp3' || extension === '.wav' || extension === '.ogg') {
                 const musicKey = 'Music/' + filename + extension;
@@ -101,8 +101,9 @@ router.post('/delete',(req,res) =>{
     //config update 후 s3 생성
     const s3 = new AWS.S3()
     //삭제할 file
-    const delete_filename = req.body.filename;
+    var delete_filename = req.body.locate;
     //파일 확장자
+    delete_filename=path.basename(delete_filename);
     const extension = path.extname(delete_filename);
     var params = {}
     //파일 확장자 확인

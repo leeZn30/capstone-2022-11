@@ -61,8 +61,8 @@ public class UserData : Singleton<UserData>
     public event FollowStateHandler OnAddFollow;
     public string id
     {
-        get { return user.id; }    // _data ¹ÝÈ¯
-        set { user.id = value; }   // value Å°¿öµå »ç¿ë
+        get { return user.id; }    // _data ë°˜í™˜
+        set { user.id = value; }   // value í‚¤ì›Œë“œ ì‚¬ìš©
     }
 
     // Start is called before the first frame update

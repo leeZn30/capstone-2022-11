@@ -43,8 +43,8 @@ public class Join : MonoBehaviour
         {
             if (inputObjects[i].isOkay == false)
             {
-                //Àß¸ø ÀÔ·ÂÇÑ °ªÀÌ ÀÖÀ» °æ¿ì
-                playAppearResultPopup("¸ğµç ¹®Ç×¿¡ ¿Ã¹Ù¸¥ °ªÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä.");
+                //ì˜ëª» ì…ë ¥í•œ ê°’ì´ ìˆì„ ê²½ìš°
+                playAppearResultPopup("ëª¨ë“  ë¬¸í•­ì— ì˜¬ë°”ë¥¸ ê°’ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.");
                 return;
             }
             switch (inputObjects[i].key)
@@ -67,23 +67,23 @@ public class Join : MonoBehaviour
             }
         }
         user.character = 0;
-        //°¡ÀÔ ¿äÃ»À» º¸³¿
+        //ê°€ì… ìš”ì²­ì„ ë³´ëƒ„
         OnClickJoinButton_(user);
 
 
     }
     public void LoadingJoin()
-    {//·Îµù ¾Ö´Ï¸ŞÀÌ¼ÇÀ» ¶ç¿ò
+    {//ë¡œë”© ì• ë‹ˆë©”ì´ì…˜ì„ ë„ì›€
         animator.SetTrigger("Join");
     }
     public void SuccessJoin()     
-    {//·Îµù ¾Ö´Ï¸ŞÀÌ¼ÇÀ» ³¡³»°í
+    {//ë¡œë”© ì• ë‹ˆë©”ì´ì…˜ì„ ëë‚´ê³ 
         animator.SetTrigger("Success");
-        //°¡ÀÔ ¿Ï·á ¾Ö´Ï¸ŞÀÌ¼ÇÀ» ¶ç¿ò
+        //ê°€ì… ì™„ë£Œ ì• ë‹ˆë©”ì´ì…˜ì„ ë„ì›€
         animator.SetBool("isOpen", false);
     }
     public void FailJoin()
-    {//·Îµù ¾Ö´Ï¸ŞÀÌ¼ÇÀ» ³¡³»°í
+    {//ë¡œë”© ì• ë‹ˆë©”ì´ì…˜ì„ ëë‚´ê³ 
         animator.SetTrigger("Fail");
 
     }

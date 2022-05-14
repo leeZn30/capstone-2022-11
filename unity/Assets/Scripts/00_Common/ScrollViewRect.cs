@@ -1,14 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; // UI¿Í °ü·ÃµÈ ½ºÅ©¸³Æ® ÀÛ¾÷À» À§ÇØ¼­ Ãß°¡ÇØ ÁÖ¾î¾ß ÇÑ´Ù. 
+using UnityEngine.UI; // UIì™€ ê´€ë ¨ëœ ìŠ¤í¬ë¦½íŠ¸ ì‘ì—…ì„ ìœ„í•´ì„œ ì¶”ê°€í•´ ì£¼ì–´ì•¼ í•œë‹¤. 
 
 
 public class ScrollViewRect : MonoBehaviour
 {
-    // ½ºÅ©·Ñ ºä¿Í °ü·ÃµÈ ¼öÁ¤À» ÇÏ±â À§ÇØ °¡Áö°í ÀÖ´Â º¯¼ö 
+    // ìŠ¤í¬ë¡¤ ë·°ì™€ ê´€ë ¨ëœ ìˆ˜ì •ì„ í•˜ê¸° ìœ„í•´ ê°€ì§€ê³  ìˆëŠ” ë³€ìˆ˜ 
     RectTransform rect;
     public bool isGrid;
+    public int gridRowCount=4;
 
     void Awake () {
 
@@ -22,10 +23,11 @@ public class ScrollViewRect : MonoBehaviour
 
         if (gameObject.GetComponent<GridLayoutGroup>() is GridLayoutGroup gl)
         {
-            height += gl.cellSize.y * ((int)(cnt/4)+(cnt%4 !=0 ?1 :0)) + gl.spacing.y*((int)(cnt / 4) + (cnt % 4 != 0 ? 1 : 0));
+            height += gl.cellSize.y * ((int)(cnt/ gridRowCount) +(cnt% gridRowCount != 0 ?1 :0)) + gl.spacing.y*((int)(cnt / gridRowCount) + (cnt % gridRowCount != 0 ? 1 : 0));
         }
         else
         {
+            Canvas.ForceUpdateCanvases(); 
             for (int i = 0; i < cnt; i++)
             {
                 height += transform.GetChild(i).gameObject.GetComponent<RectTransform>().sizeDelta.y;
@@ -33,8 +35,8 @@ public class ScrollViewRect : MonoBehaviour
             }
         }
 
-        // scrollRect.content¸¦ ÅëÇØ¼­ Hierachy ºä¿¡¼­ ºÃ´ø Viewport ¹ØÀÇ Content °ÔÀÓ ¿ÀºêÁ§Æ®¿¡ Á¢±ÙÇÒ ¼ö ÀÖ´Ù. 
-        // ±×¸®°í sizeDelta °ªÀ» ÅëÇØ¼­ ContentÀÇ ³ôÀÌ¿Í ³ĞÀÌ¸¦ ¼öÁ¤ÇÒ ¼ö ÀÖ´Ù. 
+        // scrollRect.contentë¥¼ í†µí•´ì„œ Hierachy ë·°ì—ì„œ ë´¤ë˜ Viewport ë°‘ì˜ Content ê²Œì„ ì˜¤ë¸Œì íŠ¸ì— ì ‘ê·¼í•  ìˆ˜ ìˆë‹¤. 
+        // ê·¸ë¦¬ê³  sizeDelta ê°’ì„ í†µí•´ì„œ Contentì˜ ë†’ì´ì™€ ë„“ì´ë¥¼ ìˆ˜ì •í•  ìˆ˜ ìˆë‹¤. 
 
         rect.sizeDelta = new Vector2(rect.sizeDelta.x,height);
     }

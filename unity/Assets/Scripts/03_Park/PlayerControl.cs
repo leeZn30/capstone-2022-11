@@ -8,45 +8,52 @@ using UnityEngine.UI;
 public class PlayerControl : MonoBehaviourPunCallbacks
 {
 
-    // «√∑π¿ÃæÓ º≥¡§
-    float moveSpeed = 10f;
+    // ÌîåÎ†àÏù¥Ïñ¥ ÏÑ§Ï†ï
+    float moveSpeed = 6f;
     public bool isMoveAble = true;
     public bool isUIActable = true;
 
-    // ªÛ»£¿€øÎ πˆ∆∞
+    // ÏÉÅÌò∏ÏûëÏö© Î≤ÑÌäº
     [SerializeField] bool isInteractiveAble = false;
     public GameObject InteractiveButton;
     [SerializeField] Sprite[] buttonImages;
 
-    // ∫Òµø¿
+    // ÎπÑÎîîÏò§
     public bool isVideoPanelShown = false;
     public GameObject videoPanel;
 
-    // ¿Ã∏∆ºƒ‹ ƒ⁄∑Á∆æ Ω««‡ø©∫Œ
+    // Ïù¥Î™®Ìã∞ÏΩò ÏΩîÎ£®Ìã¥ Ïã§ÌñâÏó¨Î∂Ä
     private bool isEmojiRunning = false;
     private Coroutine runningEmojiCorutine;
 
-    // √§∆√
+    // Ï±ÑÌåÖ
     [SerializeField] GameObject ChatPanel;
 
     // BusketPanel
     [SerializeField] private GameObject buskerPanel;
 
-    // ¡‹ ¿Œ/¡‹ æ∆øÙ
+    // Ï§å Ïù∏/Ï§å ÏïÑÏõÉ
     private float wheelSpeed = 10;
     [SerializeField] private float cameraDistance = 10;
+
+
+    private Vector2 mapSize;
+    private int isMoving=0;
+    private Animator animator;
+    public GameObject movingObj;
+    private Transform legTransform;
 
     // Start is called before the first frame update
     void Start()
     {
         if (this.photonView.IsMine)
         {
-            Camera.main.orthographicSize = cameraDistance;
-
             InteractiveButton = FindObjectOfType<Canvas>().transform.Find("InteractiveButton").gameObject;
             videoPanel = FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject;
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
             buskerPanel = FindObjectOfType<Canvas>().transform.Find("BuskerVideoPanel").gameObject;
+            animator = GetComponent<Animator>();
+            legTransform = movingObj.transform.GetChild(0);
         }
     }
 
@@ -64,39 +71,80 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (this.photonView.IsMine)
         {
-            if (Input.GetKey(KeyCode.UpArrow))
+            isMoving = 0;
+
+            if (Input.GetKey(KeyCode.W))
             {
-                gameObject.transform.Translate(Vector3.up * moveSpeed * Time.deltaTime);
+                isMoving = 1;
+                Debug.DrawRay(gameObject.transform.position, Vector3.up * 0.3f, Color.green);
+                RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.up, 0.3f, LayerMask.GetMask("CantPassObj"));
+
+                if (hit.collider == null)
+                {
+                    gameObject.transform.Translate(Vector3.up * moveSpeed * Time.deltaTime);
+                }
+
             }
 
-            if (Input.GetKey(KeyCode.DownArrow))
+            if (Input.GetKey(KeyCode.S))
             {
-                gameObject.transform.Translate(Vector3.down * moveSpeed * Time.deltaTime);
+                isMoving = 1;
+                Debug.DrawRay(gameObject.transform.position, Vector3.down * 0.3f, Color.green);
+                RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.down, 0.3f, LayerMask.GetMask("CantPassObj"));
+                if (hit.collider == null)
+                {
+                    gameObject.transform.Translate(Vector3.down  * moveSpeed * Time.deltaTime);
+                }
+                
+
+
+               
             }
 
-            if (Input.GetKey(KeyCode.RightArrow))
+            if (Input.GetKey(KeyCode.D))
             {
-                gameObject.transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
+                isMoving = 1;
+                Debug.DrawRay(gameObject.transform.position, Vector3.right * 0.3f, Color.green);
+                RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.right, 0.3f,LayerMask.GetMask("CantPassObj"));
+                if (hit.collider == null)
+                {
+                    gameObject.transform.Translate(Vector3.right * moveSpeed * Time.deltaTime);
+                }
             }
 
-            if (Input.GetKey(KeyCode.LeftArrow))
+            if (Input.GetKey(KeyCode.A))
             {
-                gameObject.transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
-            }
+                isMoving = -1;
+                Debug.DrawRay(gameObject.transform.position, Vector3.left * 0.3f, Color.green);
+                RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.left, 0.3f, LayerMask.GetMask("CantPassObj"));
+                if (hit.collider == null)
+                {
+                    gameObject.transform.Translate(Vector3.left * moveSpeed * Time.deltaTime);
+                }
+                
 
-            cameraDistance = Input.GetAxis("Mouse ScrollWheel") * wheelSpeed * Time.deltaTime;
-            Camera.main.orthographicSize = cameraDistance;
+                
+            }
+            RotateLeg(moveSpeed * isMoving);
+
+            //cameraDistance = Input.GetAxis("Mouse ScrollWheel") * wheelSpeed * Time.deltaTime;
+            //Camera.main.orthographicSize = cameraDistance;
 
         }
     }
-
+    void RotateLeg(float speed)
+    {
+        if (speed == 0) movingObj.SetActive(false);
+        else movingObj.SetActive(true);
+        legTransform.Rotate(new Vector3(0, 0, 1)*speed*10);
+    }
     public void OnInteractiveButton(int type)
     {
         /**
-         * 0) πˆΩ∫≈∑
-         * 1) πˆΩ∫≈∑ ±◊∏∏µŒ±‚
-         * 2) πˆΩ∫ƒø ∆»∑ŒøÏ
-         * 3) º¯∞£¿Ãµø±‚
+         * 0) Î≤ÑÏä§ÌÇπ
+         * 1) Î≤ÑÏä§ÌÇπ Í∑∏ÎßåÎëêÍ∏∞
+         * 2) Î≤ÑÏä§Ïª§ ÌåîÎ°úÏö∞
+         * 3) ÏàúÍ∞ÑÏù¥ÎèôÍ∏∞
          * **/
 
         if (!isInteractiveAble)
@@ -111,10 +159,20 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (isInteractiveAble)
         {
+            InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
             InteractiveButton.SetActive(false);
             isInteractiveAble = false;
         }
 
+    }
+
+    public void changeInteractiveButton(int type)
+    {
+        if (isInteractiveAble)
+        {
+            InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
+            InteractiveButton.GetComponent<Image>().sprite = buttonImages[type];
+        }
     }
 
     public void OnVideoPanel(int mode)
@@ -131,7 +189,10 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
                 case 1:
                     buskerPanel.SetActive(true);
+                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;
+                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;
                     buskerPanel.GetComponent<BuskerVideoPanel>().setDevice();
+                    isVideoPanelShown = true;
                     break;
 
                 default:
@@ -145,19 +206,19 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         if (isVideoPanelShown)
         {
             ChatPanel.GetComponent<Chat>().msgList.text = "";
-            ChatPanel.GetComponent<Chat>().ifSendMsg.text = "";
+            ChatPanel.GetComponent<Chat>().emojimsg = "";
             videoPanel.SetActive(false);
             isVideoPanelShown = false;
         }
     }
 
-    // πÊº€ √ ±‚º≥¡§
+    // Î∞©ÏÜ° Ï¥àÍ∏∞ÏÑ§Ï†ï
     public void initBusking()
     {
-        // ƒ≥∏Ø≈Õ ¿ßƒ° µÓ
+        // Ï∫êÎ¶≠ÌÑ∞ ÏúÑÏπò Îì±
     }
 
-    // -------------- ¿Ã∏¡ˆ µø±‚»≠ ∞¸∑√ «‘ºˆµÈ -------------
+    // -------------- Ïù¥Î™®ÏßÄ ÎèôÍ∏∞Ìôî Í¥ÄÎ†® Ìï®ÏàòÎì§ -------------
     public IEnumerator sendEmoji(int emojiNum)
     {
         GameObject bubble = transform.GetChild(1).gameObject;

@@ -9,7 +9,7 @@ public static class GlobalData
 {
     public static readonly string[] Genre =
     {
-        "¾øÀ½","´í½º","¹ß¶óµå","ÆË","·¦/ÈüÇÕ","ÀÎµğÀ½¾Ç","·Ï/¸ŞÅ»"
+        "ì—†ìŒ","ëŒ„ìŠ¤","ë°œë¼ë“œ","íŒ","ë©/í™í•©","ì¸ë””ìŒì•…","ë¡/ë©”íƒˆ"
     };
-    public static readonly string url = "http://localhost:8080/api";
+    public static readonly string url = "http://localhost:8080/api"; //http://metabusking.c.cs.kookmin.ac.kr/api
 }

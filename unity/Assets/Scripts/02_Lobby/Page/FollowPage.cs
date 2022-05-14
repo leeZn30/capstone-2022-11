@@ -23,14 +23,14 @@ public class FollowPage : Page
 
     public GameObject followUserScrollViewObject;
     public GameObject searchedUserScrollViewObject;
-
+    public GameObject[] noListObjects;
 
     private List<UserSlot> followUserSlots;
     private List<UserSlot> searchedUserSlots;
     private string[] currentUserId;
-    private TextMeshProUGUI infoFollowText;//ÆÈ·Î¿ì Ãë¼Ò, ÆÈ·Î¿ì ÇÏ±â text
+    private TextMeshProUGUI infoFollowText;//íŒ”ë¡œìš° ì·¨ì†Œ, íŒ”ë¡œìš° í•˜ê¸° text
 
-    private FollowSystemType FL;//follow¸¦ º¸¿©ÁÙ°ÇÁö, followerº¸¿©ÁÙ°ÇÁö
+    private FollowSystemType FL;//followë¥¼ ë³´ì—¬ì¤„ê±´ì§€, followerë³´ì—¬ì¤„ê±´ì§€
     public enum FollowSystemType
     {
         uploadList,follow,follower,searched
@@ -58,18 +58,18 @@ public class FollowPage : Page
                 GetUserListAsync(FollowSystemType.searched);
             
             });
-            //³» Á¤º¸ º¸±â ¹öÆ°
+            //ë‚´ ì •ë³´ ë³´ê¸° ë²„íŠ¼
             myInfoBtn.onClick.AddListener(delegate {
                 LoadUserProfile();
             });
-            //³» ÆÈ·Î¿ö ¹öÆ°
+            //ë‚´ íŒ”ë¡œì›Œ ë²„íŠ¼
             followBtns[0].onClick.AddListener(delegate {
                 followBtns[0].image.color = new Color(1f, 1f, 1f, 1f);
                 followBtns[1].image.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
                 GetUserListAsync(FollowSystemType.follower);
   
             });
-            //³» ÆÈ·Î¿ì ¹öÆ°
+            //ë‚´ íŒ”ë¡œìš° ë²„íŠ¼
             followBtns[1].onClick.AddListener(delegate {
                 followBtns[1].image.color = new Color(1f, 1f, 1f, 1f);
                 followBtns[0].image.color = new Color(0.5f, 0.5f, 0.5f, 0.5f);
@@ -77,19 +77,19 @@ public class FollowPage : Page
             });
 
             infoFollowBtn.onClick.AddListener(delegate{
-                if (infoFollowText.text == "ÆÈ·Î¿ì")
-                {//ÆÈ·Î¿ì
+                if (infoFollowText.text == "íŒ”ë¡œìš°")
+                {//íŒ”ë¡œìš°
                     FollowUser(currentUserId[0], currentUserId[1]);
                 }
                 else
-                {//ÆÈ·Î¿ì Ãë¼Ò
+                {//íŒ”ë¡œìš° ì·¨ì†Œ
                     FollowCancelUser(currentUserId[0], currentUserId[1]);
                 }
             });
-            //ÆÈ·Î¿ì°¡ Ãë¼ÒµÇ¾úÀ»¶§
+            //íŒ”ë¡œìš°ê°€ ì·¨ì†Œë˜ì—ˆì„ë•Œ
             UserData.Instance.OnDeleteFollow += SetInfoFollowTextOnDelete;
 
-            //ÆÈ·Î¿ì°¡ Ãß°¡µÇ¾úÀ» ¶§
+            //íŒ”ë¡œìš°ê°€ ì¶”ê°€ë˜ì—ˆì„ ë•Œ
             UserData.Instance.OnAddFollow += SetInfoFollowTextOnAdd;
 
 
@@ -99,61 +99,61 @@ public class FollowPage : Page
     void SetInfoFollowTextOnDelete(string str)
     {
         if (str == currentUserId[0])
-            infoFollowText.text = "ÆÈ·Î¿ì";
+            infoFollowText.text = "íŒ”ë¡œìš°";
 
     }
     void SetInfoFollowTextOnAdd(string str)
     {
         if (str == currentUserId[0])
-            infoFollowText.text = "ÆÈ·Î¿ì Ãë¼Ò";
+            infoFollowText.text = "íŒ”ë¡œìš° ì·¨ì†Œ";
     }
-    //À¯Àú ÇÁ·ÎÇÊÀ» ·ÎµåÇÏ´Â ÇÔ¼ö
+    //ìœ ì € í”„ë¡œí•„ì„ ë¡œë“œí•˜ëŠ” í•¨ìˆ˜
     async void LoadUserProfile(User user=null, bool isFollow=false)
     {
         if (user != null)
         {
             if (currentUserId[0] == user.id)
                 return;
-            //ÇöÀç º¸¿©Áö´Â À¯ÀúÀÇ id¸¦ »õ·Î ¼³Á¤
+            //í˜„ì¬ ë³´ì—¬ì§€ëŠ” ìœ ì €ì˜ idë¥¼ ìƒˆë¡œ ì„¤ì •
             currentUserId[0] = user.id;
-            currentUserId[1] = user.nickname;//ÆÈ·Î¿ì »èÁ¦¿ë
+            currentUserId[1] = user.nickname;//íŒ”ë¡œìš° ì‚­ì œìš©
 
             if (isFollow == true)
-            {//³»°¡ ÀÌ¹Ì ÆÈ·Î¿ìÇÑ À¯Àú¶ó¸é
-                infoFollowText.text = "ÆÈ·Î¿ì Ãë¼Ò";
+            {//ë‚´ê°€ ì´ë¯¸ íŒ”ë¡œìš°í•œ ìœ ì €ë¼ë©´
+                infoFollowText.text = "íŒ”ë¡œìš° ì·¨ì†Œ";
                 infoFollowBtn.gameObject.SetActive(true);
                 
             }
             else
-            {//³»°¡ ÆÈ·Î¿ìÇÏÁö¾ÊÀº À¯Àú¶ó¸é
-                infoFollowText.text = "ÆÈ·Î¿ì";
+            {//ë‚´ê°€ íŒ”ë¡œìš°í•˜ì§€ì•Šì€ ìœ ì €ë¼ë©´
+                infoFollowText.text = "íŒ”ë¡œìš°";
                 infoFollowBtn.gameObject.SetActive(true);
             }
         }
         else if (user == null)
-        {   //nullÀÏ¶§ º»ÀÎÀÇ ÇÁ·ÎÇÊÀ» Ç¥½Ã.
-            //ÇöÀç À¯Àú ¾ÆÀÌµğ¸¦ º»ÀÎÀÇ ¾ÆÀÌµğ·Î ¹Ù²Ş.
+        {   //nullì¼ë•Œ ë³¸ì¸ì˜ í”„ë¡œí•„ì„ í‘œì‹œ.
+            //í˜„ì¬ ìœ ì € ì•„ì´ë””ë¥¼ ë³¸ì¸ì˜ ì•„ì´ë””ë¡œ ë°”ê¿ˆ.
             currentUserId[0] = UserData.Instance.user.id;
             currentUserId[1] = UserData.Instance.user.nickname;
             user = UserData.Instance.user;
-            //ÆÈ·Î¿ì ¹öÆ°À» ºñÈ°¼ºÈ­
+            //íŒ”ë¡œìš° ë²„íŠ¼ì„ ë¹„í™œì„±í™”
             infoFollowBtn.gameObject.SetActive(false);
         }
 
         if (user.preferredGenres.Count == 0)
-        {//Á¤º¸¸¦ ¹Ş¾Æ¿ÀÁö ¾ÊÀº À¯ÀúÀÇ Á¤º¸¸¦ ·ÎµåÇÒ ¶§
+        {//ì •ë³´ë¥¼ ë°›ì•„ì˜¤ì§€ ì•Šì€ ìœ ì €ì˜ ì •ë³´ë¥¼ ë¡œë“œí•  ë•Œ
             user = await GET_UserInfoAsync(user.id);
             if (user == null) return;
         }
 
 
         userNameText.text = user.GetName();
-        followText.text = user.followNum + "\nÆÈ·Î¿ì";
-        followerText.text = user.followerNum + "\nÆÈ·Î¿ö";
-        musicCntText.text = "\n¿Ã¸° À½¿ø";
+        followText.text = user.followNum + "\níŒ”ë¡œìš°";
+        followerText.text = user.followerNum + "\níŒ”ë¡œì›Œ";
+        musicCntText.text = "\nì˜¬ë¦° ìŒì›";
 
         character.ChangeSprite(user.character);
-        GetuploadedMusicListAsync(user == UserData.Instance.user?null : user.id);//º»ÀÎÀÌ¸é null, º»ÀÎÀÌ ¾Æ´Ï¸é id
+        GetuploadedMusicListAsync(user == UserData.Instance.user?null : user.id);//ë³¸ì¸ì´ë©´ null, ë³¸ì¸ì´ ì•„ë‹ˆë©´ id
 
     }
 
@@ -166,19 +166,24 @@ public class FollowPage : Page
         }
     }
 
-    //¾÷·ÎµåÇÑ À½¿ø¸®½ºÆ®¸¦ Ç¥½ÃÇÏ°í ÆÈ·Î¿ì, ÆÈ·Î¿ö, ¿Ã¸°À½¿ø ¼ö¸¦ ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼ö
+    //ì—…ë¡œë“œí•œ ìŒì›ë¦¬ìŠ¤íŠ¸ë¥¼ í‘œì‹œí•˜ê³  íŒ”ë¡œìš°, íŒ”ë¡œì›Œ, ì˜¬ë¦°ìŒì› ìˆ˜ë¥¼ ì—…ë°ì´íŠ¸í•˜ëŠ” í•¨ìˆ˜
     void LoadUploadedSlots(List<Music> _musics)
     {
 
         if (_musics != null)
         {
 
-            musicCntText.text = _musics.Count + "\n¿Ã¸° À½¿ø";
+            musicCntText.text = _musics.Count + "\nì˜¬ë¦° ìŒì›";
 
             RemoveSlots(FollowSystemType.uploadList);
             if (_musics.Count == 0)
-            {//¿Ã¸° À½¿øÀÌ ¾ø½À´Ï´Ù.
-              
+            {//ì˜¬ë¦° ìŒì›ì´ ì—†ìŠµë‹ˆë‹¤.
+                
+                SetNoListObject(FollowSystemType.uploadList, true);
+            }
+            else
+            {
+                SetNoListObject(FollowSystemType.uploadList, false);
             }
             GameObject _obj = null;
             PlaySongSlot slot;
@@ -217,12 +222,12 @@ public class FollowPage : Page
         }
     }
 
-    //À¯Àú ½½·ÔÀÇ Å¸ÀÔº°·Î À¯Àú¸®½ºÆ®¸¦ ¾Ë¸ÂÀº ½½·Ô¿¡ ·ÎµåÇÏ´Â ÇÔ¼ö
+    //ìœ ì € ìŠ¬ë¡¯ì˜ íƒ€ì…ë³„ë¡œ ìœ ì €ë¦¬ìŠ¤íŠ¸ë¥¼ ì•Œë§ì€ ìŠ¬ë¡¯ì— ë¡œë“œí•˜ëŠ” í•¨ìˆ˜
     void LoadUserSlots(FollowSystemType type, List<User> _users)
     {
         if (_users != null)
         {
-            //±âÁ¸ ½½·ÔÀ» Áö¿ò
+            //ê¸°ì¡´ ìŠ¬ë¡¯ì„ ì§€ì›€
             RemoveSlots(type);
 
             GameObject _obj = null;
@@ -230,7 +235,7 @@ public class FollowPage : Page
 
             for (int i = 0; i < _users.Count; i++)
             {
-                //À¯Àú º»ÀÎ Á¤º¸´Â ·ÎµåÇÏÁö ¾ÊÀ½
+                //ìœ ì € ë³¸ì¸ ì •ë³´ëŠ” ë¡œë“œí•˜ì§€ ì•ŠìŒ
                 if (_users[i].id == UserData.Instance.id) continue;
 
                 if(type==FollowSystemType.searched)
@@ -245,7 +250,7 @@ public class FollowPage : Page
                 slot.SetUser(_users[i]);
                 slot.SetType(type);
 
-                //ÆÈ·Î¿ìÇÏ°í ÀÖ´Â À¯Àú¶ó¸é ½½·Ô¿¡¼­ ÆÈ·Î¿ì Ã³¸®ÇÏ°í ÆÈ·Î¿ì ¹öÆ°À» ºñÈ°¼ºÈ­ ½ÃÅ´
+                //íŒ”ë¡œìš°í•˜ê³  ìˆëŠ” ìœ ì €ë¼ë©´ ìŠ¬ë¡¯ì—ì„œ íŒ”ë¡œìš° ì²˜ë¦¬í•˜ê³  íŒ”ë¡œìš° ë²„íŠ¼ì„ ë¹„í™œì„±í™” ì‹œí‚´
                 if (UserData.Instance.user.follow.Contains(_users[i].id))
                 {
                     slot.Follow = true;
@@ -266,6 +271,11 @@ public class FollowPage : Page
                 }
 
             }
+            if (_users.Count == 0)
+                SetNoListObject(type, true);
+            else
+                SetNoListObject(type, false);
+
             if (type == FollowSystemType.searched)
                 searchedUserScrollViewObject.GetComponent<ScrollViewRect>().SetContentSize();
             else
@@ -274,27 +284,27 @@ public class FollowPage : Page
     }
     void FollowUser(UserSlot us)
     {
-        //À¯Àú½½·Ô ÆÈ·Î¿ì ¹öÆ° Å¬¸¯½Ã
+        //ìœ ì €ìŠ¬ë¡¯ íŒ”ë¡œìš° ë²„íŠ¼ í´ë¦­ì‹œ
         CallFollowApi(us.user.id, us.user.nickname);
         UserData.Instance.AddFollow(us.user.id);
 
     }
     void FollowUser(string id, string nickname)
     {
-        //À¯Àú½½·Ô ÆÈ·Î¿ì ¹öÆ° Å¬¸¯½Ã
+        //ìœ ì €ìŠ¬ë¡¯ íŒ”ë¡œìš° ë²„íŠ¼ í´ë¦­ì‹œ
         CallFollowApi(id, nickname);
         UserData.Instance.AddFollow(id);
 
     }
     void FollowCancelUser(UserSlot us)
     {
-        //À¯Àú½½·Ô ÆÈ·Î¿ì Ãë¼Ò ¹öÆ° Å¬¸¯½Ã
+        //ìœ ì €ìŠ¬ë¡¯ íŒ”ë¡œìš° ì·¨ì†Œ ë²„íŠ¼ í´ë¦­ì‹œ
         CallFollowApi(us.user.id, us.user.nickname, true);
         UserData.Instance.DelFollow(us.user.id);
     }
     void FollowCancelUser(string id, string nickname)
     {
-        //À¯Àú½½·Ô ÆÈ·Î¿ì Ãë¼Ò ¹öÆ° Å¬¸¯½Ã
+        //ìœ ì €ìŠ¬ë¡¯ íŒ”ë¡œìš° ì·¨ì†Œ ë²„íŠ¼ í´ë¦­ì‹œ
         CallFollowApi(id, nickname, true);
         UserData.Instance.DelFollow(id);
     }
@@ -302,24 +312,24 @@ public class FollowPage : Page
     {
         await POST_FollowUserAsync(userID, userName, isDelete);
         if (followBtns[1].image.color.r == 1.0f)
-        {   //ÆÈ·Î¿ì ¸®½ºÆ®°¡ º¸ÀÌ°í ÀÖÀ» ¶§
-            //ÆÈ·Î¿ì ¸®½ºÆ® ¾÷µ¥ÀÌÆ®
+        {   //íŒ”ë¡œìš° ë¦¬ìŠ¤íŠ¸ê°€ ë³´ì´ê³  ìˆì„ ë•Œ
+            //íŒ”ë¡œìš° ë¦¬ìŠ¤íŠ¸ ì—…ë°ì´íŠ¸
             GetUserListAsync(FollowSystemType.follow);
         }
 
         if(currentUserId[0]==UserData.Instance.user.id)
-            followText.text = UserData.Instance.user.follow.Count + "\nÆÈ·Î¿ì";
+            followText.text = UserData.Instance.user.follow.Count + "\níŒ”ë¡œìš°";
 
     }
     void UserSlotClickHandler(UserSlot us)
     {
-        //À¯Àú ½½·Ô Å¬¸¯½Ã
+        //ìœ ì € ìŠ¬ë¡¯ í´ë¦­ì‹œ
         LoadUserProfile(us.user,us.Follow);
     }
     void RemoveSlots(FollowSystemType type)
     {
         if (type == FollowSystemType.uploadList)
-        {//¾÷·Îµå ¸®½ºÆ®
+        {//ì—…ë¡œë“œ ë¦¬ìŠ¤íŠ¸
             for (int i = 0; i < uploadedSlots.Count; i++)
             {
                 Destroy(uploadedSlots[i].gameObject);
@@ -327,7 +337,7 @@ public class FollowPage : Page
             uploadedSlots.Clear();
         }
         else if (type == FollowSystemType.searched)
-        {//°Ë»ö ¸®½ºÆ®
+        {//ê²€ìƒ‰ ë¦¬ìŠ¤íŠ¸
             for (int i = 0; i < searchedUserSlots.Count; i++)
             {
                 Destroy(searchedUserSlots[i].gameObject);
@@ -336,7 +346,7 @@ public class FollowPage : Page
         }
         else
         {
-            //ÆÈ·Î¿ì,ÆÈ·Î¿ö ¸®½ºÆ®
+            //íŒ”ë¡œìš°,íŒ”ë¡œì›Œ ë¦¬ìŠ¤íŠ¸
             for (int i = 0; i < followUserSlots.Count; i++)
             {
                 Destroy(followUserSlots[i].gameObject);
@@ -345,9 +355,17 @@ public class FollowPage : Page
         }
 
     }
+    void SetNoListObject(FollowSystemType ft, bool on)
+    {
+        if (ft == FollowSystemType.follow)
+            noListObjects[(int)ft].GetComponent<TextMeshProUGUI>().text = "íŒ”ë¡œìš°í•œ ìœ ì €ê°€ ì—†ìŠµë‹ˆë‹¤.";
+        else if (ft == FollowSystemType.follower)
+            noListObjects[(int)ft].GetComponent<TextMeshProUGUI>().text = "íŒ”ë¡œì›Œê°€ ì—†ìŠµë‹ˆë‹¤.";
+        noListObjects[(int)ft].SetActive(on);
+    }
     override public void Load()
     {
-        LoadUserProfile();//³» ÇÁ·ÎÇÊ ·Îµå
+        LoadUserProfile();//ë‚´ í”„ë¡œí•„ ë¡œë“œ
         followBtns[0].image.color = new Color(1f, 1f, 1f, 1f);
         followBtns[1].image.color = new Color(0.5f, 0.5f, 0.5f, 1f);
         GetUserListAsync(FollowSystemType.follower);
@@ -359,6 +377,7 @@ public class FollowPage : Page
         RemoveSlots(FollowSystemType.searched);
         RemoveSlots(FollowSystemType.follow);
         RemoveSlots(FollowSystemType.uploadList);
+
     }
     private void OnDestroy()
     {

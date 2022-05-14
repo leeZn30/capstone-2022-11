@@ -26,14 +26,14 @@ public class CharacterSetPage : Page
     }
     void SetCharacter()
     {
-        //character³Ñ¹ö·Î º¯È¯
+        //characterë„˜ë²„ë¡œ ë³€í™˜
         int tmp = 0;
         for (int i = 0; i < partsCount; i++)
         {
              tmp += partsIdxs[i] * (int)Mathf.Pow(10, (i) * 2);
         }
 
-        //DB¿¡ ¹Ù²ï char °ª ¾÷·Îµå
+        //DBì— ë°”ë€ char ê°’ ì—…ë¡œë“œ
         StartCoroutine(POST_ModifiedChar(UserData.Instance.id, tmp));
 
     }
@@ -46,7 +46,7 @@ public class CharacterSetPage : Page
     public override void Init()
     {
         if (isAlreadyInit==false)
-        {//ÃÊ±â ¼ÂÆÃÀÌ ¾ÈµÇ¾îÀÖ´Ù¸é
+        {//ì´ˆê¸° ì…‹íŒ…ì´ ì•ˆë˜ì–´ìžˆë‹¤ë©´
             partsCount = sampleObj.childCount;
             partsIdxs = new int[partsCount];
 
@@ -69,7 +69,7 @@ public class CharacterSetPage : Page
         }
     }
     override public void Load()
-    {//Ä³¸¯ÅÍ ·Îµå
+    {//ìºë¦­í„° ë¡œë“œ
         Init();
         //character.ChangeSprite(UserData.Instance.user.character);
         

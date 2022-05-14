@@ -1,80 +1,72 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using Photon.Pun;
-using UnityEngine.UI;
 using TMPro;
 
 public class BuskingSpot : MonoBehaviourPun
 {
+    // Room Í¥ÄÎ†®
     public int roomNum;
     public bool isUsed = false;
 
-    // Title ∞¸∑√
+    // Title Í¥ÄÎ†®
     [SerializeField] private TextMeshProUGUI titleBar;
     public string titleText;
     public string buskerNickname;
+
+    [SerializeField] private GameObject localuser;
 
     private void Start()
     {
         titleBar = FindObjectOfType<Canvas>().transform.Find("TitleBar").GetComponent<TextMeshProUGUI>();
     }
 
-    public void callChangeUsed()
+    public void callChangeUsed(string name = null, string t = null)
     {
-        photonView.RPC("changeUsed", RpcTarget.AllBuffered, null);
-    }
-    public void callsetTitle(string name, string t)
-    {
-        photonView.RPC("setTitle", RpcTarget.AllBuffered, name, t);
+        photonView.RPC("changeUsed", RpcTarget.AllBuffered, name, t);
     }
 
     [PunRPC]
-    void changeUsed()
+    void changeUsed(string name = null, string t = null)
     {
         if (!isUsed)
-            isUsed = true;
-        else
-            isUsed = false;
-    }
-
-    [PunRPC]
-    void setTitle(string name, string t)
-    {
-        if (isUsed)
         {
+            isUsed = true;
             buskerNickname = name;
             titleText = t;
         }
         else
         {
+            isUsed = false;
+            buskerNickname = null;
             titleText = null;
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public void OnTriggerEnter2D(Collider2D collision)
     {
+
         GameObject player = GameManager.instance.myPlayer;
+
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
-            // AgoraManagerø° πˆΩ∫≈∑¡∏ ¡§∫∏ ≥÷±‚
-            AgoraManager.Instance.nowBuskingSpot = this;
-            AgoraManager.Instance.channelName = roomNum.ToString();
+            localuser = player;
+
+            // AgoraÏóê Î≤ÑÏä§ÌÇπÏ°¥ Ï†ïÎ≥¥ ÎÑ£Í∏∞
+            AgoraChannelPlayer.Instance.nowBuskingSpot = this;
+            AgoraChannelPlayer.Instance.channelName = roomNum.ToString();
 
             if (isUsed && !player.GetComponent<PlayerControl>().isVideoPanelShown)
             {
-                titleBar.text = buskerNickname + ": " + titleText;
-                titleBar.gameObject.SetActive(true);
-
                 collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
 
-                // Agora∞¸∑√
-                AgoraManager.Instance.loadEngine();
-                AgoraManager.Instance.callJoin(1);
-
+                // AgoraÍ¥ÄÎ†®
+                AgoraChannelPlayer.Instance.callJoin(1);
 
                 player.GetComponent<PlayerControl>().OnInteractiveButton(2);
-                //player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(); // ∆»∑ŒøÏ
+                //player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(); // ÌåîÎ°úÏö∞
 
             }
         }
@@ -83,18 +75,17 @@ public class BuskingSpot : MonoBehaviourPun
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        
         GameObject player = GameManager.instance.myPlayer;
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
+            localuser = null;
 
-            offTitleBar();
+            AgoraChannelPlayer.Instance.leaveChannel();
 
-            // AgoraManager¿« πˆΩ∫≈∑ ¡∏ ∞¸∑√ ¡§∫∏ ¡ˆøÏ±‚
-            AgoraManager.Instance.nowBuskingSpot = null;
-            AgoraManager.Instance.channelName = null;
-
-            // AgoraEngine unloaded
-            AgoraManager.Instance.unloadEngine();
+            // AgoraManagerÏùò Î≤ÑÏä§ÌÇπ Ï°¥ Í¥ÄÎ†® Ï†ïÎ≥¥ ÏßÄÏö∞Í∏∞
+            AgoraChannelPlayer.Instance.nowBuskingSpot = null;
+            AgoraChannelPlayer.Instance.channelName = null;
 
             if (player.GetComponent<PlayerControl>().isVideoPanelShown)
                 collision.transform.GetComponent<PlayerControl>().OffVideoPanel();
@@ -102,11 +93,35 @@ public class BuskingSpot : MonoBehaviourPun
         }
     }
 
+    public void callInsideUserJoin(string channelName) // localuserÏùÄ ÎèôÍ∏∞ÌôîX / JoinÏùÄ ÎèôÍ∏∞ÌôîO > localÎßå Ï∞æÏïÑÏÑú Í∞ÄÎä•
+    {
+        if (channelName == AgoraChannelPlayer.Instance.channelName)
+            photonView.RPC("insideUserJoin", RpcTarget.OthersBuffered, null);
+    }
+
+    [PunRPC]
+    public void insideUserJoin()
+    {
+        if (AgoraChannelPlayer.Instance.role != "publisher" && localuser != null)
+        {
+            localuser.GetComponent<PlayerControl>().OnVideoPanel(0);
+            AgoraChannelPlayer.Instance.callJoin(1);
+            localuser.GetComponent<PlayerControl>().OnInteractiveButton(2);
+        }
+    }
+
+    public void onTitleBar()
+    {
+        titleBar.text = buskerNickname + ": " + titleText;
+        titleBar.gameObject.SetActive(true);
+    }
+
     public void offTitleBar()
     {
         titleBar.text = null;
         titleBar.gameObject.SetActive(false);
     }
+
 
 
 }

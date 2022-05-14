@@ -22,6 +22,11 @@ public class SubMusicController : MusicWebRequest
     public delegate void SongHandler(PlaySongSlot ss);
     public event SongHandler OnChanged;
 
+    public delegate void SongPlayHandler(bool isPlay);
+    public event SongPlayHandler OnChangePlayState;
+
+
+
     private Music music;
     private IEnumerator audioLoadIEnum;
 
@@ -42,6 +47,11 @@ public class SubMusicController : MusicWebRequest
 
                 StartCoroutine(POST_AddMyList(iDList));
                 StartCoroutine(messageOn());
+
+                //현재 플레이중인 재생목록이라면 추가
+                List<Music> ms = new List<Music>();
+                ms.Add(music);
+                MusicController.Instance.AddNewMusics("myList", ms);
             }
         });       
         playBtn.onClick.AddListener(delegate {
@@ -75,22 +85,27 @@ public class SubMusicController : MusicWebRequest
         {
             GetAudioAsync(music.locate);
         }
-        if (slot.isSearchSlot) return;
 
+        if (slot.isSearchSlot)
+        {
+            subController.SetActive(false);
+            return;
+        }
         subController.SetActive(true);
         titleText.text = music.title+ " - " + music.GetArtistName();
 
     }
     async void GetAudioAsync(string path)
     {
+        playBtnImage.sprite = Resources.Load<Sprite>("Image/UI/pause");
         if (getAudioWWW != null)
         {
             getAudioWWW.Dispose();
             //StopCoroutine(audioLoadIEnum);
         }
         AudioClipPlay a = await GetAudioClipAsync(path, true);
-        SetAudioClip(a.audioClip, a.play);
-        Debug.Log("d");
+        if (a != null)
+            SetAudioClip(a.audioClip, a.play);
     }
     public void SetAudioClip(AudioClip ac, bool play)
     {
@@ -116,6 +131,7 @@ public class SubMusicController : MusicWebRequest
                 GetAudioAsync(music.locate);
         }
         MusicController.Instance.Stop();
+        OnChangePlayState?.Invoke(true);
     }
     public void Pause()
     {
@@ -123,22 +139,25 @@ public class SubMusicController : MusicWebRequest
         {
             audioSource.Pause();
             playBtnImage.sprite = Resources.Load<Sprite>("Image/UI/play");
+            OnChangePlayState?.Invoke(false);
         }
     }
     public void Reset()
     {
+        
+        messageObj.SetActive(false);
+        subController.SetActive(false);
+        music = null;
+
         if (audioSource.clip != null)
         {
-            messageObj.SetActive(false);
-            subController.SetActive(false);
-            music = null;
-
             audioSource.Stop();
-            audioSource.clip = null;
             audioSource.time = 0;
-            OnChanged(null);
 
         }
+        audioSource.clip = null;
+        OnChanged?.Invoke(null);
+
 
     }
     public void SetTime(float value)
