@@ -6,13 +6,19 @@ using Photon.Pun;
 
 public class EmojiButton : MonoBehaviourPun
 {
-    // ¿Ã∏∆ºƒ‹ ¡æ∑˘
+    // Ïù¥Î™®Ìã∞ÏΩò Ï¢ÖÎ•ò
     [SerializeField] private int emojiNum;
 
+    // bigVideoPanel Í¥ÄÎ†®
+    [SerializeField] private GameObject bigVideoPanel;
+    [SerializeField] private Chat chatPanel;
 
     // Start is called before the first frame update
     void Start()
     {
+        bigVideoPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject;
+        chatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").Find("ChatView").GetComponent<Chat>();
+
         this.GetComponent<Button>().onClick.AddListener(sendBubble);
     }
 
@@ -20,15 +26,12 @@ public class EmojiButton : MonoBehaviourPun
     public void sendBubble()
     {
         GameObject player = GameManager.instance.myPlayer;
-        if (player.GetComponent<PhotonView>().IsMine && this.GetComponentInParent<EmoticonPanel>().mode == 0)
+        player.GetComponent<PlayerControl>().rpcEmoji(emojiNum);
+
+        if (AgoraChannelPlayer.Instance.nowBuskingSpot != null && AgoraChannelPlayer.Instance.nowBuskingSpot.isUsed)
         {
-            player.GetComponent<PlayerControl>().rpcEmoji(emojiNum);
-        }
-        else if (player.GetComponent<PhotonView>().IsMine && this.GetComponentInParent<EmoticonPanel>().mode == 1)
-        {
-            GameObject ChatPanel = this.GetComponentInParent<EmoticonPanel>().ChatPanel;
-            ChatPanel.GetComponent<Chat>().emojimsg = "<sprite=" + emojiNum + ">";
-            ChatPanel.GetComponent<Chat>().OnSendChatMsg();
+            chatPanel.emojimsg = "<sprite=" + emojiNum + ">";
+            chatPanel.OnSendChatMsg();
         }
     }
 

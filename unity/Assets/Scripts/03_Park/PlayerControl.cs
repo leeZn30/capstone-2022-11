@@ -208,6 +208,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
             ChatPanel.GetComponent<Chat>().msgList.text = "";
             ChatPanel.GetComponent<Chat>().emojimsg = "";
             videoPanel.SetActive(false);
+            buskerPanel.SetActive(false);
             isVideoPanelShown = false;
         }
     }

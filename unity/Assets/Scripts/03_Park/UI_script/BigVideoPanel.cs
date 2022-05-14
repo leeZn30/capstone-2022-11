@@ -7,7 +7,7 @@ public class BigVideoPanel : MonoBehaviour
 {
     [SerializeField] private GameObject shutButton;
     [SerializeField] private SmallVideoPanel smallVideoPanel;
-    [SerializeField] private GameObject emoticonPanel;
+    [SerializeField] private GameObject soundSlider;
 
     // Start is called before the first frame update
     void Start()
@@ -19,12 +19,13 @@ public class BigVideoPanel : MonoBehaviour
     {
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;
+
+        soundSlider.SetActive(true);
     }
 
     private void OnDisable()
     {
-        emoticonPanel.SetActive(false);
-
+        soundSlider.SetActive(false);
         if (AgoraChannelPlayer.Instance.role != "publisher")
         {
             GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
