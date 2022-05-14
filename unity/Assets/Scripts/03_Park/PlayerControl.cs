@@ -21,6 +21,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     // 비디오
     public bool isVideoPanelShown = false;
     public GameObject videoPanel;
+    public GameObject bigVideoPanel;
 
     // 이모티콘 코루틴 실행여부
     private bool isEmojiRunning = false;
@@ -50,6 +51,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         {
             InteractiveButton = FindObjectOfType<Canvas>().transform.Find("InteractiveButton").gameObject;
             videoPanel = FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject;
+            bigVideoPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject;
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
             buskerPanel = FindObjectOfType<Canvas>().transform.Find("BuskerVideoPanel").gameObject;
             animator = GetComponent<Animator>();
@@ -138,6 +140,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         else movingObj.SetActive(true);
         legTransform.Rotate(new Vector3(0, 0, 1)*speed*10);
     }
+
     public void OnInteractiveButton(int type)
     {
         /**
@@ -152,6 +155,19 @@ public class PlayerControl : MonoBehaviourPunCallbacks
             InteractiveButton.GetComponent<Image>().sprite = buttonImages[type];
             InteractiveButton.SetActive(true);
             isInteractiveAble = true;
+
+            switch (type)
+            {
+                case 0:
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { OnVideoPanel(1); });
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
         }
     }
 
@@ -172,6 +188,19 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         {
             InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
             InteractiveButton.GetComponent<Image>().sprite = buttonImages[type];
+
+            switch (type)
+            {
+                case 0:
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { OnVideoPanel(1); }) ;
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
         }
     }
 
@@ -207,8 +236,11 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         {
             ChatPanel.GetComponent<Chat>().msgList.text = "";
             ChatPanel.GetComponent<Chat>().emojimsg = "";
+            // 걍 체크하지 말고 다 false
             videoPanel.SetActive(false);
             buskerPanel.SetActive(false);
+            bigVideoPanel.SetActive(false);
+
             isVideoPanelShown = false;
         }
     }

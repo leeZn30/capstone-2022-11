@@ -28,21 +28,11 @@ public class InteractiveObject : MonoBehaviour
             {
                 case 0:
                     if (componentObj.TryGetComponent<BuskingSpot>(out buskingSpot))
-                    {
-
+                    { 
                         if (!buskingSpot.isUsed)
                         {
                             player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
-                            player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
-                                delegate { player.GetComponent<PlayerControl>().OnVideoPanel(1); });
                         }                      
-                    }
-                    break;
-
-                default:
-                    if (collision.tag == "Character")
-                    {
-                        collision.transform.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
                     }
                     break;
             }

@@ -8,29 +8,29 @@ using Photon.Pun;
 
 public class BuskerVideoPanel : MonoBehaviour
 {
-    // Ä«¸Ş¶ó °ü·Ã
+    // ì¹´ë©”ë¼ ê´€ë ¨
     protected WebCamTexture textureWebCam = null;
     public GameObject objectTarget;
     private bool isCameraOn = false;
 
-    // ¸¶ÀÌÅ© °ü·Ã
+    // ë§ˆì´í¬ ê´€ë ¨
     public AudioSource micAudioSource;
     private bool isMicOn = false;
 
-    // Ä«¸Ş¶ó ¸¶ÀÌÅ© Ã¼Å©ÇÒ ÀÌ¹ÌÁö
+    // ì¹´ë©”ë¼ ë§ˆì´í¬ ì²´í¬í•  ì´ë¯¸ì§€
     [SerializeField] private Image CameraCheck;
     [SerializeField] private Image MicCheck;
 
-    // ¹ö½ºÅ· ½ÃÀÛ ¹öÆ°
+    // ë²„ìŠ¤í‚¹ ì‹œì‘ ë²„íŠ¼
     [SerializeField] private Button StartButton;
 
-    // ¹ö½ºÅ· ³ª°¡±â ¹öÆ°
+    // ë²„ìŠ¤í‚¹ ë‚˜ê°€ê¸° ë²„íŠ¼
     [SerializeField] private Button ExitButton;
 
     // Input Field
     [SerializeField] private TMP_InputField titleInput;
 
-    // Ä«¸Ş¶ó, ¸¶ÀÌÅ©
+    // ì¹´ë©”ë¼, ë§ˆì´í¬
     [SerializeField] private RawImage cameraImage;
     [SerializeField] private AudioSource MicSource;
 
@@ -68,11 +68,11 @@ public class BuskerVideoPanel : MonoBehaviour
 
     public void setDevice()
     {
-        StartButton.onClick.RemoveAllListeners(); // Áö¿öÁÖ°í ÇØ¾ßÇÔ
+        StartButton.onClick.RemoveAllListeners(); // ì§€ì›Œì£¼ê³  í•´ì•¼í•¨
         StartButton.onClick.AddListener(StartBusking);
     }
 
-    // ¹ö½ºÅ· ÀÎÅÍ·ºÆ¼ºê
+    // ë²„ìŠ¤í‚¹ ì¸í„°ë ‰í‹°ë¸Œ
     public void StartBusking()
     {
         if (titleInput.text != "" && titleInput.text != null)
@@ -81,14 +81,13 @@ public class BuskerVideoPanel : MonoBehaviour
 
             AgoraChannelPlayer.Instance.nowBuskingSpot.onTitleBar();
 
-            // Busker È­¸é ¾ø¾Ö±â
+            // Busker í™”ë©´ ì—†ì• ê¸°
             gameObject.SetActive(false);
-            smallVideo.transform.localPosition = new Vector3(-700, 350, 0);
-            //smallVideo.GetComponent<Button>().enabled = false;
+            smallVideo.transform.localPosition.Set(-500, 290, 0);
             smallVideo.SetActive(true);
             AgoraChannelPlayer.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
 
-            // ±×¸¸µÎ±â ¹öÆ° ¼³Á¤
+            // ê·¸ë§Œë‘ê¸° ë²„íŠ¼ ì„¤ì •
             PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
             player.changeInteractiveButton(1);
             player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });

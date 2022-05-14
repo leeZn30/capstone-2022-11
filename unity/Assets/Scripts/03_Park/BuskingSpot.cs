@@ -87,9 +87,7 @@ public class BuskingSpot : MonoBehaviourPun
             AgoraChannelPlayer.Instance.nowBuskingSpot = null;
             AgoraChannelPlayer.Instance.channelName = null;
 
-            if (player.GetComponent<PlayerControl>().isVideoPanelShown)
-                collision.transform.GetComponent<PlayerControl>().OffVideoPanel();
-
+            collision.transform.GetComponent<PlayerControl>().OffVideoPanel();
         }
     }
 
@@ -104,6 +102,9 @@ public class BuskingSpot : MonoBehaviourPun
     {
         if (AgoraChannelPlayer.Instance.role != "publisher" && localuser != null)
         {
+            // 만약 방송 준비중이었다면 지워줌
+            localuser.GetComponent<PlayerControl>().OffVideoPanel();
+
             localuser.GetComponent<PlayerControl>().OnVideoPanel(0);
             AgoraChannelPlayer.Instance.callJoin(1);
             localuser.GetComponent<PlayerControl>().OnInteractiveButton(2);

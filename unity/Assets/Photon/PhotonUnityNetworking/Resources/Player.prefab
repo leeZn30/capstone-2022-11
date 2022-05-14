@@ -173,12 +173,13 @@ MonoBehaviour:
   isInteractiveAble: 0
   InteractiveButton: {fileID: 0}
   buttonImages:
-  - {fileID: 21300000, guid: c21d6bce7f055224ba6c286cac114bf5, type: 3}
   - {fileID: 21300000, guid: 8c092b00160f2724a9ee4c73c1163cd9, type: 3}
+  - {fileID: 21300000, guid: 30ec007ef34acaf4a8046af82eef657d, type: 3}
   - {fileID: 21300000, guid: 864e927c550b4904f8386aa005664184, type: 3}
   - {fileID: 21300000, guid: f43a9983497e19d4fb168479fc87dde3, type: 3}
   isVideoPanelShown: 0
   videoPanel: {fileID: 0}
+  bigVideoPanel: {fileID: 0}
   ChatPanel: {fileID: 0}
   buskerPanel: {fileID: 0}
   cameraDistance: 10
