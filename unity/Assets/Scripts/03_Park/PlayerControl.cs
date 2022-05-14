@@ -35,7 +35,14 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     // 줌 인/줌 아웃
     private float wheelSpeed = 10;
     [SerializeField] private float cameraDistance = 10;
+
+
     private Vector2 mapSize;
+    private int isMoving=0;
+    private Animator animator;
+    public GameObject movingObj;
+    private Transform legTransform;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +52,8 @@ public class PlayerControl : MonoBehaviourPunCallbacks
             videoPanel = FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject;
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
             buskerPanel = FindObjectOfType<Canvas>().transform.Find("BuskerVideoPanel").gameObject;
+            animator = GetComponent<Animator>();
+            legTransform = movingObj.transform.GetChild(0);
         }
     }
 
@@ -62,10 +71,11 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (this.photonView.IsMine)
         {
-
+            isMoving = 0;
 
             if (Input.GetKey(KeyCode.W))
             {
+                isMoving = 1;
                 Debug.DrawRay(gameObject.transform.position, Vector3.up * 0.3f, Color.green);
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.up, 0.3f, LayerMask.GetMask("CantPassObj"));
 
@@ -78,6 +88,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
             if (Input.GetKey(KeyCode.S))
             {
+                isMoving = 1;
                 Debug.DrawRay(gameObject.transform.position, Vector3.down * 0.3f, Color.green);
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.down, 0.3f, LayerMask.GetMask("CantPassObj"));
                 if (hit.collider == null)
@@ -92,6 +103,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
             if (Input.GetKey(KeyCode.D))
             {
+                isMoving = 1;
                 Debug.DrawRay(gameObject.transform.position, Vector3.right * 0.3f, Color.green);
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.right, 0.3f,LayerMask.GetMask("CantPassObj"));
                 if (hit.collider == null)
@@ -102,6 +114,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
             if (Input.GetKey(KeyCode.A))
             {
+                isMoving = -1;
                 Debug.DrawRay(gameObject.transform.position, Vector3.left * 0.3f, Color.green);
                 RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.left, 0.3f, LayerMask.GetMask("CantPassObj"));
                 if (hit.collider == null)
@@ -112,15 +125,19 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
                 
             }
-
-
+            RotateLeg(moveSpeed * isMoving);
 
             //cameraDistance = Input.GetAxis("Mouse ScrollWheel") * wheelSpeed * Time.deltaTime;
             //Camera.main.orthographicSize = cameraDistance;
 
         }
     }
-
+    void RotateLeg(float speed)
+    {
+        if (speed == 0) movingObj.SetActive(false);
+        else movingObj.SetActive(true);
+        legTransform.Rotate(new Vector3(0, 0, 1)*speed*10);
+    }
     public void OnInteractiveButton(int type)
     {
         /**
