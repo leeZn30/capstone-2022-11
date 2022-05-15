@@ -170,8 +170,8 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                     break;
                 case 3:
                     break;
-            }
 
+            }
             nowInteractiveType = type;
         }
     }
@@ -185,9 +185,9 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                 InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
                 InteractiveButton.SetActive(false);
                 isInteractiveAble = false;
-            }
 
-            nowInteractiveType = -1;
+                nowInteractiveType = -1;
+            }
         }
 
     }
@@ -223,13 +223,13 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         {
             switch (mode)
             {
-                case 0:
+                case 0: // small
                     videoPanel.GetComponent<SmallVideoPanel>();
                     videoPanel.SetActive(true);
                     isVideoPanelShown = true;
                     break;
 
-                case 1:
+                case 1: // busker 준비
                     buskerPanel.SetActive(true);
                     GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;
                     GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;

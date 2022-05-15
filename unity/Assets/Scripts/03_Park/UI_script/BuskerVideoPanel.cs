@@ -83,6 +83,7 @@ public class BuskerVideoPanel : MonoBehaviour
             gameObject.SetActive(false);
             smallVideo.SetActive(true);
             AgoraChannelPlayer.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
+            GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
 
             // 그만두기 버튼 설정
             PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
