@@ -50,7 +50,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
 
                 // 원래는 join되어야 하는게 맞지만 일단 빠르게 안변해서 여기다 둠
                 if (nowBuskingSpot != null)
-                    nowBuskingSpot.callChangeUsed("TEst", "TTTTT");
+                    nowBuskingSpot.callChangeUsed(buskerNickname, t);
                 nowBuskingSpot.onTitleBar();
 
                 channelToken = await HelperClass.FetchToken(url: "http://localhost:8082", channel: channelName, role: role, userId: myUID);
@@ -209,8 +209,6 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
 
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().OnVideoPanel(0);
-
-
     }
 
 
