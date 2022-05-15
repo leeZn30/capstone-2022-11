@@ -9,18 +9,15 @@ const User = require('../../models/user');
 const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
+
 //body-Parser
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
-//액세스 키 담긴 파일 로드
-const dirPath = path.join(__dirname, '/aws.config.json')
-AWS.config.loadFromPath(dirPath);
-//config update 후 s3 생성
-const s3 = new AWS.S3()
-
 const { BUCKET_NAME } = config
 const { AWS_BUCKET_URL } = config
+const { AWS_BUCKET_ACCESS_KEY_ID } = config
+const { AWS_BUCKET_SECERET_ACCESS_KEY } = config
 
 
 router.get('/*', (req,res)=>{
@@ -30,6 +27,13 @@ router.get('/*', (req,res)=>{
 
 //Upload
 router.post('/', auth, function(req, res){
+
+    //버킷 액세스 키 업로드
+    AWS.config.update({
+        region:'ap-northeast-2',
+        accessKeyId: AWS_BUCKET_ACCESS_KEY_ID,
+        secretAccessKey: AWS_BUCKET_SECERET_ACCESS_KEY,
+    })
     const userid = req.user.id;
     let totalNum = 0;
     let musicLocate = "";
@@ -47,14 +51,16 @@ router.post('/', auth, function(req, res){
             //파일 아니면 res.error
             if(!part.filename)
                 return res.status(400).json({msg: "올바르지 않은 파일입니다."});
+
             //filename -> id+_+totalNum
             const filename = userid+"_"+totalNum
             
             //음악, 이미지 파일 다른 폴더로 업로드
             const extension = path.extname(part.filename);
-            var params = {} 
+            var params = {}
+            
             //파일 확장자 확인
-            if(extension === '.mp3' || extension === '.wav') {
+            if(extension === '.mp3' || extension === '.wav' || extension === '.ogg') {
                 const musicKey = 'Music/' + filename + extension;
                 params = {Bucket: BUCKET_NAME, Key: musicKey, Body: part, ContentType: 'audio/mpeg'};
                 musicLocate = AWS_BUCKET_URL + "/" + musicKey;
@@ -92,25 +98,51 @@ router.post('/', auth, function(req, res){
 
 //Delete
 router.post('/delete',(req,res) =>{
-    //삭제할 file
-    var delete_filename = req.body.locate;
+    //액세스 키 담긴 파일 로드
+    const dirPath = path.join(__dirname, '/aws.config.json')
+    AWS.config.loadFromPath(dirPath);
+
+    //config update 후 s3 생성
+    const s3 = new AWS.S3()
+
+    //삭제할 file locate(music) & imgLocate(image)
+    const del_music = req.body.locate;
+    const del_image = req.body.imgLocate
+    
+    //Key
+    var del_musicKey = '';
+    var del_imageKey = '';
+
     //파일 확장자
-    delete_filename=path.basename(delete_filename);
-    const extension = path.extname(delete_filename);
-    var params = {}
+    const music_extension = path.extname(del_music);
+    const image_extension = path.extname(del_image);
+
     //파일 확장자 확인
-    if(extension === '.mp3' || extension === '.wav') {
-        params = {Bucket: BUCKET_NAME, Key: "Music/" + delete_filename};
+    if(music_extension === '.mp3' || music_extension === '.wav') {
+        del_musicKey = 'Music/' + del_music;
     }
-    else if(extension === '.jpg' || extension === '.png') {
-        params = {Bucket: BUCKET_NAME, Key: "Image/" + delete_filename};
+    if(image_extension === '.jpg' || image_extension === '.png') {
+        del_imageKey = 'Image/' + del_image;
     }
-    else
-        return res.status(400).json({msg: "올바르지 않은 파일입니다."});
-    //파일 삭제
-    s3.deleteObject(params, function(err, data) {
-    if (err) console.log(err, err.stack); 
-    else     console.log("Delete Object Success!");
+
+    //음악&이미지 파일 삭제
+    var params = {
+        Bucket: BUCKET_NAME, 
+        Delete: {
+         Objects: [
+            {
+           Key: del_musicKey, 
+          }, 
+            {
+           Key: del_imageKey, 
+          }
+         ], 
+         Quiet: false
+        }
+       };
+    s3.deleteObjects(params, function(err, data) {
+    if (err) console.log(err, err.stack);
+    else     console.log("Delete Object Success");
     });
     res.status(200).json({msg: "파일이 성공적으로 삭제되었습니다."})
 })
