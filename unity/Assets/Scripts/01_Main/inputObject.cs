@@ -289,7 +289,7 @@ public class inputObject : MonoBehaviour
         string json = JsonUtility.ToJson(check);
 
         Debug.Log(json);
-        using (UnityWebRequest www = UnityWebRequest.Get(GlobalData.url + "/user/check"))
+        using (UnityWebRequest www = UnityWebRequest.Get(GlobalData.url + "/api/user/check"))
         {
 
             www.SetRequestHeader("Content-Type", "application/json");
@@ -345,7 +345,7 @@ public class inputObject : MonoBehaviour
         emailKey.email = email;
         emailKey.key = key;
         string json = JsonUtility.ToJson(emailKey);
-        using (UnityWebRequest request = UnityWebRequest.Post(GlobalData.url + "/auth/email", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(GlobalData.url + "/api/auth/email", json))
         {// 보낼 주소와 데이터 입력
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);

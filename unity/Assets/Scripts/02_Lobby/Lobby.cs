@@ -11,7 +11,6 @@ using System;
 using Cysharp.Threading.Tasks;
 public class Lobby : MusicWebRequest
 {
-    public Button settingBtn;
 
     public Button openSongPageBtn;
     public Button loadSquareSceneBtn;
@@ -21,7 +20,6 @@ public class Lobby : MusicWebRequest
     public CharacterSetPage characterSetPage;
     public SongPage songPage;
     public FollowPage followPage;
-    public LobbySetting lobbySetting;
 
     public Character character;
     public TextMeshProUGUI userNickname;
@@ -32,7 +30,7 @@ public class Lobby : MusicWebRequest
     {
         
         //버튼 이벤트 등록
-        settingBtn.onClick.AddListener(delegate { lobbySetting.Open(); });
+        
         openSongPageBtn.onClick.AddListener(delegate { songPage.Open(); });
         characterSetBtn.onClick.AddListener(delegate { characterSetPage.Open(); });
         followPageBtn.onClick.AddListener(delegate { followPage.Open(); });
@@ -64,13 +62,11 @@ public class Lobby : MusicWebRequest
             UpdateFollow();
             ChangeCharacter();
 
-
+            StringList listNameList = await GET_ListNameAsync();
             //재생목록리스트 업데이트
-            //임시로 고정 데이터입력
-            List<string> listNames = new List<string>();
-            listNames.Add("uploadList");
-            listNames.Add("myList");
-            MusicController.Instance.SetOptions(listNames);
+            if (listNameList == null) return;
+
+            MusicController.Instance.SetOptions(listNameList.stringList);
         }
 
     }

@@ -207,6 +207,20 @@ public class MusicID
 {
     public string musicId;
 }
+public class MusicIDListName
+{
+    public string musicId;
+    public string listName;
+}
+public class StringList
+{
+    public List<string> stringList;
+}
+public class MusicIDListNameList
+{
+    public string listName;
+    public List<string> musicList;
+}
 public class MusicIDList
 {
     public List<string> musicList;
@@ -242,6 +256,7 @@ public class MusicTitle
 public class MusicLocate
 {
     public string locate;
+    public string imageLocate;
 }
 public class MusicArtist
 {
@@ -329,12 +344,14 @@ public class MusicWebRequest : MonoBehaviour
     }
     */
     
-    protected IEnumerator POST_Delete(MusicID id, string listName)
+    protected IEnumerator POST_DeleteMusic(MusicID id, string listName)
     {
 
-
-        string json = JsonUtility.ToJson(id);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/delete"+listName, json))
+        MusicIDListName idname = new MusicIDListName();
+        idname.musicId = id.musicId;
+        idname.listName = listName;
+        string json = JsonUtility.ToJson(idname);
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/user/deleteSong" + listName, json))
         {// 보낼 주소와 데이터 입력
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -361,11 +378,12 @@ public class MusicWebRequest : MonoBehaviour
         }
     }
     //버킷에서 음원 삭제
-    protected IEnumerator POST_DeleteFromBucket(string fileName)
+    protected IEnumerator POST_DeleteFromBucket(string fileName,string imgName)
     {
 
         MusicLocate musicLocate = new MusicLocate();
         musicLocate.locate = fileName;
+        musicLocate.imageLocate = imgName;
 
         string json = JsonUtility.ToJson(musicLocate);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/media/delete" , json))
@@ -393,11 +411,15 @@ public class MusicWebRequest : MonoBehaviour
 
 
     //음원 담기
-    protected IEnumerator POST_AddMyList(MusicIDList idList, string listName="myList")
+    protected IEnumerator POST_AddMusic(MusicIDList idList, string listName="myList")
     {
 
-        string json = JsonUtility.ToJson(idList);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/add"+listName, json))
+        MusicIDListNameList idname = new MusicIDListNameList();
+        idname.musicList = idList.musicList;
+        idname.listName = listName;
+
+        string json = JsonUtility.ToJson(idname);
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/user/addsong", json))
         {// 보낼 주소와 데이터 입력
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -424,7 +446,7 @@ public class MusicWebRequest : MonoBehaviour
     {
 
         string json = JsonUtility.ToJson(_music);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/music", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/music", json))
         {// 보낼 주소와 데이터 입력
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -461,7 +483,7 @@ public class MusicWebRequest : MonoBehaviour
 
 
         string json = JsonUtility.ToJson(mo);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user/modifiedChar", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/user/modifiedChar", json))
         {// 보낼 주소와 데이터 입력
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -531,14 +553,18 @@ public class MusicWebRequest : MonoBehaviour
     {
         try{ 
             string json = "";
-            string resultUrl = url + "/user/" + listName;
+            string resultUrl = url + "/api/user/musicList";
             if (_userid != null)
             {
                 UserID userID = new UserID();
                 userID.userId = _userid;
 
                 json = JsonUtility.ToJson(userID);
-                resultUrl = url + "/music/" + listName;
+                resultUrl = url + "/api/music/" + listName;
+            }
+            else
+            {
+                json="{\"listName\":\""+listName+"\"}";
             }
 
             Debug.Log(listName + " 리스트: " + json);
@@ -546,12 +572,9 @@ public class MusicWebRequest : MonoBehaviour
             using (UnityWebRequest www = UnityWebRequest.Get(resultUrl))
             {
                 www.SetRequestHeader("token", UserData.Instance.Token);
-                if (_userid != null)
-                {
-                    www.SetRequestHeader("Content-Type", "application/json");
-                    www.SetRequestHeader("accept", "text/plain");
-                    www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
-                }
+                www.SetRequestHeader("Content-Type", "application/json");
+                www.SetRequestHeader("accept", "text/plain");
+                www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
 
                 await www.SendWebRequest();
 
@@ -563,8 +586,18 @@ public class MusicWebRequest : MonoBehaviour
                         string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
                         Debug.Log("결과 " + jsonResult);
 
-                        JsonData jsonData2 = JsonToObject(jsonResult);
-                        JsonData jsonData = jsonData2[listName];
+                        JsonData jsonData = JsonToObject(jsonResult);
+
+                        if (_userid != null)
+                        {
+                          
+                            jsonData = jsonData[listName];
+                        }
+                        else
+                        {
+                          
+                            jsonData = jsonData["music"];
+                        }
 
                         for (int i = 0; i < jsonData.Count; i++)
                         {
@@ -730,7 +763,7 @@ public class MusicWebRequest : MonoBehaviour
 
             Debug.Log("곡 검색 json: " + json);
 
-            using (UnityWebRequest www = UnityWebRequest.Get(url + "/music/"+type))
+            using (UnityWebRequest www = UnityWebRequest.Get(url + "/api/music/" + type))
             {
 
                 www.SetRequestHeader("Content-Type", "application/json");
@@ -813,7 +846,7 @@ public class MusicWebRequest : MonoBehaviour
         try
         {
             //type은 recent, personalGenre, popular 있음
-            using (UnityWebRequest www = UnityWebRequest.Get(url + "/music/" + type.ToString()))
+            using (UnityWebRequest www = UnityWebRequest.Get(url + "/api/music/" + type.ToString()))
             {
                 if(type==SpecificMusic.personalGenre)
                     www.SetRequestHeader("token", UserData.Instance.Token);
@@ -897,7 +930,7 @@ public class MusicWebRequest : MonoBehaviour
         try
         {
 
-            using (UnityWebRequest www = UnityWebRequest.Get(url + "/follow" + (ft== FollowPage.FollowSystemType.follower ? "/follower" : ""))) 
+            using (UnityWebRequest www = UnityWebRequest.Get(url + "/api/follow" + (ft== FollowPage.FollowSystemType.follower ? "/follower" : ""))) 
             {
                 
                 www.SetRequestHeader("token", UserData.Instance.Token);
@@ -981,7 +1014,7 @@ public class MusicWebRequest : MonoBehaviour
 
             Debug.Log("곡 검색 json: " + json);
 
-            using (UnityWebRequest www = UnityWebRequest.Get(url + "/user/search"))
+            using (UnityWebRequest www = UnityWebRequest.Get(url + "/api/user/search"))
             {
                 www.SetRequestHeader("token", UserData.Instance.Token);
                 www.SetRequestHeader("Content-Type", "application/json");
@@ -1070,7 +1103,7 @@ public class MusicWebRequest : MonoBehaviour
 
             Debug.Log("follow "+isDelete+ " json: " + json);
 
-            using (UnityWebRequest www = UnityWebRequest.Post(url + "/follow"+(isDelete?"/delete":""),json))
+            using (UnityWebRequest www = UnityWebRequest.Post(url + "/api/follow" + (isDelete? "/api/delete" : ""),json))
             {
 
                 www.SetRequestHeader("token", UserData.Instance.Token);
@@ -1136,7 +1169,7 @@ public class MusicWebRequest : MonoBehaviour
 
             Debug.Log("유저 정보 get json: " + json);
 
-            using (UnityWebRequest www = UnityWebRequest.Get(GlobalData.url + "/user/info"))
+            using (UnityWebRequest www = UnityWebRequest.Get(GlobalData.url + "/api/user/info"))
             {
 
                 www.SetRequestHeader("Content-Type", "application/json");
@@ -1214,6 +1247,7 @@ public class MusicWebRequest : MonoBehaviour
         }
     }
 
+    
     protected async UniTask POST_AddPlayCount(string musicId)
     {
         try
@@ -1224,8 +1258,8 @@ public class MusicWebRequest : MonoBehaviour
             string json = "";
             json = JsonUtility.ToJson(mi);
 
-            Debug.Log(musicId+ "재생 수 추가 요청");
-            using (UnityWebRequest www = UnityWebRequest.Post(url + "/music/play" , json))
+            Debug.Log(musicId + "재생 수 추가 요청");
+            using (UnityWebRequest www = UnityWebRequest.Post(url + "/api/music/play", json))
             {
 
                 www.SetRequestHeader("Content-Type", "application/json");
@@ -1254,7 +1288,7 @@ public class MusicWebRequest : MonoBehaviour
             if (e.ResponseCode == 400 || e.ResponseCode == 401)
             {
                 Popup.Instance.Open(0);
-                Debug.Log(e.ResponseCode + "[POST_FollowUserAsync] 토큰 만료");
+                Debug.Log(e.ResponseCode + "[POST_AddPlayCount] 토큰 만료");
             }
             else if (e.ResponseCode == 0)
             {
@@ -1269,6 +1303,203 @@ public class MusicWebRequest : MonoBehaviour
         catch (Exception e)
         {
             Debug.LogError(e);
+        }
+    }
+    protected async UniTask<StringList> POST_MakeListAsync(string _listName)
+    {
+        try
+        {
+            string json = "{\"listName\":\""+_listName+"\"}";
+            Debug.Log(json);
+            using (UnityWebRequest www = UnityWebRequest.Post(url + "/api/user/makeList", json))
+            {
+                www.SetRequestHeader("token", UserData.Instance.Token);
+                www.SetRequestHeader("Content-Type", "application/json");
+                www.SetRequestHeader("accept", "text/plain");
+                www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
+
+                await www.SendWebRequest();
+                if (www.error == null)
+                {
+
+                    string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+
+                    JsonData jsonData = JsonToObject(jsonResult)["listName"];
+
+                    StringList sl = new StringList();
+                    List<string> ln = new List<string>();
+                    foreach (JsonData jsonData1 in jsonData)
+                    {
+                        ln.Add((string)jsonData1);
+                    }
+                    sl.stringList = ln;
+
+                    return sl;
+
+                }
+                else
+                {
+                    Debug.Log(www.error.ToString());
+                    return null;
+                }
+            }
+        }
+        catch (ArgumentNullException e)
+        {
+            Debug.Log(""); return null;
+        }
+        catch (UnityWebRequestException e)
+        {
+            if (e.ResponseCode == 400 || e.ResponseCode == 401)
+            {
+                Popup.Instance.Open(0);
+                Debug.Log(e.ResponseCode + "[POST_MakeListAsync] 토큰 만료");
+
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
+            }
+            else
+            {
+                Debug.Log(e);
+            }
+            return null ;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            return null;
+        }
+    }
+    protected async UniTask<StringList> POST_DeleteListAsync(string _listName)
+    {
+        try
+        {
+            string json = "{\"listName\":\"" + _listName + "\"}";
+            using (UnityWebRequest www = UnityWebRequest.Post(url + "/api/user/deleteList", json))
+            {
+                www.SetRequestHeader("token", UserData.Instance.Token);
+                www.SetRequestHeader("Content-Type", "application/json");
+                www.SetRequestHeader("accept", "text/plain");
+                www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
+
+                await www.SendWebRequest();
+                if (www.error == null)
+                {
+
+                    string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+                    JsonData jsonData = JsonToObject(jsonResult)["listName"];
+
+                    StringList sl = new StringList();
+                    List<string> ln = new List<string>();
+                    foreach (JsonData jsonData1 in jsonData)
+                    {
+                        ln.Add((string)jsonData1);
+                    }
+                    sl.stringList = ln;
+
+                    return sl;
+
+                }
+                else
+                {
+                    Debug.Log(www.error.ToString());
+                    return null;
+                }
+            }
+        }
+        catch (ArgumentNullException e)
+        {
+            Debug.Log(""); return null;
+        }
+        catch (UnityWebRequestException e)
+        {
+            if (e.ResponseCode == 400 || e.ResponseCode == 401)
+            {
+                Popup.Instance.Open(0);
+                Debug.Log(e.ResponseCode + "[POST_DeleteListAsync] 토큰 만료");
+
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
+            }
+            else
+            {
+                Debug.Log(e);
+            }
+            return null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            return null;
+        }
+    }
+    protected async UniTask<StringList> GET_ListNameAsync()
+    {
+        try
+        {
+            using (UnityWebRequest www = UnityWebRequest.Get(url + "/api/user/musicListName"))
+            {
+                www.SetRequestHeader("token", UserData.Instance.Token);
+
+
+                await www.SendWebRequest();
+                if (www.error == null)
+                {
+                    string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+
+                    JsonData jsonData = JsonToObject(jsonResult)["listName"];
+                    Debug.Log("결과 " + jsonResult);
+
+                    StringList sl = new StringList();
+                    List<string> ln = new List<string>();
+                    foreach (JsonData jsonData1 in jsonData)
+                    {
+                        ln.Add((string)jsonData1);
+                    }
+                    sl.stringList = ln;
+                    return sl;
+
+                }
+                else
+                {
+                    Debug.Log(www.error.ToString());
+                    return null;
+                }
+            }
+        }
+        catch (ArgumentNullException e)
+        {
+            Debug.Log(""); return null;
+        }
+        catch (UnityWebRequestException e)
+        {
+            if (e.ResponseCode == 400 || e.ResponseCode == 401)
+            {
+                Popup.Instance.Open(0);
+                Debug.Log(e.ResponseCode + "[GET_ListNameAsync] 토큰 만료");
+
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
+            }
+            else
+            {
+                Debug.Log(e);
+            }
+            return null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            return null;
         }
     }
     JsonData JsonToObject(string json)

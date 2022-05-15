@@ -83,8 +83,8 @@ public class ListPageInSongPage : Page
             id.musicId = ss.GetMusic().id;
             MusicController.Instance.DelNewMusic(listName, songSlots.IndexOf(ss), ss.GetMusic());
 
-            StartCoroutine(POST_Delete(id, listName));
-            StartCoroutine(POST_DeleteFromBucket(ss.GetMusic().locate));
+            StartCoroutine(POST_DeleteMusic(id, listName));
+            StartCoroutine(POST_DeleteFromBucket(ss.GetMusic().locate, ss.GetMusic().imageLocate));
 
             songSlots.Remove(ss);
             Destroy(ss.gameObject);

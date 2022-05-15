@@ -125,18 +125,12 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
                 
             }
-            RotateLeg(moveSpeed * isMoving);
 
+            animator.SetBool("isMoving", isMoving != 0);
             //cameraDistance = Input.GetAxis("Mouse ScrollWheel") * wheelSpeed * Time.deltaTime;
             //Camera.main.orthographicSize = cameraDistance;
 
         }
-    }
-    void RotateLeg(float speed)
-    {
-        if (speed == 0) movingObj.SetActive(false);
-        else movingObj.SetActive(true);
-        legTransform.Rotate(new Vector3(0, 0, 1)*speed*10);
     }
     public void OnInteractiveButton(int type)
     {

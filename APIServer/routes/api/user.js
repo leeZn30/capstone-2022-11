@@ -54,6 +54,7 @@ router.get('/musicList', auth, async(req,res) => {
     const {listName} = req.body;
 
     User.findOne({id:id}).then(async (user) => {
+
         res.status(200).json({music: user[listName]})
     })
 })
@@ -212,7 +213,7 @@ router.post('/deleteList', auth, async (req, res)=> {
         await User.updateOne({id:id}, {$unset:{[listName] : ""}});
 
         User.findOne({id:id}).then((user) => {
-            res.status(200).json({user: user.listName})
+            res.status(200).json({listName: user.listName})
         })
     }
 })
