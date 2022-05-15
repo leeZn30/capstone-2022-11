@@ -6,6 +6,7 @@ const config = require('../../config/index');
 const { JWT_SECRET } = config;
 
 const User = require('../../models/user');
+const Music = require('../../models/music');
 
 const router = express.Router();
 
@@ -52,9 +53,28 @@ router.get('/musicListName', auth, async(req,res) => {
 router.get('/musicList', auth, async(req,res) => {
     const id = req.user.id;
     const {listName} = req.body;
+    let musicInfo = [];
 
-    User.findOne({id:id}).then(async (user) => {
-        res.status(200).json({music: user[listName]})
+    const filter = [
+        {$match : {id : id}},
+        {$project: {
+                [listName] : 1
+            }
+        }
+    ]
+
+    User.aggregate(filter).then(async (user) => {
+        for (let i = 0; i < user[0][listName].length; i++){
+            await Music.findOne({id: user[0][listName][i]}).then((music) => {
+                if (music) {
+                    musicInfo.push(music);
+                }
+                else {
+                    User.updateOne({id: id}, {$pull: { [listName]: user[0][listName][i]}});
+                }
+            })
+        }
+        res.status(200).json({music: musicInfo})
     })
 })
 
@@ -212,7 +232,7 @@ router.post('/deleteList', auth, async (req, res)=> {
         await User.updateOne({id:id}, {$unset:{[listName] : ""}});
 
         User.findOne({id:id}).then((user) => {
-            res.status(200).json({user: user.listName})
+            res.status(200).json({listName: user.listName})
         })
     }
 })
