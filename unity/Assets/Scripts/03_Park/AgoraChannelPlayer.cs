@@ -18,6 +18,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     // 필요 Object
     [SerializeField] private RawImage buskersmallVideo;
     [SerializeField] private RawImage audienceVideo;
+    [SerializeField] private InfoPanel infoPanel;
 
     // User 정보
     [Header("User 정보")]
@@ -182,6 +183,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             nowBuskingSpot.offTitleBar();
             nowChannel.LeaveChannel();
             Debug.Log("Leaving channel: " + channelName);
+
         }
         else
         {
@@ -235,7 +237,9 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         Debug.Log("onLeaveBuskerInfo: uid = " + uid + " reason = " + reason + " nowChannel: " + channelID);
 
         if (buskerUid != 0 && buskerUid == uid) // 버스커가 나갈때만
+        {
             leaveChannel();
+        }
     }
 
     private void OnAudienceLeaveChannel(string channelID, RtcStats stats)
@@ -244,7 +248,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
 
         Destroy(audienceVideo.GetComponent<VideoSurface>());
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton();
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton(2); // 팔로우 버튼 삭제
 
         buskerUid = 0;
         isFoundBusker = false;
@@ -257,10 +261,13 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     {
         if (nowChannel != null)
         {
-            // 안내문
+            // event handler라 다 안되는것 같음
 
-            nowChannel.LeaveChannel();
+            Debug.Log("Quit!");
+            // leaveChannel handler가 안됨
+            leaveChannel();
             nowChannel.ReleaseChannel();
+
         }
     }
 

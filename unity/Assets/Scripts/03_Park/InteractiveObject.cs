@@ -45,7 +45,7 @@ public class InteractiveObject : MonoBehaviour
         GameObject player = GameManager.instance.myPlayer;
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
-            player.GetComponent<PlayerControl>().OffInteractiveButton();
+            player.GetComponent<PlayerControl>().OffInteractiveButton(0); // 버스킹 시작 버튼 삭제
 
         }
     }

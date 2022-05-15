@@ -66,7 +66,6 @@ public class BuskingSpot : MonoBehaviourPun
                 AgoraChannelPlayer.Instance.callJoin(1);
 
                 player.GetComponent<PlayerControl>().OnInteractiveButton(2);
-                //player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(); // 팔로우
 
             }
         }
@@ -82,6 +81,7 @@ public class BuskingSpot : MonoBehaviourPun
             localuser = null;
 
             AgoraChannelPlayer.Instance.leaveChannel();
+            GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton(2); // 팔로우 버튼 삭제 우연히 겹칠때를 대비해서 하나 더
 
             // AgoraManager의 버스킹 존 관련 정보 지우기
             AgoraChannelPlayer.Instance.nowBuskingSpot = null;
@@ -104,10 +104,13 @@ public class BuskingSpot : MonoBehaviourPun
         {
             // 만약 방송 준비중이었다면 지워줌
             localuser.GetComponent<PlayerControl>().OffVideoPanel();
+            localuser.GetComponent<PlayerControl>().isMoveAble = true;
+            localuser.GetComponent<PlayerControl>().isUIActable = true;
 
             localuser.GetComponent<PlayerControl>().OnVideoPanel(0);
             AgoraChannelPlayer.Instance.callJoin(1);
-            localuser.GetComponent<PlayerControl>().OnInteractiveButton(2);
+            localuser.GetComponent<PlayerControl>().OnInteractiveButton(2); // 버튼 활성화 아니었던 사람들
+            localuser.GetComponent<PlayerControl>().changeInteractiveButton(2); // 버튼 활성화 되어있던 사람들
         }
     }
 

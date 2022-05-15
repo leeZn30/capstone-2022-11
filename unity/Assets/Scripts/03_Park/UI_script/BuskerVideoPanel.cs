@@ -87,8 +87,7 @@ public class BuskerVideoPanel : MonoBehaviour
             // 그만두기 버튼 설정
             PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
             player.changeInteractiveButton(1);
-            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
-            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { player.OffInteractiveButton(); });
+            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { player.changeInteractiveButton(0); }); // 버스킹 그만두기 버튼 삭제 or 그대로 트리거 안에 있으니까 시작하기로 다시 바꾸기
 
             AgoraChannelPlayer.Instance.nowBuskingSpot.callInsideUserJoin(AgoraChannelPlayer.Instance.channelName);
 

@@ -17,6 +17,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     [SerializeField] bool isInteractiveAble = false;
     public GameObject InteractiveButton;
     [SerializeField] Sprite[] buttonImages;
+    [SerializeField] int nowInteractiveType = -1;
 
     // 비디오
     public bool isVideoPanelShown = false;
@@ -162,22 +163,31 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                     InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { OnVideoPanel(1); });
                     break;
                 case 1:
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
                     break;
                 case 2:
+                    // 팔로우 기능
                     break;
                 case 3:
                     break;
             }
+
+            nowInteractiveType = type;
         }
     }
 
-    public void OffInteractiveButton()
+    public void OffInteractiveButton(int type)
     {
         if (isInteractiveAble)
         {
-            InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
-            InteractiveButton.SetActive(false);
-            isInteractiveAble = false;
+            if (type == nowInteractiveType)
+            {
+                InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
+                InteractiveButton.SetActive(false);
+                isInteractiveAble = false;
+            }
+
+            nowInteractiveType = -1;
         }
 
     }
@@ -195,12 +205,15 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                     InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { OnVideoPanel(1); }) ;
                     break;
                 case 1:
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
                     break;
                 case 2:
+                    // 팔로우 기능
                     break;
                 case 3:
                     break;
             }
+            nowInteractiveType = type;
         }
     }
 

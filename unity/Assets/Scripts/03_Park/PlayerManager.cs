@@ -9,13 +9,10 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class PlayerManager : MonoBehaviourPunCallbacks
 {
 
-    // Player °´Ã¼ ¹Þ¾Æ¿À±â
-    //[SerializeField] private GameObject player;
-
-    // ´Ð³×ÀÓ
+    // ë‹‰ë„¤ìž„
     [SerializeField] private string nickName;
 
-    // character ¿ÜÇü
+    // character ì™¸í˜•
     [SerializeField] private int appearance;
 
     // Start is called before the first frame update
@@ -41,7 +38,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     {
         Hashtable playerData = player.CustomProperties;
 
-        // Á¤º¸ ÀúÀå
+        // ì •ë³´ ì €ìž¥
         appearance = (int)player.CustomProperties["character"];
         nickName = player.NickName;
 
