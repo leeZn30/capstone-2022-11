@@ -30,7 +30,7 @@ public class Chat : MonoBehaviourPunCallbacks
                                    , emojimsg);
 
 
-        photonView.RPC("ReceiveMsg", RpcTarget.AllBuffered, msg, channelName);
+        photonView.RPC("ReceiveMsg", RpcTarget.All, msg, channelName);
     }
 
     public void OnSendChatMsg()
@@ -45,7 +45,7 @@ public class Chat : MonoBehaviourPunCallbacks
                                            , UserData.Instance.user.nickname // PhotonNetwork.LocalPlayer.NickName
                                            , ifSendMsg.text);
 
-                photonView.RPC("ReceiveMsg", RpcTarget.AllBuffered, msg, channelName);
+                photonView.RPC("ReceiveMsg", RpcTarget.All, msg, channelName);
 
                 ifSendMsg.text = "";
             }

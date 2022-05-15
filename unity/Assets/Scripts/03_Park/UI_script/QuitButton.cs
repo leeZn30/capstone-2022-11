@@ -18,6 +18,7 @@ public class QuitButton : MonoBehaviour
 
     public void GameQuit()
     {
-        Application.Quit();
+        if (AgoraChannelPlayer.Instance.role != "publisher")
+            Application.Quit();
     }
 }

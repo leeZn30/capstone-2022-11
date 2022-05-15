@@ -8,10 +8,14 @@ public class LobbyButton : MonoBehaviour
 {
     public void goToLobby()
     {
-        AgoraChannelPlayer.Instance.leaveChannel();
+        if (AgoraChannelPlayer.Instance.role != "publisher")
+        {
+            AgoraChannelPlayer.Instance.leaveChannel();
 
-        PhotonNetwork.LeaveRoom();
-        SceneManager.LoadScene(1);
+            PhotonNetwork.LeaveRoom();
+            SceneManager.LoadScene(1);
+        }
+
     }
 
 }
