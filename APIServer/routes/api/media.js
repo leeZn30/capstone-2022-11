@@ -105,13 +105,18 @@ router.post('/delete',(req,res) =>{
     //config update 후 s3 생성
     const s3 = new AWS.S3()
 
-    //삭제할 file locate(music) & imgLocate(image)
+    //삭제할 file locate(music) & imageLocate(image)
     const del_music = req.body.locate;
-    const del_image = req.body.imgLocate
-    
+    const del_image = req.body.imageLocate;
+
     //Key
     var del_musicKey = '';
     var del_imageKey = '';
+
+    //음악 파일만 삭제할 경우
+    if(del_imageKey === ''){
+        del_imageKey = 'Dummy.png'
+    }
 
     //파일 확장자
     const music_extension = path.extname(del_music);
@@ -141,10 +146,14 @@ router.post('/delete',(req,res) =>{
         }
        };
     s3.deleteObjects(params, function(err, data) {
-    if (err) console.log(err, err.stack);
-    else     console.log("Delete Object Success");
+    if (err){
+        console.log(err, err.stack);
+    } 
+    else{
+        console.log("Delete Object Success");
+        res.status(200).json({msg: "파일이 성공적으로 삭제되었습니다."})
+    }
     });
-    res.status(200).json({msg: "파일이 성공적으로 삭제되었습니다."})
 })
 
 
