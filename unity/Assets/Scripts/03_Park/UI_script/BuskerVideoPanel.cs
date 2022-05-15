@@ -109,12 +109,16 @@ public class BuskerVideoPanel : MonoBehaviour
         try
         {
             string mic = Microphone.devices[0];
+            /**
             micAudioSource.clip = Microphone.Start(mic, true, 10, 44100);
             while (!(Microphone.GetPosition(mic) > 0)) { } // Wait until the recording has started
             micAudioSource.Play(); // Play the audio source!
-
+            **/
+            if (mic != null)
+            {
+                isMicOn = true;
+            }
             // 마이크 켜졌다고 표시
-            isMicOn = true;
 
         }
         catch
@@ -136,9 +140,10 @@ public class BuskerVideoPanel : MonoBehaviour
         cameraConnect();
         micConnect();
 
+        StartButton.onClick.RemoveAllListeners(); // 지워주고 해야함
+
         if (isMicOn && isCameraOn)
         {
-            StartButton.onClick.RemoveAllListeners(); // 지워주고 해야함
             StartButton.onClick.AddListener(StartBusking);
         }
 
@@ -149,6 +154,12 @@ public class BuskerVideoPanel : MonoBehaviour
     {
         if (titleInput.text != "" && titleInput.text != null)
         {
+
+            objectTarget.GetComponent<RawImage>().texture = null;
+            textureWebCam.Stop();
+            isMicOn = false;
+            isCameraOn = false;
+
             AgoraChannelPlayer.Instance.callJoin(0, PhotonNetwork.LocalPlayer.NickName, titleInput.text);
 
             gameObject.SetActive(false);
