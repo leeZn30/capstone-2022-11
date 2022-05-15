@@ -79,11 +79,15 @@ public class BuskerVideoPanel : MonoBehaviour
         {
             AgoraChannelPlayer.Instance.callJoin(0, PhotonNetwork.LocalPlayer.NickName, titleInput.text);
 
+            gameObject.SetActive(false);
+
+            /**
             // Busker 화면 없애기
             gameObject.SetActive(false);
             smallVideo.SetActive(true);
             AgoraChannelPlayer.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
             GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+            **/
 
             // 그만두기 버튼 설정
             PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();

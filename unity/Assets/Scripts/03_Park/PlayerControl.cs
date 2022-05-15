@@ -247,14 +247,13 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (isVideoPanelShown)
         {
-            //ChatPanel.GetComponent<Chat>().msgList.text = "";
             // child 에는 부모와 자식이 함께 설정 된다.
-            var child = ChatPanel.GetComponent<Chat>().msgList.GetComponentsInChildren<GameObject>();
+            var child = ChatPanel.GetComponent<Chat>().msgList.GetComponentsInChildren<Transform>();
 
             foreach (var iter in child)
             {
                 // 부모(this.gameObject)는 삭제 하지 않기 위한 처리
-                if (iter != this.transform)
+                if (iter != ChatPanel.GetComponent<Chat>().msgList.transform)
                 {
                     Destroy(iter.gameObject);
                 }

@@ -48,9 +48,9 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             {
                 role = "publisher";
 
+                // 원래는 join되어야 하는게 맞지만 일단 빠르게 안변해서 여기다 둠
                 if (nowBuskingSpot != null)
-                    nowBuskingSpot.callChangeUsed(buskerNickname, t);
-
+                    nowBuskingSpot.callChangeUsed("TEst", "TTTTT");
                 nowBuskingSpot.onTitleBar();
 
                 channelToken = await HelperClass.FetchToken(url: "http://localhost:8082", channel: channelName, role: role, userId: myUID);
@@ -58,7 +58,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
                 nowChannel = AgoraEngine.mRtcEngine.CreateChannel(channelName);
                 nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-                nowChannel.ChannelOnJoinChannelSuccess = OnJoinChannelSuccess;
+                nowChannel.ChannelOnJoinChannelSuccess = OnBuskerJoinChannelSuccess;
                 nowChannel.ChannelOnLeaveChannel = OnBuskerLeaveChannel;
 
                 publish();
@@ -70,6 +70,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             {
                 role = "audience";
 
+                // 원래는 join되어야 하는게 맞지만 일단 빠르게 안변해서 여기다 둠
                 if (nowBuskingSpot != null)
                     nowBuskingSpot.onTitleBar();
 
@@ -80,11 +81,10 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
                 nowChannel.MuteLocalVideoStream(true);
                 nowChannel.MuteLocalAudioStream(true);
 
-                nowChannel.ChannelOnJoinChannelSuccess = OnJoinChannelSuccess;
+                nowChannel.ChannelOnJoinChannelSuccess = OnAudienceJoinChannelSuccess;
                 nowChannel.ChannelOnUserJoined = OnBuskerJoined;
                 nowChannel.ChannelOnLeaveChannel = OnAudienceLeaveChannel;
                 nowChannel.ChannelOnUserOffLine = OnBuskerOffline;
-                //nowChannel.ChannelOnRemoteVideoStats = OnRemoteVideoStatsHandler;
 
                 nowChannel.JoinChannel(channelToken, null, myUID, new ChannelMediaOptions(true, true, false,false));
 
@@ -194,11 +194,26 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     //============================================
 
     #region Handler
-    public void OnJoinChannelSuccess(string channelID, uint uid, int elapsed)
+    public void OnBuskerJoinChannelSuccess(string channelID, uint uid, int elapsed)
     {
         Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
 
+        // Busker 화면 없애기
+        buskersmallVideo.gameObject.SetActive(true);
+        setBuskerVideoSurface(buskersmallVideo);
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+
     }
+    public void OnAudienceJoinChannelSuccess(string channelID, uint uid, int elapsed)
+    {
+        Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
+
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OnVideoPanel(0);
+
+
+    }
+
+
 
     public void OnBuskerJoined(string channelID, uint uid, int elapsed)
     {

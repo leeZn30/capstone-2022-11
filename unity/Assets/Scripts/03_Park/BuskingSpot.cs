@@ -60,7 +60,8 @@ public class BuskingSpot : MonoBehaviourPun
 
             if (isUsed && !player.GetComponent<PlayerControl>().isVideoPanelShown)
             {
-                collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
+                // 여기가 아니라 join되면
+                //collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
 
                 // Agora관련
                 AgoraChannelPlayer.Instance.callJoin(1);
@@ -107,7 +108,7 @@ public class BuskingSpot : MonoBehaviourPun
             localuser.GetComponent<PlayerControl>().isMoveAble = true;
             localuser.GetComponent<PlayerControl>().isUIActable = true;
 
-            localuser.GetComponent<PlayerControl>().OnVideoPanel(0);
+            //localuser.GetComponent<PlayerControl>().OnVideoPanel(0);
             AgoraChannelPlayer.Instance.callJoin(1);
             localuser.GetComponent<PlayerControl>().OnInteractiveButton(2); // 버튼 활성화 아니었던 사람들
             localuser.GetComponent<PlayerControl>().changeInteractiveButton(2); // 버튼 활성화 되어있던 사람들
