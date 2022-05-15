@@ -7,34 +7,63 @@ using TMPro;
 
 public class Chat : MonoBehaviourPunCallbacks
 {
-    public TextMeshProUGUI msgList;
-    //public TMP_InputField ifSendMsg;
+    public GameObject msgList;
+    public TMP_InputField ifSendMsg;
 
     public string emojimsg;
+
+    [SerializeField] private GameObject chatBox;
 
     public string channelName;
 
     public void OnEnable()
     {
         channelName = AgoraChannelPlayer.Instance.channelName;
+
+        ifSendMsg.onSubmit.AddListener(delegate { OnSendChatMsg(); });
     }
 
+    public void OnSendEmoji()
+    {
+        string msg = string.Format("[{0}]  {1}"
+                                   , UserData.Instance.user.nickname // PhotonNetwork.LocalPlayer.NickName
+                                   , emojimsg);
+
+
+        photonView.RPC("ReceiveMsg", RpcTarget.AllBuffered, msg, channelName);
+    }
 
     public void OnSendChatMsg()
     {
-        string msg = string.Format("[{0}]  {1}"
-                                   ,UserData.Instance.user.nickname // PhotonNetwork.LocalPlayer.NickName
-                                   , emojimsg);
+        if (ifSendMsg.text != null)
+        {
+            string tmp = ifSendMsg.text.Replace(" ", "");
 
-        
-        photonView.RPC("ReceiveMsg", RpcTarget.AllBuffered, msg, channelName);
-        //ReceiveMsg(msg, channelName);
+            if (tmp != "")
+            {
+                string msg = string.Format("[{0}]  {1}"
+                                           , UserData.Instance.user.nickname // PhotonNetwork.LocalPlayer.NickName
+                                           , ifSendMsg.text);
+
+                photonView.RPC("ReceiveMsg", RpcTarget.AllBuffered, msg, channelName);
+
+                ifSendMsg.text = "";
+            }
+        }
     }
 
     [PunRPC]
     void ReceiveMsg(string msg, string _channel)
     {
         if (_channel == channelName)
-            msgList.text += "\n" + msg;
+        {
+
+            GameObject go = Instantiate<GameObject>(chatBox);
+            go.GetComponentInChildren<TextMeshProUGUI>().text = msg;
+
+
+            go.transform.parent = msgList.transform;
+            go.transform.localScale = new Vector3(1, 1, 0);
+        }
     }
 }

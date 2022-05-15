@@ -31,7 +31,7 @@ public class EmojiButton : MonoBehaviourPun
         if (AgoraChannelPlayer.Instance.nowBuskingSpot != null && AgoraChannelPlayer.Instance.nowBuskingSpot.isUsed)
         {
             chatPanel.emojimsg = "<sprite=" + emojiNum + ">";
-            chatPanel.OnSendChatMsg();
+            chatPanel.OnSendEmoji();
         }
     }
 
