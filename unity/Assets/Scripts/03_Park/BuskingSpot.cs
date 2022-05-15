@@ -12,7 +12,7 @@ public class BuskingSpot : MonoBehaviourPun
     public bool isUsed = false;
 
     // Title 관련
-    [SerializeField] private TextMeshProUGUI titleBar;
+    [SerializeField] private GameObject titleBar;
     public string titleText;
     public string buskerNickname;
 
@@ -20,7 +20,7 @@ public class BuskingSpot : MonoBehaviourPun
 
     private void Start()
     {
-        titleBar = FindObjectOfType<Canvas>().transform.Find("TitleBar").GetComponent<TextMeshProUGUI>();
+        titleBar = FindObjectOfType<Canvas>().transform.Find("TitleBar").gameObject;
     }
 
     public void callChangeUsed(string name = null, string t = null)
@@ -113,14 +113,14 @@ public class BuskingSpot : MonoBehaviourPun
 
     public void onTitleBar()
     {
-        titleBar.text = buskerNickname + ": " + titleText;
-        titleBar.gameObject.SetActive(true);
+        titleBar.GetComponentInChildren<TextMeshProUGUI>().text = buskerNickname + ": " + titleText;
+        titleBar.SetActive(true);
     }
 
     public void offTitleBar()
     {
-        titleBar.text = null;
-        titleBar.gameObject.SetActive(false);
+        titleBar.GetComponentInChildren<TextMeshProUGUI>().text = null;
+        titleBar.SetActive(false);
     }
 
 

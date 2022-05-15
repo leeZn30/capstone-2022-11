@@ -61,7 +61,7 @@ public class BuskerVideoPanel : MonoBehaviour
 
     private void exitPanel()
     {
-        gameObject.SetActive(false);
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
     }
@@ -79,11 +79,8 @@ public class BuskerVideoPanel : MonoBehaviour
         {
             AgoraChannelPlayer.Instance.callJoin(0, PhotonNetwork.LocalPlayer.NickName, titleInput.text);
 
-            AgoraChannelPlayer.Instance.nowBuskingSpot.onTitleBar();
-
             // Busker 화면 없애기
             gameObject.SetActive(false);
-            smallVideo.transform.localPosition.Set(-500, 290, 0);
             smallVideo.SetActive(true);
             AgoraChannelPlayer.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
 
