@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks
 {
 
     // 닉네임
-    [SerializeField] private string nickName;
+    public string nickName;
 
     // character 외형
     [SerializeField] private int appearance;

@@ -14,9 +14,11 @@ public class BuskingSpot : MonoBehaviourPun
     // Title 관련
     [SerializeField] private GameObject titleBar;
     public string titleText;
-    public string buskerNickname;
+    public string buskerNickname = null;
 
     [SerializeField] private GameObject localuser;
+    [SerializeField] private List<string> userLists;
+    [SerializeField] private bool isFoundWrongUser = false;
 
     private void Start()
     {
@@ -26,6 +28,24 @@ public class BuskingSpot : MonoBehaviourPun
     public void callChangeUsed(string name = null, string t = null)
     {
         photonView.RPC("changeUsed", RpcTarget.AllBuffered, name, t);
+    }
+
+    private void Update()
+    {
+        findWrongUser();
+    }
+
+    private void findWrongUser()
+    {
+        if (!string.IsNullOrEmpty(buskerNickname) && !isFoundWrongUser)
+        {
+            if (!userLists.Contains(buskerNickname))
+            {
+                isFoundWrongUser = true;
+                callChangeUsed();
+
+            }
+        }
     }
 
     [PunRPC]
@@ -42,6 +62,11 @@ public class BuskingSpot : MonoBehaviourPun
             isUsed = false;
             buskerNickname = null;
             titleText = null;
+
+            if (isFoundWrongUser)
+            {
+                isFoundWrongUser = false;
+            }
         }
     }
 
@@ -49,6 +74,11 @@ public class BuskingSpot : MonoBehaviourPun
     {
 
         GameObject player = GameManager.instance.myPlayer;
+
+        if (collision.tag == "Character")
+        {
+            userLists.Add(collision.transform.gameObject.GetComponent<PlayerManager>().nickName);
+        }
 
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
@@ -75,7 +105,18 @@ public class BuskingSpot : MonoBehaviourPun
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        
+        if (collision.tag == "Character")
+        {
+            foreach (string name in userLists)
+            {
+                if (collision.transform.gameObject.GetComponent<PlayerManager>().nickName == name)
+                {
+                    userLists.Remove(name);
+                    break;
+                }
+            }
+        }
+
         GameObject player = GameManager.instance.myPlayer;
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {

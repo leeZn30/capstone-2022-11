@@ -274,12 +274,12 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     {
         if (nowChannel != null)
         {
-            // event handler라 다 안되는것 같음
+            nowBuskingSpot.callChangeUsed();
 
-            Debug.Log("Quit!");
-            // leaveChannel handler가 안됨
             leaveChannel();
             nowChannel.ReleaseChannel();
+
+            Debug.Log("Quit!");
 
         }
     }
