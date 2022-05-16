@@ -112,6 +112,7 @@ public class SearchPageInSongPage : Page
     }
     private void PutSelect()
     {
+        if (listNameDropdown.options.Count == 0) return;
         MusicIDList iDList = new MusicIDList();
         iDList.musicList = new List<string>();
 
@@ -200,8 +201,15 @@ public class SearchPageInSongPage : Page
     public void SetOptions()
     {
 
-        listNameDropdown.options = MusicController.Instance.dropdown.options;
-        listNameDropdown.value = MusicController.Instance.dropdown.value;
+        List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>(MusicController.Instance.dropdown.options);
+        options.RemoveAt(0);
+        listNameDropdown.options = options;
+        if (listNameDropdown.options.Count != 0)
+        {
+
+            listNameDropdown.value = MusicController.Instance.dropdown.value;
+
+        }
 
     }
     void Remove()

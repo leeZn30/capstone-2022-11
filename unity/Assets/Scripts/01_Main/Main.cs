@@ -82,8 +82,6 @@ public class Main : MonoBehaviour
             id = id_input.text,
             password = password_input.text
         };
-        Debug.Log("로그인 시도 : " + id_input.text + " " + password_input.text);
-
 
         string json = JsonUtility.ToJson(auth);
         using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/auth", json))
@@ -110,7 +108,6 @@ public class Main : MonoBehaviour
 
 
                     JsonData jsonData = JsonToObject(jsonResult);
-                    Debug.Log("결과 " + jsonData[1]);
                     User user = new User();
              
                     user.SetUser((string)(jsonData[1]["id"]),

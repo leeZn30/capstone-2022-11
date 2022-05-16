@@ -43,6 +43,7 @@ public class SubMusicController : MusicWebRequest
         {
             if (music != null)
             {
+                if (listNameDropdown.options.Count == 0) return;
                 MusicIDList iDList = new MusicIDList();
                 iDList.musicList = new List<string>();
                 iDList.musicList.Add(music.id);
@@ -201,9 +202,16 @@ public class SubMusicController : MusicWebRequest
     }
     public void SetOptions()
     {
+        List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>(MusicController.Instance.dropdown.options);
+        options.RemoveAt(0);
+        listNameDropdown.options = options;
+        if (listNameDropdown.options.Count !=0)
+        {
+            
+            listNameDropdown.value = MusicController.Instance.dropdown.value;
 
-        listNameDropdown.options = MusicController.Instance.dropdown.options;
-        listNameDropdown.value = MusicController.Instance.dropdown.value;
+        }
+
 
     }
     private void OnDestroy()

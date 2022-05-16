@@ -95,7 +95,9 @@ public class MusicController : MusicWebRequest
     public GameObject scrollViewObject;
     private ScrollViewRect scrollViewRect;
     CancellationTokenSource cts;
-    private IEnumerator audioLoadIEnum; 
+    private IEnumerator audioLoadIEnum;
+
+    private float lastVolume;
     private enum PlayState
     {
         Play,Pause
@@ -118,10 +120,25 @@ public class MusicController : MusicWebRequest
         {
             isAlreadyInit = true;
 
+            volumeSlider.gameObject.SetActive(false);
             //볼륨제어 포인터 이벤트 등록
             volumeToggle = volumeToggleObj.GetComponent<Toggle>();
-            volumeSlider.onValueChanged.AddListener(delegate { AudioListener.volume = volumeSlider.value; }); 
-
+            volumeSlider.onValueChanged.AddListener(delegate {
+                AudioListener.volume = volumeSlider.value; 
+            });
+            volumeToggle.onValueChanged.AddListener(delegate {
+                if (volumeToggle.isOn == true)
+                {
+                    
+                    lastVolume = AudioListener.volume;
+                    volumeSlider.value = 0;
+                }
+                else
+                {
+                    AudioListener.volume = lastVolume;
+                    volumeSlider.value = lastVolume;
+                }
+            });
             //볼륨 토글에 포인터 올리면 세부조절활성화
             volumeToggleObj.OnPointEnter += delegate
             {
@@ -499,7 +516,9 @@ public class MusicController : MusicWebRequest
     }
     int PickRandomIndex()
     {
+        if (currentSongSlotList.Count <= 1) return 0;
         int randomIdx = currentSongIndex;
+        
 
         while (randomIdx == currentSongIndex)
         {
@@ -518,8 +537,6 @@ public class MusicController : MusicWebRequest
             nextIdx = (currentSongIndex + 1) % currentSongSlotList.Count;
         }
 
-   
-        Debug.Log("Autoplay" + nextIdx);
         if (repeatMode == RepeatMode.None)
         {
             if (nextIdx == 0)
@@ -583,7 +600,6 @@ public class MusicController : MusicWebRequest
 
         if (audioSource.isPlaying == true)
         {
-            Debug.Log("stop!!!!!");
             StopCoroutine(enumerator);
         }
     }
@@ -732,13 +748,10 @@ public class MusicController : MusicWebRequest
             options.Add(new TMP_Dropdown.OptionData(listNames[i].ToString()));
 
         dropdown.options = options;
-        Debug.Log("재생목록 변경됨" + dropdown.value);
-
     }
 
     void OnChangeDropDown(int value)
     {
-        Debug.Log("재생목록 변경됨"+ dropdown.value);
         StartGetListCoroution(dropdown.options[value].text, 0, true);
     }
 

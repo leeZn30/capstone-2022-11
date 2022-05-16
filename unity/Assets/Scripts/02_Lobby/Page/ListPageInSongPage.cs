@@ -181,7 +181,6 @@ public class ListPageInSongPage : Page
     }
     override public void Reset()
     {
-        Debug.Log("list reset");
         //재생목록 초기화
         Init();
 

@@ -203,7 +203,8 @@ MonoBehaviour:
     followNum: 0
     followerNum: 0
     preferredGenres: []
-    followIds: []
+    follow: []
+    listName: []
   type: 0
   userName: {fileID: 273857811725993118}
   button: {fileID: 273857813165820064}
@@ -470,7 +471,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uCDE8\uC18C\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2b9508251aebd2741b2d6a8859447dc9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e8754e71af078c54fb90a6dfa5476822, type: 2}
   m_sharedMaterial: {fileID: 7779101192413030801, guid: 2b9508251aebd2741b2d6a8859447dc9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -534,6 +535,6 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}

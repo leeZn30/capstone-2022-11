@@ -346,12 +346,12 @@ public class MusicWebRequest : MonoBehaviour
     
     protected IEnumerator POST_DeleteMusic(MusicID id, string listName)
     {
-
+       
         MusicIDListName idname = new MusicIDListName();
         idname.musicId = id.musicId;
         idname.listName = listName;
         string json = JsonUtility.ToJson(idname);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/user/deleteSong" + listName, json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/user/deleteSong", json))
         {// 보낼 주소와 데이터 입력
 
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
@@ -567,8 +567,6 @@ public class MusicWebRequest : MonoBehaviour
                 json="{\"listName\":\""+listName+"\"}";
             }
 
-            Debug.Log(listName + " 리스트: " + json);
-
             using (UnityWebRequest www = UnityWebRequest.Get(resultUrl))
             {
                 www.SetRequestHeader("token", UserData.Instance.Token);
@@ -584,8 +582,7 @@ public class MusicWebRequest : MonoBehaviour
                     if (www.isDone)
                     {
                         string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
-                        Debug.Log("결과 " + jsonResult);
-
+                        Debug.Log(jsonResult);
                         JsonData jsonData = JsonToObject(jsonResult);
 
                         if (_userid != null)
@@ -690,7 +687,6 @@ public class MusicWebRequest : MonoBehaviour
 
                 await getAudioWWW.SendWebRequest();// Unity의 Async Operation 이라 await 가능하다.
 
-                Debug.Log("get audio 끝" + _filePath + audioType.ToString());
                 if (getAudioWWW.result == UnityWebRequest.Result.ConnectionError)
                 {
                     Debug.Log(getAudioWWW.error);

@@ -28,7 +28,7 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        OnClickSlot(this);
+        OnClickSlot?.Invoke(this);
     }
     private void Awake()
     {

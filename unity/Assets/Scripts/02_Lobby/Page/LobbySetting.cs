@@ -80,7 +80,6 @@ public class LobbySetting : MonoBehaviour
     }
     void SetConfig()
     {
-        Debug.Log("setConfig");
         AudioListener.volume = volumeSlider.value;
 
         UserData.Instance.sets[0] = volumeSlider.value ;

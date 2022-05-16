@@ -47,7 +47,6 @@ public class Lobby : MusicWebRequest
     }
     void UpdateFollow()
     {
-        Debug.Log("update follow");
         followNum.text = UserData.Instance.user.followNum+"\n팔로우";
         followerNum.text = UserData.Instance.user.followerNum + "\n팔로워";
 
@@ -72,7 +71,6 @@ public class Lobby : MusicWebRequest
     }
     void ChangeCharacter()
     {
-        Debug.Log(UserData.Instance.user.character);
         character.ChangeSprite(UserData.Instance.user.character);
     }
     

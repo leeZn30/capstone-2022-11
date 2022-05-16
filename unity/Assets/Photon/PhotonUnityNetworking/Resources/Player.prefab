@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 6890278054613492546}
   - component: {fileID: 5253602933163298885}
   - component: {fileID: 7973976387866127287}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Character
   m_Icon: {fileID: 0}
@@ -199,6 +199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nickName: 
+  id: 
   appearance: 0
 --- !u!114 &8480671304642129222
 MonoBehaviour:
