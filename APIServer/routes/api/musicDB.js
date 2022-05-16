@@ -102,6 +102,7 @@ router.get('/category', async(req, res) =>{
 
 router.get('/uploadList', async(req,res) => {
     const {userId} = req.body;
+    let musicInfo = [];
 
     User.findOne({id:userId}).then(async (user) => {
         for (let i = 0; i < user.uploadList.length; i++){
@@ -109,9 +110,12 @@ router.get('/uploadList', async(req,res) => {
                 if (!music) {
                     User.updateOne({id: userId}, {$pull: { uploadList: {musicID: musicId}}});
                 }
+                else {
+                    musicInfo.push(music);
+                }
             })
         }
-        res.status(200).json({uploadList: user.uploadList});
+        res.status(200).json({uploadList: musicInfo});
     })
 })
 
