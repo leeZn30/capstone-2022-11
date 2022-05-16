@@ -142,7 +142,7 @@ router.get('/personalGenre', auth, async(req, res)=>{
 })
 
 router.post('/', auth, async(req, res) => {
-    const {locate ,imageLocate, title, category, lyrics, info} = req.body;
+    const {locate ,imageLocate, title, category, lyrics, info, time} = req.body;
 
     const userID = req.user.id;
 
@@ -155,7 +155,7 @@ router.post('/', auth, async(req, res) => {
         // console.log(id);
 
         const newMusic = new Music({
-            locate, imageLocate, title, id, userID, userNickname, lyrics, category, info
+            locate, imageLocate, title, id, userID, userNickname, lyrics, category, info, time
         });
 
         newMusic.save().then(()=> console.log("music save success!!"));
