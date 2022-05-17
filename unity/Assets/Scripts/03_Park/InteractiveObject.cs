@@ -16,6 +16,7 @@ public class InteractiveObject : MonoBehaviour
     [SerializeField] protected int InteractiveType;
 
     private BuskingSpot buskingSpot;
+    private MusicSpot musicSpot;
     private void OnTriggerEnter2D(Collider2D collision)
     {
 
@@ -36,6 +37,22 @@ public class InteractiveObject : MonoBehaviour
                             player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
                                 delegate { player.GetComponent<PlayerControl>().OnVideoPanel(1); });
                         }                      
+                    }
+                    break;
+
+                case 4://음원존 등록 버튼
+                    if (componentObj.TryGetComponent<MusicSpot>(out musicSpot))
+                    {
+                        if (musicSpot.musicZoneUI == null)
+                            musicSpot.musicZoneUI = GameObject.FindObjectOfType<MusicZoneUI>();
+
+                        if (musicSpot.state==MusicSpot.State.None)
+                        {//듣기 상태가 아니라면 설정창 열기
+                            player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
+                            player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
+                                delegate { musicSpot.musicZoneUI.OpenSetUI(musicSpot); });
+                        }
+
                     }
                     break;
 

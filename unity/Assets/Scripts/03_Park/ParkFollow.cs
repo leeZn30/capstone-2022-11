@@ -75,6 +75,11 @@ public class ParkFollow: MusicWebRequest
             PlayerManager pm;
             if (collider.TryGetComponent<PlayerManager>(out pm))
             {
+                if (pm.GetId() == UserData.Instance.id)
+                {
+                return;
+                }
+                
                 UserInfoMini info = (UserInfoMini)FindObjectOfType(typeof(UserInfoMini));
 
                 if (info == null)
@@ -115,10 +120,12 @@ public class ParkFollow: MusicWebRequest
                 if (infoFollowText.text == "팔로우")
                 {//팔로우
                     FollowUser(currentUserId, currentUserNickname);
+                    infoFollowText.text = "팔로우 취소";
                 }
                 else
                 {//팔로우 취소
                     FollowCancelUser(currentUserId, currentUserNickname);
+                    infoFollowText.text = "팔로우";
                 }
             });
 
@@ -143,17 +150,16 @@ public class ParkFollow: MusicWebRequest
     }
 
     //유저 프로필을 로드하는 함수
-    async void LoadUserProfile(string _id, bool isFollow=false)
+    async void LoadUserProfile(string _id)
     {
-
-        if (isFollow == true)
-        {//내가 이미 팔로우한 유저라면
+        if (UserData.Instance.user.follow.Contains(_id))
+        {
             infoFollowText.text = "팔로우 취소";
             infoFollowBtn.gameObject.SetActive(true);
-               
+
         }
         else
-        {//내가 팔로우하지않은 유저라면
+        {
             infoFollowText.text = "팔로우";
             infoFollowBtn.gameObject.SetActive(true);
         }

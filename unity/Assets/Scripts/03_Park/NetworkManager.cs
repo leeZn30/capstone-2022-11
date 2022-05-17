@@ -105,8 +105,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         this.connectionInfoText.text = "�� ���� ����!";
 
         //��� �� �����ڰ� Main ���� �ε��ϰ� ��
-        //PhotonNetwork.LoadLevel("03_Park");
-        PhotonNetwork.LoadLevel("Park test scene");
+        PhotonNetwork.LoadLevel("03_Park");
+        //PhotonNetwork.LoadLevel("Park test scene");
 
         PhotonNetwork.LocalPlayer.NickName = UserData.Instance.user.nickname;
         Hashtable playerData = new Hashtable();

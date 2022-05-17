@@ -14,7 +14,7 @@ public class SongFolder : MonoBehaviour
 
     private Button btn;
 
-    public delegate void LoadSongListHandler(string listName,string str);
+    public delegate void LoadSongListHandler(string listName,string str=null);
     public event LoadSongListHandler OnClickButton_;
 
     public delegate void DeleteHandler(SongFolder sf);
@@ -28,9 +28,12 @@ public class SongFolder : MonoBehaviour
     {
         btn = GetComponent<Button>();
         btn.onClick.AddListener(OnClickButton);
-        delBtn.onClick.AddListener(delegate { OnDelete?.Invoke(this); });
-
-        SetActiveDelButton(false);
+        if (delBtn != null)
+        {
+            delBtn.onClick.AddListener(delegate { OnDelete?.Invoke(this); });
+            SetActiveDelButton(false);
+        } 
+        
         name_text.text = value;
         folderName = value;
         content = value;

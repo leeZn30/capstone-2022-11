@@ -296,6 +296,7 @@ public class Music
     public string category;
     public string lyrics;
     public string info;
+    public float time;
     public string GetArtistName()
     {
         return userNickname + "(" + userID + ")";
@@ -463,6 +464,10 @@ public class MusicWebRequest : MonoBehaviour
                 OnUploaded(true);
                 Debug.Log("업로드 !" + _music.title+_music.locate+_music.imageLocate) ;
 
+                //현재 재생목록이 uploadList라면 추가
+                List<Music> ms = new List<Music>();
+                ms.Add(_music);
+                MusicController.Instance.AddNewMusics("uploadList", ms);
 
             }
             else
@@ -566,7 +571,7 @@ public class MusicWebRequest : MonoBehaviour
             {
                 json="{\"listName\":\""+listName+"\"}";
             }
-
+            Debug.Log(json);
             using (UnityWebRequest www = UnityWebRequest.Get(resultUrl))
             {
                 www.SetRequestHeader("token", UserData.Instance.Token);
@@ -609,6 +614,7 @@ public class MusicWebRequest : MonoBehaviour
                             music.category = (string)jsonData[i]["category"];
                             music.lyrics = (string)jsonData[i]["lyrics"];
                             music.info = (string)jsonData[i]["info"];
+                            music.time = (float)(double)jsonData[i]["time"];
                             musics.Add(music);
 
                         }
@@ -1179,9 +1185,9 @@ public class MusicWebRequest : MonoBehaviour
                     if (www.isDone)
                     {
                         string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
-
-                        JsonData jsonData = JsonToObject(jsonResult)["user"];
                         Debug.Log("결과 " + jsonResult);
+                        JsonData jsonData = JsonToObject(jsonResult)["user"];
+
                         User user = new User();
 
                         user.character = (int)(jsonData["character"]);
@@ -1496,6 +1502,149 @@ public class MusicWebRequest : MonoBehaviour
         {
             Debug.LogError(e);
             return null;
+        }
+    }
+    //음원존 join (park scene MusicZoneUI에서 사용)
+    protected async UniTask<MusicZoneOutputData> GET_JoinZone(MusicZoneNumber num)
+    {
+        try
+        {
+            string json = JsonUtility.ToJson(num);
+
+            using (UnityWebRequest www = UnityWebRequest.Get(url + "/api/musiczone/joinZone"))
+            {
+                www.SetRequestHeader("token", UserData.Instance.Token);
+                www.SetRequestHeader("Content-Type", "application/json");
+                www.SetRequestHeader("accept", "text/plain");
+                www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
+
+                await www.SendWebRequest();
+
+                MusicZoneOutputData mz = new MusicZoneOutputData();
+
+                if (www.error == null)
+                {
+                    string jsonResult = System.Text.Encoding.UTF8.GetString(www.downloadHandler.data);
+                    Debug.Log("결과 " + jsonResult);
+
+                    JsonData jsonData = JsonToObject(jsonResult);
+
+                    for (int i = 0; i < jsonData["title"].Count; i++)
+                    {
+                        mz.titleList.Add((string)jsonData["title"][i]);
+                        mz.locateList.Add((string)jsonData["locate"][i]);
+
+                    }
+                    if (jsonData["time"].GetJsonType() == JsonType.Double)
+                    {
+                        mz.time = (float)(double)jsonData["time"];
+                    }
+                    else
+                    {
+                        mz.time = (float)(int)jsonData["time"];
+                    }
+
+                    return mz;
+                }
+                else
+                {
+                    Debug.Log(www.error.ToString());
+                    return null;
+                }
+            }
+        }
+        catch (ArgumentNullException e)
+        {
+            Debug.Log(""); return null;
+        }
+        catch (UnityWebRequestException e)
+        {
+            if (e.ResponseCode == 400 || e.ResponseCode == 401)
+            {
+                Popup.Instance.Open(0);
+                Debug.Log(e.ResponseCode + "[POST_DeleteListAsync] 토큰 만료");
+
+            }
+            else if (e.ResponseCode == 510)
+            {
+                Debug.Log("재생되는 음원 없음 : 재생 시간 초과");
+
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
+            }
+            else
+            {
+                Debug.Log(e);
+            }
+            return null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            return null;
+        }
+    }
+    //음원존 create (park scene MusicZoneUI에서 사용)
+    protected async UniTask<bool> POST_CreateZone(MusicZoneInputData mz)
+    {
+        try
+        {
+            string json = JsonUtility.ToJson(mz);
+
+            using (UnityWebRequest www = UnityWebRequest.Post(url + "/api/musiczone/createZone", json))
+            {
+                www.SetRequestHeader("token", UserData.Instance.Token);
+                www.SetRequestHeader("Content-Type", "application/json");
+                www.SetRequestHeader("accept", "text/plain");
+                www.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(json));
+
+                await www.SendWebRequest();
+                if (www.error == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    Debug.Log(www.error.ToString());
+                    return false;
+                }
+            }
+        }
+        catch (ArgumentNullException e)
+        {
+            Debug.Log(""); return false;
+        }
+        catch (UnityWebRequestException e)
+        {
+            if (e.ResponseCode == 400 || e.ResponseCode == 401)
+            {
+                Popup.Instance.Open(0);
+                Debug.Log(e.ResponseCode + "[POST_DeleteListAsync] 토큰 만료");
+
+            }
+            else if (e.ResponseCode == 410)
+            {
+                Debug.Log("이미 만들어짐");
+
+            }
+            else if (e.ResponseCode == 0)
+            {
+                Debug.Log("서버와 연결 끊어짐");
+                Popup.Instance.Open(1);
+            }
+            else
+            {
+                Debug.Log(e);
+            }
+            return false;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError(e);
+            return false;
         }
     }
     JsonData JsonToObject(string json)

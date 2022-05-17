@@ -119,6 +119,7 @@ public class SearchPageInSongPage : Page
         List<Music> ms = new List<Music>();
         for (int i = 0; i < selectedSlots.Count; i++)
         {
+
             selectedSlots[i].isSelected = false;
             iDList.musicList.Add(selectedSlots[i].GetMusic().id);
             ms.Add(selectedSlots[i].GetMusic());

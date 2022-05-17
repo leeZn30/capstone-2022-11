@@ -64,6 +64,8 @@ public class AddPageInSongPage : Page
                 if (!string.IsNullOrEmpty(filePath))
                 {
                     StartCoroutine(SetAudioCilpUsingWebRequest(filePath));
+
+                   
                 }
             });
             okayBtn.onClick.AddListener(UploadAndFinish);
@@ -93,13 +95,14 @@ public class AddPageInSongPage : Page
             music.userNickname = UserData.Instance.user.nickname;
             music.lyrics= infoInputs[1].text;
             music.info = infoInputs[2].text;
+            music.time = musicControllerMini.audioClip.length;
 
             foreach(Toggle tg in toggleGroup.ActiveToggles())
             {
                 music.category = tg.GetComponentInChildren<TextMeshProUGUI>().text;
             }
 
-            Debug.Log(music.ToString());
+            Debug.Log(music.time);
             StartCoroutine(Upload(musicBytes, imageBytes, music, localFileName.text));
             //Close();
         }

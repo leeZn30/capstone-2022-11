@@ -142,12 +142,14 @@ public class MusicController : MusicWebRequest
             //볼륨 토글에 포인터 올리면 세부조절활성화
             volumeToggleObj.OnPointEnter += delegate
             {
+                Debug.Log("드감");
                 volumeSlider.gameObject.SetActive(true);
                 volumeSlider.value = AudioListener.volume;
             };
             //컨트롤바에서 포인터 나가면 세부조절 비활성화
             mainControllBar.OnPointExit += delegate
             {
+                Debug.Log("나감");
                 volumeSlider.gameObject.SetActive(false);
             };
 
@@ -740,6 +742,7 @@ public class MusicController : MusicWebRequest
     }
     public void SetOptions(List<string> listNames)
     {
+       
         if (listNames == null) return;
 
         List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();

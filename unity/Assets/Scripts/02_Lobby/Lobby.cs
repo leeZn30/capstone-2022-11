@@ -65,7 +65,8 @@ public class Lobby : MusicWebRequest
             //재생목록리스트 업데이트
             if (listNameList == null) return;
 
-            MusicController.Instance.SetOptions(listNameList.stringList);
+            UserData.Instance.user.listName = listNameList.stringList;
+            MusicController.Instance.SetOptions(UserData.Instance.user.listName);
         }
 
     }

@@ -38,7 +38,8 @@ public class FolderAddPage : Page
         StringList sl= await POST_MakeListAsync(inputField.text);
         if (sl != null)
         {
-            MusicController.Instance.SetOptions(sl.stringList);
+            UserData.Instance.user.listName = sl.stringList;   
+            MusicController.Instance.SetOptions(UserData.Instance.user.listName);
             OnMakeFolder?.Invoke(inputField.text);
             Close();
         }

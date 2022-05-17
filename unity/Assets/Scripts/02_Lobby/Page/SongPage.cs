@@ -72,9 +72,9 @@ public class SongPage : Page
         songFolderList.Clear();
         //오류 생길 수 있음.
         //이전 단계에서 dropdown이 로드되지않았을 경우. 출력안됨.
-        foreach (TMP_Dropdown.OptionData optionData in MusicController.Instance.dropdown.options)
+        foreach (string name in UserData.Instance.user.listName)
         {
-            AddMusicFolder(optionData.text);
+            AddMusicFolder(name);
         }
     }
     void AddMusicFolder(string value)
@@ -89,7 +89,6 @@ public class SongPage : Page
         sf.OnDelete += DelMusicFolder;
 
         songFolderList.Add(sf);
-        Debug.Log(value);
     }
     void DelMusicFolder(SongFolder sf)
     {
@@ -114,7 +113,8 @@ public class SongPage : Page
         StringList sl= await POST_DeleteListAsync(name);
         if (sl != null)
         {
-            MusicController.Instance.SetOptions(sl.stringList);
+            UserData.Instance.user.listName = sl.stringList;
+            MusicController.Instance.SetOptions(UserData.Instance.user.listName);
         }
     }
     void MusicListLoad()
