@@ -6,8 +6,8 @@ using Cysharp.Threading.Tasks;
 
 public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
 {
-    // Channel°ü·Ã
-    [Header("Channel °ü·Ã")]
+    // Channelê´€ë ¨
+    [Header("Channel ê´€ë ¨")]
     public string channelName;
     [SerializeField] private string channelToken;
     [SerializeField] private bool isPublishing;
@@ -15,17 +15,18 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     [SerializeField] private bool isFoundBusker = false;
     [SerializeField] private uint buskerUid;
 
-    // ÇÊ¿ä Object
+    // í•„ìš” Object
     [SerializeField] private RawImage buskersmallVideo;
     [SerializeField] private RawImage audienceVideo;
+    [SerializeField] private InfoPanel infoPanel;
 
-    // User Á¤º¸
-    [Header("User Á¤º¸")]
+    // User ì •ë³´
+    [Header("User ì •ë³´")]
     [SerializeField] private uint myUID;
     public string role;
 
-    // BuskingZone Á¤º¸
-    [Header("BuskingZone Á¤º¸")]
+    // BuskingZone ì •ë³´
+    [Header("BuskingZone ì •ë³´")]
     public BuskingSpot nowBuskingSpot;
 
     private void Start()
@@ -33,12 +34,12 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         myUID = UIDCreator.createUID(UserData.Instance.id);
     }
 
-    // ======================= Join °ü·Ã =============================
+    // ======================= Join ê´€ë ¨ =============================
     public void callJoin(int mode, string buskerNickname = null, string title = null)
     {
         join(mode, buskerNickname, title);
     }
-    private async UniTask join(int mode, string buskerNickname = null, string title = null) //IEnumerator
+    private async UniTask join(int mode, string buskerNickname = null, string t = null) //IEnumerator
     {
         if (nowChannel == null)
         {
@@ -47,26 +48,29 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             {
                 role = "publisher";
 
+                // ì›ë˜ëŠ” joinë˜ì–´ì•¼ í•˜ëŠ”ê²Œ ë§ì§€ë§Œ ì¼ë‹¨ ë¹ ë¥´ê²Œ ì•ˆë³€í•´ì„œ ì—¬ê¸°ë‹¤ ë‘ 
                 if (nowBuskingSpot != null)
-                    nowBuskingSpot.callChangeUsed(buskerNickname, title);
+                    nowBuskingSpot.callChangeUsed(buskerNickname, t);
+                nowBuskingSpot.onTitleBar();
 
                 channelToken = await HelperClass.FetchToken(url: "http://localhost:8082", channel: channelName, role: role, userId: myUID);
 
                 nowChannel = AgoraEngine.mRtcEngine.CreateChannel(channelName);
                 nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-                nowChannel.ChannelOnJoinChannelSuccess = OnJoinChannelSuccess;
+                nowChannel.ChannelOnJoinChannelSuccess = OnBuskerJoinChannelSuccess;
                 nowChannel.ChannelOnLeaveChannel = OnBuskerLeaveChannel;
 
                 publish();
 
-                nowChannel.JoinChannel(channelToken, null, myUID, new ChannelMediaOptions(false, false, true, true)); // ÀÌ°Å ³»°¡ ÇÑ°Ç ´Ù ´Ù¸§
+                nowChannel.JoinChannel(channelToken, null, myUID, new ChannelMediaOptions(false, false, true, true)); // ì´ê±° ë‚´ê°€ í•œê±´ ë‹¤ ë‹¤ë¦„
                 Debug.Log("Joining channel: " + channelName);
             }
             else if (mode == 1) //Audience
             {
                 role = "audience";
 
+                // ì›ë˜ëŠ” joinë˜ì–´ì•¼ í•˜ëŠ”ê²Œ ë§ì§€ë§Œ ì¼ë‹¨ ë¹ ë¥´ê²Œ ì•ˆë³€í•´ì„œ ì—¬ê¸°ë‹¤ ë‘ 
                 if (nowBuskingSpot != null)
                     nowBuskingSpot.onTitleBar();
 
@@ -77,13 +81,13 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
                 nowChannel.MuteLocalVideoStream(true);
                 nowChannel.MuteLocalAudioStream(true);
 
-                nowChannel.ChannelOnJoinChannelSuccess = OnJoinChannelSuccess;
+                nowChannel.ChannelOnJoinChannelSuccess = OnAudienceJoinChannelSuccess;
                 nowChannel.ChannelOnUserJoined = OnBuskerJoined;
                 nowChannel.ChannelOnLeaveChannel = OnAudienceLeaveChannel;
                 nowChannel.ChannelOnUserOffLine = OnBuskerOffline;
-                //nowChannel.ChannelOnRemoteVideoStats = OnRemoteVideoStatsHandler;
 
-                nowChannel.JoinChannel(channelToken, null, myUID, new ChannelMediaOptions(true, true, false,false)); // ÀÌ°Å ³»°¡ ÇÑ°Ç ´Ù ´Ù¸§
+                nowChannel.JoinChannel(channelToken, null, myUID, new ChannelMediaOptions(true, true, false,false));
+
                 Debug.Log("Joining channel: " + channelName);
             }
             else
@@ -99,7 +103,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     }
     //=========================================================
 
-    // ============= °¢Á¾ ÄÚµå ===========
+    // ============= ê°ì¢… ì½”ë“œ ===========
     private void publish()
     {
         if (nowChannel == null)
@@ -155,7 +159,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         {
             // configure videoSurface
             videoSurface.SetForMultiChannelUser(channelId, uid);
-            videoSurface.SetForUser(uid); // ÀÌ·¯¸é ÀÌÁ¦ µÇ´Â°Å°°Àºµ¥
+            videoSurface.SetForUser(uid); // ì´ëŸ¬ë©´ ì´ì œ ë˜ëŠ”ê±°ê°™ì€ë°
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
         }
@@ -179,6 +183,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             nowBuskingSpot.offTitleBar();
             nowChannel.LeaveChannel();
             Debug.Log("Leaving channel: " + channelName);
+
         }
         else
         {
@@ -189,14 +194,28 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     //============================================
 
     #region Handler
-    public void OnJoinChannelSuccess(string channelID, uint uid, int elapsed)
+    public void OnBuskerJoinChannelSuccess(string channelID, uint uid, int elapsed)
     {
         Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
+
+        // Busker í™”ë©´ ì—†ì• ê¸°
+        buskersmallVideo.gameObject.SetActive(true);
+        setBuskerVideoSurface(buskersmallVideo);
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+
     }
+    public void OnAudienceJoinChannelSuccess(string channelID, uint uid, int elapsed)
+    {
+        Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
+
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OnVideoPanel(0);
+    }
+
+
 
     public void OnBuskerJoined(string channelID, uint uid, int elapsed)
     {
-        if (!isFoundBusker) // Busker´Â ¸Ç Ã³À½ µé¾î¿È
+        if (!isFoundBusker) // BuskerëŠ” ë§¨ ì²˜ìŒ ë“¤ì–´ì˜´
         {
             Debug.Log("onBuskerInfo: uid = " + uid + " elapsed = " + elapsed + " nowChannel: " + channelID);
             // this is called in main thread
@@ -230,8 +249,10 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     {
         Debug.Log("onLeaveBuskerInfo: uid = " + uid + " reason = " + reason + " nowChannel: " + channelID);
 
-        if (buskerUid != 0 && buskerUid == uid) // ¹ö½ºÄ¿°¡ ³ª°¥¶§¸¸
+        if (buskerUid != 0 && buskerUid == uid) // ë²„ìŠ¤ì»¤ê°€ ë‚˜ê°ˆë•Œë§Œ
+        {
             leaveChannel();
+        }
     }
 
     private void OnAudienceLeaveChannel(string channelID, RtcStats stats)
@@ -240,7 +261,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
 
         Destroy(audienceVideo.GetComponent<VideoSurface>());
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton();
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton(2); // íŒ”ë¡œìš° ë²„íŠ¼ ì‚­ì œ
 
         buskerUid = 0;
         isFoundBusker = false;
@@ -253,8 +274,13 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     {
         if (nowChannel != null)
         {
-            nowChannel.LeaveChannel();
+            nowBuskingSpot.callChangeUsed();
+
+            leaveChannel();
             nowChannel.ReleaseChannel();
+
+            Debug.Log("Quit!");
+
         }
     }
 

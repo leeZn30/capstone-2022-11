@@ -9,15 +9,18 @@ public class SoundButton : MonoBehaviour
 
     public void showSlide()
     {
-        if (!isSoundSlideShown)
+        if (GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable)
         {
-            soundSlide.gameObject.SetActive(true);
-            isSoundSlideShown = true;
-        }
-        else
-        {
-            soundSlide.gameObject.SetActive(false);
-            isSoundSlideShown = false;
+            if (!isSoundSlideShown)
+            {
+                soundSlide.gameObject.SetActive(true);
+                isSoundSlideShown = true;
+            }
+            else
+            {
+                soundSlide.gameObject.SetActive(false);
+                isSoundSlideShown = false;
+            }
         }
     }
 }
