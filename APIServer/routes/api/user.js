@@ -272,6 +272,10 @@ router.post('/deleteSong', auth, async (req, res)=> {
     const {musicId} = req.body;
     const id = req.user.id;
 
+    if (listName === "uploadList") {
+        await Music.deleteOne({id:musicId});
+    }
+
     await User.updateOne({id: id}, {$pull: { [listName]: musicId}});
 
     User.findOne({id:id}).then((user) => {
