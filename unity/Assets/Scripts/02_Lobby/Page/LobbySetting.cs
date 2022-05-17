@@ -36,8 +36,15 @@ public class LobbySetting : MonoBehaviour
     }
     void Quit()
     {//프로그램 종료 버튼
-
-        Application.Quit();
+        if (SceneManager.GetActiveScene().name == "03_Park")
+        {
+            if (AgoraChannelPlayer.Instance.role != "publisher")
+                Application.Quit();
+        }
+        else
+        {
+            Application.Quit();
+        }
 
     }
     public void Load()

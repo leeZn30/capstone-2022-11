@@ -47,16 +47,13 @@ public class InteractiveObject : MonoBehaviour
                         {//듣기 상태가 아니라면 설정창 열기
                             player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
                             player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
-                                delegate { musicSpot.musicZoneUI.OpenSetUI(musicSpot); });
+                                delegate { 
+                                    musicSpot.musicZoneUI.OpenSetUI(musicSpot);
+                                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;//이동 제한
+
+                                });
                         }
 
-                    }
-                    break;
-
-                default:
-                    if (collision.tag == "Character")
-                    {
-                        collision.transform.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
                     }
                     break;
             }
@@ -69,7 +66,8 @@ public class InteractiveObject : MonoBehaviour
         GameObject player = GameManager.instance.myPlayer;
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
-            player.GetComponent<PlayerControl>().OffInteractiveButton(0); // 버스킹 시작 버튼 삭제
+
+            player.GetComponent<PlayerControl>().OffInteractiveButton(InteractiveType); //  버튼 삭제
 
         }
     }

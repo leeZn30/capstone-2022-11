@@ -141,6 +141,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
          * 1) 버스킹 그만두기
          * 2) 버스커 팔로우
          * 3) 순간이동기
+         * 4) 음원존 등록
          * **/
 
         if (!isInteractiveAble)
@@ -161,6 +162,9 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                     // 팔로우 기능
                     break;
                 case 3:
+                    break;
+                case 4:
+                    //musicSpot를 받아야해서 일단 다른 방식으로 함
                     break;
 
             }

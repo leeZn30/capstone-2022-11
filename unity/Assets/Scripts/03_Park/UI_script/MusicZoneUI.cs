@@ -191,6 +191,7 @@ public class MusicZoneUI : MusicWebRequest
     {
         setUI.SetActive(false);
         ClearData();
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
     }
     public void CloseListeningUI()
     {

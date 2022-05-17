@@ -189,7 +189,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: -2413806693520163455, guid: ebe73ca9363db456bacf42c025bb4847, type: 3}
-  m_Color: {r: 0.1336569, g: 0.4056604, b: 0, a: 0.49411765}
+  m_Color: {r: 0.13702142, g: 0.41509432, b: 0, a: 0.23921569}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -227,12 +227,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af8dff003e6dd4e43addb339736d3391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomNum: 0
+  roomNum: 7
   isUsed: 0
   titleBar: {fileID: 0}
   titleText: 
   buskerNickname: 
   localuser: {fileID: 0}
+  userLists: []
+  isFoundWrongUser: 0
 --- !u!114 &3258327784786468163
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        Screen.SetResolution(720, 480, false);
+        
 
         PhotonNetwork.AutomaticallySyncScene = true;
         Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, -10f);
