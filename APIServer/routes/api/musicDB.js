@@ -102,6 +102,7 @@ router.get('/category', async(req, res) =>{
 
 router.get('/uploadList', async(req,res) => {
     const {userId} = req.body;
+    let musicInfo = [];
 
     User.findOne({id:userId}).then(async (user) => {
         for (let i = 0; i < user.uploadList.length; i++){
@@ -109,9 +110,12 @@ router.get('/uploadList', async(req,res) => {
                 if (!music) {
                     User.updateOne({id: userId}, {$pull: { uploadList: {musicID: musicId}}});
                 }
+                else {
+                    musicInfo.push(music);
+                }
             })
         }
-        res.status(200).json({uploadList: user.uploadList});
+        res.status(200).json({uploadList: musicInfo});
     })
 })
 
@@ -138,7 +142,7 @@ router.get('/personalGenre', auth, async(req, res)=>{
 })
 
 router.post('/', auth, async(req, res) => {
-    const {locate ,imageLocate, title, category, lyrics, info} = req.body;
+    const {locate ,imageLocate, title, category, lyrics, info, time} = req.body;
 
     const userID = req.user.id;
 
@@ -151,7 +155,7 @@ router.post('/', auth, async(req, res) => {
         // console.log(id);
 
         const newMusic = new Music({
-            locate, imageLocate, title, id, userID, userNickname, lyrics, category, info
+            locate, imageLocate, title, id, userID, userNickname, lyrics, category, info, time
         });
 
         newMusic.save().then(()=> console.log("music save success!!"));
