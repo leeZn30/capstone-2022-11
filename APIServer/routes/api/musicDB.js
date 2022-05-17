@@ -106,7 +106,7 @@ router.get('/uploadList', async(req,res) => {
 
     User.findOne({id:userId}).then(async (user) => {
         for (let i = 0; i < user.uploadList.length; i++){
-            await Music.findOne({id: user.uploadList[i].musicID}).then((music) => {
+            await Music.findOne({id: user.uploadList[i]}).then((music) => {
                 if (!music) {
                     User.updateOne({id: userId}, {$pull: { uploadList: {musicID: musicId}}});
                 }
@@ -161,7 +161,7 @@ router.post('/', auth, async(req, res) => {
         newMusic.save().then(()=> console.log("music save success!!"));
 
         user.totalNum += 1;
-        user.uploadList.push({musicID:id});
+        user.uploadList.push(id);
 
         user.save();
 
