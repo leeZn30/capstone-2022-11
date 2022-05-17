@@ -108,7 +108,7 @@ router.get('/uploadList', async(req,res) => {
         for (let i = 0; i < user.uploadList.length; i++){
             await Music.findOne({id: user.uploadList[i]}).then((music) => {
                 if (!music) {
-                    User.updateOne({id: userId}, {$pull: { uploadList: {musicID: musicId}}});
+                    User.updateOne({id: userId}, {$pull: { uploadList: musicId}});
                 }
                 else {
                     musicInfo.push(music);
