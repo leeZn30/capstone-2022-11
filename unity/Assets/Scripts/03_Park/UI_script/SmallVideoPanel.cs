@@ -1,56 +1,56 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
 
 public class SmallVideoPanel : MonoBehaviour
 {
-    public Vector3 initPosition;
-    public Vector3 initSize;
+
+    Vector3 initPosition;
+    Vector3 initScale;
 
     private void Start()
     {
-        initPosition = new Vector3(0, 290, 0);
-        initSize = new Vector3(-1, -1, 1);
+        GetComponent<Button>().onClick.AddListener(ScaleUpPanel);
+    }
+
+    private void OnEnable()
+    {
+        if (AgoraChannelPlayer.Instance.role == "publisher")
+        {
+            gameObject.transform.localPosition = new Vector3(-700, 290, 0);
+            gameObject.transform.localScale = new Vector3(-1, -1, 1);
+
+            initPosition = new Vector3(-700, 290, 0);
+
+        }
+        else
+        {
+            gameObject.transform.localPosition = new Vector3(0, 290, 0);
+            gameObject.transform.localScale = new Vector3(-1, -1, 1);
+
+            initPosition = new Vector3(0, 290, 0);
+        }
+
+        this.gameObject.GetComponent<Button>().enabled = true;
+
     }
 
 
     public void ScaleUpPanel()
     {
-        StartCoroutine(ScaleUp(this.transform, new Vector3(-2, -2, 0), 2f));
         FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.SetActive(true);
+        transform.localScale = new Vector3(-2, -2, 1);
+        transform.localPosition = new Vector3(-350, 0, 0);
         this.gameObject.GetComponent<Button>().enabled = false;
     }
 
     public void ScaleDownPanle()
     {
-        StartCoroutine(ScaleDown(this.transform, 2f));
         FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.SetActive(false);
+        transform.localScale = new Vector3(-1, -1, 1);
+        //transform.localPosition = new Vector3(0, 290, 0);
+        transform.localPosition = initPosition;
         this.gameObject.GetComponent<Button>().enabled = true;
-    }
-
-    IEnumerator ScaleUp(Transform transform, Vector3 upScale, float duration)
-    {
-        Vector3 initialScale = transform.localScale;
-
-        for (float time = 0; time < duration; time += Time.deltaTime)
-        {
-            transform.localScale = Vector3.Lerp(initialScale, upScale, duration);
-            transform.localPosition = new Vector3(-380, 0, 0);
-            yield return null;
-        }
-    }
-    IEnumerator ScaleDown(Transform transform, float duration)
-    {
-        Vector3 initialScale = transform.localScale;
-
-        for (float time = 0; time < duration; time += Time.deltaTime)
-        {
-            transform.localScale = Vector3.Lerp(initialScale, initSize, duration);
-            transform.localPosition = initPosition;
-            yield return null;
-        }
     }
 
 }

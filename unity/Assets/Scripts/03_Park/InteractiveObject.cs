@@ -29,13 +29,10 @@ public class InteractiveObject : MonoBehaviour
             {
                 case 0:
                     if (componentObj.TryGetComponent<BuskingSpot>(out buskingSpot))
-                    {
-
+                    { 
                         if (!buskingSpot.isUsed)
                         {
                             player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
-                            player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
-                                delegate { player.GetComponent<PlayerControl>().OnVideoPanel(1); });
                         }                      
                     }
                     break;
@@ -72,7 +69,7 @@ public class InteractiveObject : MonoBehaviour
         GameObject player = GameManager.instance.myPlayer;
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
-            player.GetComponent<PlayerControl>().OffInteractiveButton();
+            player.GetComponent<PlayerControl>().OffInteractiveButton(0); // 버스킹 시작 버튼 삭제
 
         }
     }

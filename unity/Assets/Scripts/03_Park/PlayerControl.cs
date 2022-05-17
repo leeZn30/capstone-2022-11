@@ -17,10 +17,12 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     [SerializeField] bool isInteractiveAble = false;
     public GameObject InteractiveButton;
     [SerializeField] Sprite[] buttonImages;
+    [SerializeField] int nowInteractiveType = -1;
 
     // 비디오
     public bool isVideoPanelShown = false;
     public GameObject videoPanel;
+    public GameObject bigVideoPanel;
 
     // 이모티콘 코루틴 실행여부
     private bool isEmojiRunning = false;
@@ -40,8 +42,6 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     private Vector2 mapSize;
     private int isMoving=0;
     private Animator animator;
-    public GameObject movingObj;
-    private Transform legTransform;
 
     // Start is called before the first frame update
     void Start()
@@ -50,10 +50,11 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         {
             InteractiveButton = FindObjectOfType<Canvas>().transform.Find("InteractiveButton").gameObject;
             videoPanel = FindObjectOfType<Canvas>().transform.Find("smallVideoPanel").gameObject;
+            bigVideoPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject;
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
             buskerPanel = FindObjectOfType<Canvas>().transform.Find("BuskerVideoPanel").gameObject;
             animator = GetComponent<Animator>();
-            legTransform = movingObj.transform.GetChild(0);
+
         }
     }
 
@@ -132,6 +133,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
         }
     }
+
     public void OnInteractiveButton(int type)
     {
         /**
@@ -146,16 +148,38 @@ public class PlayerControl : MonoBehaviourPunCallbacks
             InteractiveButton.GetComponent<Image>().sprite = buttonImages[type];
             InteractiveButton.SetActive(true);
             isInteractiveAble = true;
+
+            switch (type)
+            {
+                case 0:
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { OnVideoPanel(1); });
+                    break;
+                case 1:
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
+                    break;
+                case 2:
+                    // 팔로우 기능
+                    break;
+                case 3:
+                    break;
+
+            }
+            nowInteractiveType = type;
         }
     }
 
-    public void OffInteractiveButton()
+    public void OffInteractiveButton(int type)
     {
         if (isInteractiveAble)
         {
-            InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
-            InteractiveButton.SetActive(false);
-            isInteractiveAble = false;
+            if (type == nowInteractiveType)
+            {
+                InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
+                InteractiveButton.SetActive(false);
+                isInteractiveAble = false;
+
+                nowInteractiveType = -1;
+            }
         }
 
     }
@@ -166,6 +190,22 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         {
             InteractiveButton.GetComponent<Button>().onClick.RemoveAllListeners();
             InteractiveButton.GetComponent<Image>().sprite = buttonImages[type];
+
+            switch (type)
+            {
+                case 0:
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { OnVideoPanel(1); }) ;
+                    break;
+                case 1:
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
+                    break;
+                case 2:
+                    // 팔로우 기능
+                    break;
+                case 3:
+                    break;
+            }
+            nowInteractiveType = type;
         }
     }
 
@@ -175,13 +215,13 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         {
             switch (mode)
             {
-                case 0:
+                case 0: // small
                     videoPanel.GetComponent<SmallVideoPanel>();
                     videoPanel.SetActive(true);
                     isVideoPanelShown = true;
                     break;
 
-                case 1:
+                case 1: // busker 준비
                     buskerPanel.SetActive(true);
                     GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;
                     GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = false;
@@ -199,9 +239,23 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     {
         if (isVideoPanelShown)
         {
-            ChatPanel.GetComponent<Chat>().msgList.text = "";
+            // child 에는 부모와 자식이 함께 설정 된다.
+            var child = ChatPanel.GetComponent<Chat>().msgList.GetComponentsInChildren<Transform>();
+
+            foreach (var iter in child)
+            {
+                // 부모(this.gameObject)는 삭제 하지 않기 위한 처리
+                if (iter != ChatPanel.GetComponent<Chat>().msgList.transform)
+                {
+                    Destroy(iter.gameObject);
+                }
+            }
             ChatPanel.GetComponent<Chat>().emojimsg = "";
+            // 걍 체크하지 말고 다 false
             videoPanel.SetActive(false);
+            buskerPanel.SetActive(false);
+            bigVideoPanel.SetActive(false);
+
             isVideoPanelShown = false;
         }
     }

@@ -9,12 +9,17 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class PlayerManager : MonoBehaviourPunCallbacks
 {
 
+
     // Player 객체 받아오기
     //[SerializeField] private GameObject player;
 
-    // 닉네임
-    [SerializeField] private string nickName;
+
+
     [SerializeField] private string id;
+
+
+    // 닉네임
+    public string nickName;
 
     // character 외형
     [SerializeField] private int appearance;
