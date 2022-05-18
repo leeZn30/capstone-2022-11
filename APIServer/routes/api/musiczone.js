@@ -1,17 +1,13 @@
 const express = require('express');
 const auth = require('../../middleware/auth');
-const config = require('../../config/index');
-
-const User = require('../../models/user');
-const Music = require('../../models/music');
 
 const router = express.Router();
 
-let musicTitle = []
-let musicList = []
-let musicTime = []
-let totalTime = []
-let startTime = []
+global.musicTitle = []
+global.musicList = []
+global.musicTime = []
+global.totalTime = []
+global.startTime = []
 
 
 router.get('/joinZone', auth, async (req, res)=> {
