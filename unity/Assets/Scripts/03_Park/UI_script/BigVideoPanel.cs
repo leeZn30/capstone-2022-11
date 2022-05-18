@@ -50,6 +50,7 @@ public class BigVideoPanel : MonoBehaviour
             Debug.Log("Wrong role but big Panel is active");
         }
 
+        soundSlider.transform.localPosition -= new Vector3(50, 0, 0);
         soundSlider.SetActive(true);
     }
 
@@ -66,6 +67,7 @@ public class BigVideoPanel : MonoBehaviour
 
         dynamicButton.onClick.RemoveAllListeners();
 
+        soundSlider.transform.localPosition += new Vector3(50, 0, 0);
         soundSlider.SetActive(false);
 
     }

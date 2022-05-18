@@ -5,13 +5,13 @@ using UnityEngine.UI;
 
 public class VolumeControl : MonoBehaviour
 {
-    [SerializeField] private AudioSource mainAudioSource;
+    [SerializeField] private AudioListener mainAudioSource;
     [SerializeField] private Slider slider;
 
     // Start is called before the first frame update
     void Start()
     {
-        mainAudioSource.volume = slider.value;
+        mainAudioSource = FindObjectOfType<AudioListener>();
     }
 
     // Update is called once per frame
@@ -22,6 +22,6 @@ public class VolumeControl : MonoBehaviour
 
     void ChangeVolume()
     {
-        mainAudioSource.volume = slider.value;
+        AudioListener.volume = slider.value;
     }
 }
