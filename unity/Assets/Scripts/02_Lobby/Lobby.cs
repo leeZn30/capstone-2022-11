@@ -67,6 +67,7 @@ public class Lobby : MusicWebRequest
 
             UserData.Instance.user.listName = listNameList.stringList;
             MusicController.Instance.SetOptions(UserData.Instance.user.listName);
+            MusicController.Instance.StartGetListCoroution("uploadList", 0, false);
         }
 
     }

@@ -14,17 +14,21 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     void Awake()
     {
+
+        GameObject[] pms =  GameObject.FindGameObjectsWithTag("Character");
+        Debug.Log(pms.Length);
         /*
-        PlayerManager[] pms = FindObjectsOfType<PlayerManager>();
-        foreach(PlayerManager pm in pms)
+        foreach (PlayerManager pm in pms)
         {
+            Debug.Log("dsadsa");
             if (pm.GetId() == UserData.Instance.id)
             {
+                Debug.Log("dsadsa");
                 Popup.Instance.Open(2);
-                return;
+               
             }
-        }
-        */
+        }*/
+
 
         PhotonNetwork.AutomaticallySyncScene = true;
         Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, -10f);

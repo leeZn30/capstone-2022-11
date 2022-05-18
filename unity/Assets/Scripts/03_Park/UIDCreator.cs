@@ -15,6 +15,9 @@ public static class UIDCreator
     {
         uint uid = 0;
         string id_str = "";
+        //임시
+        return 0;
+
 
         foreach (char c in userID)
         {
