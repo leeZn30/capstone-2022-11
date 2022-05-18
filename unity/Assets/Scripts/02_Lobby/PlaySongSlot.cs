@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-
+using TMPro;
 public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler
 { 
     public GameObject imageBackObject;
     public GameObject playBtnObject;
     public CustomSlider slider;
+    public TextMeshProUGUI rankText;
 
     private Image playImage;
     private Button playBtn;
@@ -55,7 +56,10 @@ public class PlaySongSlot : SongSlot, IPointerEnterHandler, IPointerExitHandler,
 
 
     }
-
+    public void SetRank(int rank)
+    {
+        rankText.text = rank.ToString();
+    }
     void OnValueChange(float value)
     {
 

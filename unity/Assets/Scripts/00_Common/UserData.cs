@@ -14,6 +14,7 @@ public class User
     public int followerNum;
     public List<string> preferredGenres=new List<string>();
     public List<string> follow = new List<string>();
+    public List<string> listName = new List<string>();
 
 
     public void SetUser(string id,string email,string nickname,int character, List<string> preferredGenres=null, List<string> followIds = null)
@@ -53,6 +54,7 @@ public class UserData : Singleton<UserData>
     public User user;
     public string Token;
 
+    public float[] sets;//오디오, 전체화면 유무, 해상도
     public delegate void FollowHandler();
     public event FollowHandler OnChangeFollow;
 
@@ -66,8 +68,10 @@ public class UserData : Singleton<UserData>
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        sets = new float[3];
+        sets[0] = 0.8f;
         if (Instance != this)
         {
             Destroy(gameObject);

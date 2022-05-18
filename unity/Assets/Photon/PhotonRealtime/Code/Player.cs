@@ -101,6 +101,9 @@ namespace Photon.Realtime
         /// <remarks>Useful for <see cref="LoadBalancingClient.OpFindFriends"/> and blocking slots in a room for expected players (e.g. in <see cref="LoadBalancingClient.OpCreateRoom"/>).</remarks>
         public string UserId { get; internal set; }
 
+        //¾Û¾ÆÀÌµð
+        public string id { get; internal set; }
+
         /// <summary>
         /// True if this player is the Master Client of the current room.
         /// </summary>

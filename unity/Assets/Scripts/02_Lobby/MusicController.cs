@@ -34,6 +34,10 @@ public class MusicController : MusicWebRequest
     private AudioSource audioSource;
     public SubMusicController subMusicController;
 
+    public PointObject mainControllBar;
+    public PointObject volumeToggleObj;
+    private Toggle volumeToggle;
+    public Slider volumeSlider;
 
     public TMP_Dropdown dropdown;
     public Button openBtn;
@@ -91,7 +95,9 @@ public class MusicController : MusicWebRequest
     public GameObject scrollViewObject;
     private ScrollViewRect scrollViewRect;
     CancellationTokenSource cts;
-    private IEnumerator audioLoadIEnum; 
+    private IEnumerator audioLoadIEnum;
+
+    private float lastVolume;
     private enum PlayState
     {
         Play,Pause
@@ -101,14 +107,109 @@ public class MusicController : MusicWebRequest
         None,OneRepeat,AllRepeat
     }
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         Init();
-
+       
 
     }
 
+    void Init()
+    {
+        if (isAlreadyInit == false)
+        {
+            isAlreadyInit = true;
 
+            volumeSlider.gameObject.SetActive(false);
+            //볼륨제어 포인터 이벤트 등록
+            volumeToggle = volumeToggleObj.GetComponent<Toggle>();
+            volumeSlider.onValueChanged.AddListener(delegate {
+                AudioListener.volume = volumeSlider.value; 
+            });
+            volumeToggle.onValueChanged.AddListener(delegate {
+                if (volumeToggle.isOn == true)
+                {
+                    
+                    lastVolume = AudioListener.volume;
+                    volumeSlider.value = 0;
+                }
+                else
+                {
+                    AudioListener.volume = lastVolume;
+                    volumeSlider.value = lastVolume;
+                }
+            });
+            //볼륨 토글에 포인터 올리면 세부조절활성화
+            volumeToggleObj.OnPointEnter += delegate
+            {
+                Debug.Log("드감");
+                volumeSlider.gameObject.SetActive(true);
+                volumeSlider.value = AudioListener.volume;
+            };
+            //컨트롤바에서 포인터 나가면 세부조절 비활성화
+            mainControllBar.OnPointExit += delegate
+            {
+                Debug.Log("나감");
+                volumeSlider.gameObject.SetActive(false);
+            };
+
+
+
+
+            //info 오른쪽 오브젝트
+            scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
+            currentSongSlotList = new List<SongSlot>();
+
+            //겉
+            animator = GetComponent<Animator>();
+            audioSource = GetComponent<AudioSource>();
+            audioSource.loop = false;
+
+            pauseplayBtnImage = new Image[2];
+
+            int[] num = { 0, 1 };
+            for (int i = 0; i < num.Length; i++)
+            {
+                pauseplayBtns[i].onClick.AddListener(delegate {
+                    if (audioSource.clip != null)
+                    {
+                        //완전히 들었는지 false
+                        isCleanListen = false;
+
+                        ChangeState(!audioSource.isPlaying);
+                    }
+                });
+                pauseplayBtnImage[i] = (pauseplayBtns[i].gameObject).GetComponent<Image>();
+
+
+                prevBtns[i].onClick.AddListener(ClickPrevButton);
+                nextBtns[i].onClick.AddListener(ClickNextButton);
+
+            }
+            repeatBtnImage = (repeatBtn.gameObject).GetComponent<Image>();
+            repeatBtn.onClick.AddListener(SetRepeatMode);
+
+
+            slider.OnPointUp += OnValueChange;
+            slider.OnPointDown += StopSlider;
+
+            openBtn.onClick.AddListener(OpenCloseInfo);
+
+            lyricsBtn.onClick.AddListener(delegate { LoadInfo("lyrics"); });
+            contentBtn.onClick.AddListener(delegate { LoadInfo("info"); });
+            listBtn.onClick.AddListener(delegate { animator.SetBool("isContentOpen", false); });
+
+            playState = PlayState.Pause;
+            enumerator = MoveSlider();
+
+            //리스너
+            OnGetClip += SetAudioClip;
+
+            dropdown.onValueChanged.AddListener(OnChangeDropDown);
+            StartGetListCoroution("uploadList", 0, false);
+            cts = new CancellationTokenSource();
+        }
+    }
     public void Stop()
     {
         if (audioSource.clip != null)
@@ -180,6 +281,7 @@ public class MusicController : MusicWebRequest
     }
     private void LoadInfo(string type)
     {
+        if (audioSource.clip == null) return;
         if (type == "lyrics")
         {
             contentText.text = currentSongSlotList[currentSongIndex].GetMusic().lyrics;
@@ -277,67 +379,7 @@ public class MusicController : MusicWebRequest
         StartGetAudioCoroution(newIndex, true);
 
     }
-    void Init()
-    {
-        if (isAlreadyInit == false)
-        {
-            isAlreadyInit = true;
-
-            
-
-            //info 오른쪽 오브젝트
-            scrollViewRect = scrollViewObject.GetComponent<ScrollViewRect>();
-            currentSongSlotList = new List<SongSlot>();
-
-            //겉
-            animator = GetComponent<Animator>();
-            audioSource = GetComponent<AudioSource>();
-            audioSource.loop = false;
-
-            pauseplayBtnImage = new Image[2];
-
-            int[] num = { 0, 1 };
-            for (int i = 0; i < num.Length; i++)
-            {
-                pauseplayBtns[i].onClick.AddListener(delegate {
-                    if (audioSource.clip != null) {
-                        //완전히 들었는지 false
-                        isCleanListen = false;
-
-                        ChangeState(!audioSource.isPlaying);
-                    }
-                });
-                pauseplayBtnImage[i] = (pauseplayBtns[i].gameObject).GetComponent<Image>();
-
-
-                prevBtns[i].onClick.AddListener(ClickPrevButton);
-                nextBtns[i].onClick.AddListener(ClickNextButton);
-
-            }
-            repeatBtnImage = (repeatBtn.gameObject).GetComponent<Image>();
-            repeatBtn.onClick.AddListener(SetRepeatMode);
-
-
-            slider.OnPointUp += OnValueChange;
-            slider.OnPointDown += StopSlider;
-
-            openBtn.onClick.AddListener(OpenCloseInfo);
-
-            lyricsBtn.onClick.AddListener(delegate { LoadInfo("lyrics"); });
-            contentBtn.onClick.AddListener(delegate { LoadInfo("info"); });
-            listBtn.onClick.AddListener(delegate { animator.SetBool("isContentOpen",false); });
-
-            playState = PlayState.Pause;
-            enumerator = MoveSlider();
-
-            //리스너
-            OnGetClip += SetAudioClip;
-
-            dropdown.onValueChanged.AddListener(OnChangeDropDown);
-            StartGetListCoroution("uploadList", 0, false);
-            cts = new CancellationTokenSource();
-        }
-    }
+    
 
     void SetRepeatMode()
     {
@@ -476,7 +518,9 @@ public class MusicController : MusicWebRequest
     }
     int PickRandomIndex()
     {
+        if (currentSongSlotList.Count <= 1) return 0;
         int randomIdx = currentSongIndex;
+        
 
         while (randomIdx == currentSongIndex)
         {
@@ -495,8 +539,6 @@ public class MusicController : MusicWebRequest
             nextIdx = (currentSongIndex + 1) % currentSongSlotList.Count;
         }
 
-   
-        Debug.Log("Autoplay" + nextIdx);
         if (repeatMode == RepeatMode.None)
         {
             if (nextIdx == 0)
@@ -560,7 +602,6 @@ public class MusicController : MusicWebRequest
 
         if (audioSource.isPlaying == true)
         {
-            Debug.Log("stop!!!!!");
             StopCoroutine(enumerator);
         }
     }
@@ -701,6 +742,7 @@ public class MusicController : MusicWebRequest
     }
     public void SetOptions(List<string> listNames)
     {
+       
         if (listNames == null) return;
 
         List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>();
@@ -715,4 +757,5 @@ public class MusicController : MusicWebRequest
     {
         StartGetListCoroution(dropdown.options[value].text, 0, true);
     }
+
 }

@@ -15,6 +15,8 @@ public class SubMusicController : MusicWebRequest
     public Button cancelBtn;
     public Button playBtn;
 
+    public TMP_Dropdown listNameDropdown;
+
     private Image playBtnImage;
 
     private AudioSource audioSource;
@@ -41,17 +43,18 @@ public class SubMusicController : MusicWebRequest
         {
             if (music != null)
             {
+                if (listNameDropdown.options.Count == 0) return;
                 MusicIDList iDList = new MusicIDList();
                 iDList.musicList = new List<string>();
                 iDList.musicList.Add(music.id);
 
-                StartCoroutine(POST_AddMyList(iDList));
+                StartCoroutine(POST_AddMusic(iDList, listNameDropdown.options[listNameDropdown.value].text));
                 StartCoroutine(messageOn());
 
                 //현재 플레이중인 재생목록이라면 추가
                 List<Music> ms = new List<Music>();
                 ms.Add(music);
-                MusicController.Instance.AddNewMusics("myList", ms);
+                MusicController.Instance.AddNewMusics(listNameDropdown.options[listNameDropdown.value].text, ms);
             }
         });       
         playBtn.onClick.AddListener(delegate {
@@ -93,6 +96,7 @@ public class SubMusicController : MusicWebRequest
         }
         subController.SetActive(true);
         titleText.text = music.title+ " - " + music.GetArtistName();
+        SetOptions();
 
     }
     async void GetAudioAsync(string path)
@@ -195,6 +199,20 @@ public class SubMusicController : MusicWebRequest
         messageObj.SetActive(true);
         yield return new WaitForSeconds(1.0f);
         messageObj.SetActive(false);
+    }
+    public void SetOptions()
+    {
+        List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>(MusicController.Instance.dropdown.options);
+        options.RemoveAt(0);
+        listNameDropdown.options = options;
+        if (listNameDropdown.options.Count !=0)
+        {
+            
+            listNameDropdown.value = MusicController.Instance.dropdown.value;
+
+        }
+
+
     }
     private void OnDestroy()
     {

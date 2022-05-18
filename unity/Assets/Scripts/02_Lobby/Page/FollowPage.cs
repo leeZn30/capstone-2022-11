@@ -291,7 +291,7 @@ public class FollowPage : Page
     }
     void FollowUser(string id, string nickname)
     {
-        //유저슬롯 팔로우 버튼 클릭시
+        // 팔로우 버튼 클릭시
         CallFollowApi(id, nickname);
         UserData.Instance.AddFollow(id);
 
@@ -304,7 +304,7 @@ public class FollowPage : Page
     }
     void FollowCancelUser(string id, string nickname)
     {
-        //유저슬롯 팔로우 취소 버튼 클릭시
+        // 팔로우 취소 버튼 클릭시
         CallFollowApi(id, nickname, true);
         UserData.Instance.DelFollow(id);
     }
