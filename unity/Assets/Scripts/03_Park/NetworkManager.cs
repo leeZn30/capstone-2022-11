@@ -106,16 +106,19 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         //��� �� �����ڰ� Main ���� �ε��ϰ� ��
         PhotonNetwork.LoadLevel("03_Park");
+        //PhotonNetwork.LoadLevel("Park test scene");
 
         PhotonNetwork.LocalPlayer.NickName = UserData.Instance.user.nickname;
         Hashtable playerData = new Hashtable();
 
         playerData.Add("character", UserData.Instance.user.character);
+        playerData.Add("id", UserData.Instance.user.id);
 
         // ���� ���޷� �ؾ���, setcustomproperties�ϸ� ���� ���� ����
         PhotonNetwork.LocalPlayer.CustomProperties = playerData;
 
         // �굵 ����� ���� ����ȭ��
+        playerData["id"] = UserData.Instance.user.id;
         playerData["character"] = UserData.Instance.user.character;
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerData);
 

@@ -20,7 +20,9 @@ GameObject:
   - component: {fileID: 8480671304642129222}
   - component: {fileID: -7454780402357576447}
   - component: {fileID: 6890278054613492546}
-  m_Layer: 0
+  - component: {fileID: 5253602933163298885}
+  - component: {fileID: 7973976387866127287}
+  m_Layer: 7
   m_Name: Player
   m_TagString: Character
   m_Icon: {fileID: 0}
@@ -103,6 +105,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 749579043475033277}
   - {fileID: 749579043475033276}
+  - {fileID: 5253602933163298885}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -174,17 +177,19 @@ MonoBehaviour:
   InteractiveButton: {fileID: 0}
   buttonImages:
   - {fileID: 21300000, guid: 8c092b00160f2724a9ee4c73c1163cd9, type: 3}
+  - {fileID: 21300000, guid: 8c092b00160f2724a9ee4c73c1163cd9, type: 3}
   - {fileID: 21300000, guid: 1361e8bd8560a9744a3d82803b040049, type: 3}
   - {fileID: 21300000, guid: 864e927c550b4904f8386aa005664184, type: 3}
+  - {fileID: 21300000, guid: 8f4d09d6b73355747acb9fa6166f59c9, type: 3}
   - {fileID: 21300000, guid: f43a9983497e19d4fb168479fc87dde3, type: 3}
-  nowInteractiveType: 0
+  - {fileID: 0}
+  nowInteractiveType: -1
   isVideoPanelShown: 0
   videoPanel: {fileID: 0}
   bigVideoPanel: {fileID: 0}
   ChatPanel: {fileID: 0}
   buskerPanel: {fileID: 0}
   cameraDistance: 10
-  movingObj: {fileID: 4456221725439890867}
 --- !u!114 &6924849003541504941
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,6 +202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b14027f00d9ee24b8b821d86ec5cc97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  id: 
   nickName: 
   appearance: 0
 --- !u!114 &8480671304642129222
@@ -240,6 +246,46 @@ SortingGroup:
   m_SortingLayerID: 289754803
   m_SortingLayer: 1
   m_SortingOrder: 0
+--- !u!114 &5253602933163298885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 749579043475033275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b8c4a61274f60b4ea5fb4299cfdbf14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowLayerWeightsInspector: 1
+  ShowParameterInspector: 1
+  m_SynchronizeParameters:
+  - Type: 4
+    SynchronizeType: 1
+    Name: isMoving
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
+--- !u!95 &7973976387866127287
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 749579043475033275}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 2af35e199272c5348b7ae643935092f5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &4456221725439890867
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,7 +650,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -0.94}
-  m_SizeDelta: {x: 1.4, y: 0.28}
+  m_SizeDelta: {x: 1.79, y: 0.28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &3411959940462939075
 MeshRenderer:
@@ -625,7 +671,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 7779101192413030801, guid: 2b9508251aebd2741b2d6a8859447dc9, type: 2}
+  - {fileID: -4326787251800058793, guid: e8754e71af078c54fb90a6dfa5476822, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -669,8 +715,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Ayeoni
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2b9508251aebd2741b2d6a8859447dc9, type: 2}
-  m_sharedMaterial: {fileID: 7779101192413030801, guid: 2b9508251aebd2741b2d6a8859447dc9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e8754e71af078c54fb90a6dfa5476822, type: 2}
+  m_sharedMaterial: {fileID: -4326787251800058793, guid: e8754e71af078c54fb90a6dfa5476822, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

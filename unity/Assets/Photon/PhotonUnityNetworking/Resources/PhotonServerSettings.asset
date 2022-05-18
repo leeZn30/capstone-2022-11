@@ -50,6 +50,7 @@ MonoBehaviour:
   - insidePlayerAgoraJoin
   - changeFlag
   - insideUserJoin
+  - JoinEnterUsers
   - Test
   DisableAutoOpenWizard: 1
   ShowSettings: 1

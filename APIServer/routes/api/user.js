@@ -55,6 +55,7 @@ router.get('/musicList', auth, async(req,res) => {
     const {listName} = req.body;
     let musicInfo = [];
 
+
     const filter = [
         {$match : {id : id}},
         {$project: {
@@ -75,6 +76,7 @@ router.get('/musicList', auth, async(req,res) => {
             })
         }
         res.status(200).json({music: musicInfo})
+
     })
 })
 

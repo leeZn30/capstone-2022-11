@@ -21,6 +21,9 @@ public class SearchPageInSongPage : Page
     public TextMeshProUGUI searchTypeText;
     public TMP_InputField searchField;
     public GameObject scrollViewObject;
+
+    public TMP_Dropdown listNameDropdown;
+
     private List<PlaySongSlot> searchedSlots;
     private List<Music> currentMusics;
 
@@ -95,6 +98,8 @@ public class SearchPageInSongPage : Page
     }
     private void OnOffBtnObject()
     {
+        if (selectedSlots == null) return;
+        SetOptions();
         if (selectedSlots.Count > 0)
         {
             btnsObj.SetActive(true);
@@ -107,12 +112,14 @@ public class SearchPageInSongPage : Page
     }
     private void PutSelect()
     {
+        if (listNameDropdown.options.Count == 0) return;
         MusicIDList iDList = new MusicIDList();
         iDList.musicList = new List<string>();
 
         List<Music> ms = new List<Music>();
         for (int i = 0; i < selectedSlots.Count; i++)
         {
+
             selectedSlots[i].isSelected = false;
             iDList.musicList.Add(selectedSlots[i].GetMusic().id);
             ms.Add(selectedSlots[i].GetMusic());
@@ -120,8 +127,8 @@ public class SearchPageInSongPage : Page
         selectedSlots.Clear();
         OnOffBtnObject();
 
-        StartCoroutine(POST_AddMyList(iDList));
-        MusicController.Instance.AddNewMusics("myList", ms);
+        StartCoroutine(POST_AddMusic(iDList,listNameDropdown.options[listNameDropdown.value].text));
+        MusicController.Instance.AddNewMusics(listNameDropdown.options[listNameDropdown.value].text, ms);
 
     }
     private void CancelSelect()
@@ -141,6 +148,7 @@ public class SearchPageInSongPage : Page
     override public void Load()
     {//오버라이딩
         searchField.text = "";
+        
         LoadSongs();
         Debug.Log("search Page Load");
     }
@@ -163,6 +171,7 @@ public class SearchPageInSongPage : Page
                 searchedSlots.Add(_searchedSlot);
                 
             }
+            OnOffBtnObject();
             scrollViewRect.SetContentSize(100);
         }
     }
@@ -190,7 +199,20 @@ public class SearchPageInSongPage : Page
             LoadSongs(m.musicList);
         //StartCoroutine(GET_SearchMusicTitle(searchField.text));
     }
+    public void SetOptions()
+    {
 
+        List<TMP_Dropdown.OptionData> options = new List<TMP_Dropdown.OptionData>(MusicController.Instance.dropdown.options);
+        options.RemoveAt(0);
+        listNameDropdown.options = options;
+        if (listNameDropdown.options.Count != 0)
+        {
+
+            listNameDropdown.value = MusicController.Instance.dropdown.value;
+
+        }
+
+    }
     void Remove()
     {
         currentMusics.Clear();

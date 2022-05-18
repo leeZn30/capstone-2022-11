@@ -82,11 +82,9 @@ public class Main : MonoBehaviour
             id = id_input.text,
             password = password_input.text
         };
-        Debug.Log("로그인 시도 : " + id_input.text + " " + password_input.text);
-
 
         string json = JsonUtility.ToJson(auth);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/auth", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/auth", json))
         {// 보낼 주소와 데이터 입력
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -110,7 +108,6 @@ public class Main : MonoBehaviour
 
 
                     JsonData jsonData = JsonToObject(jsonResult);
-                    Debug.Log("결과 " + jsonData[1]);
                     User user = new User();
              
                     user.SetUser((string)(jsonData[1]["id"]),
@@ -155,7 +152,7 @@ public class Main : MonoBehaviour
         join.LoadingJoin();
 
         string json = JsonUtility.ToJson(user);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/user", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/user", json))
         {// 보낼 주소와 데이터 입력
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
@@ -192,7 +189,7 @@ public class Main : MonoBehaviour
         emailKey.email = email;
         emailKey.key = key;
         string json = JsonUtility.ToJson(emailKey);
-        using (UnityWebRequest request = UnityWebRequest.Post(url + "/auth/email", json))
+        using (UnityWebRequest request = UnityWebRequest.Post(url + "/api/auth/email", json))
         {// 보낼 주소와 데이터 입력
             byte[] jsonToSend = new System.Text.UTF8Encoding().GetBytes(json);
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);

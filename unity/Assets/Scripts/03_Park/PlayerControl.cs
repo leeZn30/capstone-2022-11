@@ -42,8 +42,6 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     private Vector2 mapSize;
     private int isMoving=0;
     private Animator animator;
-    public GameObject movingObj;
-    private Transform legTransform;
 
     // Start is called before the first frame update
     void Start()
@@ -56,7 +54,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
             buskerPanel = FindObjectOfType<Canvas>().transform.Find("BuskerVideoPanel").gameObject;
             animator = GetComponent<Animator>();
-            legTransform = movingObj.transform.GetChild(0);
+
         }
     }
 
@@ -128,18 +126,12 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
                 
             }
-            RotateLeg(moveSpeed * isMoving);
 
+            animator.SetBool("isMoving", isMoving != 0);
             //cameraDistance = Input.GetAxis("Mouse ScrollWheel") * wheelSpeed * Time.deltaTime;
             //Camera.main.orthographicSize = cameraDistance;
 
         }
-    }
-    void RotateLeg(float speed)
-    {
-        if (speed == 0) movingObj.SetActive(false);
-        else movingObj.SetActive(true);
-        legTransform.Rotate(new Vector3(0, 0, 1)*speed*10);
     }
 
     public void OnInteractiveButton(int type)
@@ -149,6 +141,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
          * 1) 버스킹 그만두기
          * 2) 버스커 팔로우
          * 3) 순간이동기
+         * 4) 음원존 등록
          * **/
 
         if (!isInteractiveAble)
@@ -169,6 +162,9 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                     // 팔로우 기능
                     break;
                 case 3:
+                    break;
+                case 4:
+                    //musicSpot를 받아야해서 일단 다른 방식으로 함
                     break;
 
             }

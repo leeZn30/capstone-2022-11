@@ -16,6 +16,7 @@ public class InteractiveObject : MonoBehaviour
     [SerializeField] protected int InteractiveType;
 
     private BuskingSpot buskingSpot;
+    private MusicSpot musicSpot;
     private void OnTriggerEnter2D(Collider2D collision)
     {
 
@@ -35,6 +36,26 @@ public class InteractiveObject : MonoBehaviour
                         }                      
                     }
                     break;
+
+                case 4://음원존 등록 버튼
+                    if (componentObj.TryGetComponent<MusicSpot>(out musicSpot))
+                    {
+                        if (musicSpot.musicZoneUI == null)
+                            musicSpot.musicZoneUI = GameObject.FindObjectOfType<MusicZoneUI>();
+
+                        if (musicSpot.state==MusicSpot.State.None)
+                        {//듣기 상태가 아니라면 설정창 열기
+                            player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
+                            player.GetComponent<PlayerControl>().InteractiveButton.GetComponent<Button>().onClick.AddListener(
+                                delegate { 
+                                    musicSpot.musicZoneUI.OpenSetUI(musicSpot);
+                                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = false;//이동 제한
+
+                                });
+                        }
+
+                    }
+                    break;
             }
 
         }
@@ -45,7 +66,8 @@ public class InteractiveObject : MonoBehaviour
         GameObject player = GameManager.instance.myPlayer;
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
-            player.GetComponent<PlayerControl>().OffInteractiveButton(0); // 버스킹 시작 버튼 삭제
+
+            player.GetComponent<PlayerControl>().OffInteractiveButton(InteractiveType); //  버튼 삭제
 
         }
     }

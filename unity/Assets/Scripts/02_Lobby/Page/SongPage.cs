@@ -10,9 +10,13 @@ public class SongPage : Page
     public ListPageInSongPage listPage;
     public SearchPageInSongPage searchPage;
     public AddPageInSongPage addPage;
-    public Button searchBtn;
+    public FolderAddPage folderAddPage;
 
+    public Button searchBtn;
     public Button addBtn;
+
+    public Button folderAddBtn;
+    public Button folderDelBtn;
 
     public GameObject popularScrollViewObject;
     public GameObject genreScrollViewObject;
@@ -23,6 +27,10 @@ public class SongPage : Page
     private List<PlaySongSlot> recentSlots;
 
     public List<SongFolder> songFolderList;
+
+    public GameObject songFolderParent;
+    private bool deleteMode = false;
+
     void Start()
     {
         Init();
@@ -31,25 +39,84 @@ public class SongPage : Page
     {
         if (isAlreadyInit == false)
         {
+            isAlreadyInit = true;
+
+            deleteMode = false;
             songFolderList = new List<SongFolder>(GetComponentsInChildren<SongFolder>());
-            for (int i = 0; i < songFolderList.Count; i++)
-            {
-                songFolderList[i].OnClickButton_ += listPage.Open;
-            }
             searchBtn.onClick.AddListener(searchPage.OpenSearchObject);
        
             addBtn.onClick.AddListener(addPage.Open);
-            Debug.Log(gameObject.name + "open");
-            isAlreadyInit = true;
+            folderAddBtn.onClick.AddListener(folderAddPage.Open);
+            folderDelBtn.onClick.AddListener(delegate { ChangeModeDeleteFolder(!deleteMode); });
 
-            popularSlots = new List<PlaySongSlot>();
-            genreSlots = new List<PlaySongSlot>();
-            recentSlots = new List<PlaySongSlot>();
+
+            folderAddPage.OnMakeFolder += AddMusicFolder;
+
+            popularSlots = new List<PlaySongSlot>(popularScrollViewObject.GetComponentsInChildren<PlaySongSlot>());  
+            genreSlots = new List<PlaySongSlot>(genreScrollViewObject.GetComponentsInChildren<PlaySongSlot>());
+            recentSlots = new List<PlaySongSlot>(recentScrollViewObject.GetComponentsInChildren<PlaySongSlot>());
 
             
         }
     }
-    
+    void LoadMusicFolder()
+    {
+        if (songFolderList == null) return;
+
+        for (int i = 0; i < songFolderList.Count; i++)
+        {
+            songFolderList[i].OnClickButton_ -= listPage.Open;
+            songFolderList[i].OnDelete -= DelMusicFolder;
+            Destroy(songFolderList[i].gameObject);
+        }
+        songFolderList.Clear();
+        //오류 생길 수 있음.
+        //이전 단계에서 dropdown이 로드되지않았을 경우. 출력안됨.
+        foreach (string name in UserData.Instance.user.listName)
+        {
+            AddMusicFolder(name);
+        }
+    }
+    void AddMusicFolder(string value)
+    {
+        if (songFolderList == null) return;
+
+        SongFolder sf;
+        GameObject obj = Instantiate(Resources.Load("Prefabs/SongFolder") as GameObject, songFolderParent.transform);
+        sf = obj.GetComponent<SongFolder>();
+        sf.SetData(value);
+        sf.OnClickButton_ += listPage.Open;
+        sf.OnDelete += DelMusicFolder;
+
+        songFolderList.Add(sf);
+    }
+    void DelMusicFolder(SongFolder sf)
+    {
+        if (songFolderList == null) return;
+        if (sf == null) return;
+
+        CallPostDeleteFolder(sf.listName);
+        if (MusicController.Instance.currentListName == sf.listName)
+        {
+            MusicController.Instance.StartGetListCoroution("uploadList", 0, false);
+        }
+
+        songFolderList.Remove(sf);
+        sf.OnClickButton_-= listPage.Open;
+        sf.OnDelete -= DelMusicFolder;
+        Destroy(sf.gameObject);
+
+
+    }
+    async void CallPostDeleteFolder(string name)
+    {
+        StringList sl= await POST_DeleteListAsync(name);
+        if (sl != null)
+        {
+            UserData.Instance.user.listName = sl.stringList;
+            MusicController.Instance.SetOptions(UserData.Instance.user.listName);
+        }
+    }
     void MusicListLoad()
     {
         GetSpecificMusicListAsync(SpecificMusic.popular);
@@ -87,11 +154,15 @@ public class SongPage : Page
 
 
                 if (type == SpecificMusic.popular)
+                {
+                    slot.SetRank(i + 1);
                     popularSlots.Add(slot);
+                }
                 if (type == SpecificMusic.personalGenre)
                     genreSlots.Add(slot);
                 else if (type == SpecificMusic.recent)
                     recentSlots.Add(slot);
+                
 
 
             }
@@ -132,12 +203,23 @@ public class SongPage : Page
         }
         
     }
+    void ChangeModeDeleteFolder(bool isOn)
+    {
+        deleteMode = isOn;
+        folderDelBtn.GetComponentInChildren<TextMeshProUGUI>().text = isOn ? "삭제 취소" : "목록 삭제";    
+        for(int i=0; i<songFolderList.Count; i++)
+        {
+            songFolderList[i].SetActiveDelButton(isOn);
+        }
+    }
     void SongClickHandler(PlaySongSlot ss)
     {
 
     }
+
     override public void Load()
     {
+        LoadMusicFolder();
         MusicListLoad();
     }
 
@@ -146,6 +228,7 @@ public class SongPage : Page
         listPage.Close();
         searchPage.Close();
         addPage.Close();
+        folderAddPage.Close();
     }
 
     // Update is called once per frame

@@ -9,6 +9,15 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 public class PlayerManager : MonoBehaviourPunCallbacks
 {
 
+
+    // Player 객체 받아오기
+    //[SerializeField] private GameObject player;
+
+
+
+    [SerializeField] private string id;
+
+
     // 닉네임
     public string nickName;
 
@@ -26,11 +35,20 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     }
 
 
+    public string GetId()
+    {
+        return id;
+    }
+    public string GetNickName()
+    {
+        return nickName;
+    }
     [PunRPC]
     void setPlayer()
     {
         transform.GetChild(0).GetComponent<Character>().ChangeSprite(UserData.Instance.user.character);
         transform.GetChild(2).GetComponent<TextMeshPro>().text = UserData.Instance.user.nickname;
+        id = UserData.Instance.user.id;
     }
 
     [PunRPC]
@@ -41,6 +59,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks
         // 정보 저장
         appearance = (int)player.CustomProperties["character"];
         nickName = player.NickName;
+        id = (string)player.CustomProperties["id"];
 
         transform.GetChild(0).gameObject.GetComponent<Character>().ChangeSprite((int)playerData["character"]);
         transform.GetChild(2).gameObject.GetComponent<TextMeshPro>().text = player.NickName;

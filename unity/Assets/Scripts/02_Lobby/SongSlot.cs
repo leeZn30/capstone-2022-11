@@ -18,6 +18,8 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
     public Toggle toggle;
     public Button delBtn;
     protected Image backImage;
+    public TextMeshProUGUI timeText;
+
     private bool select = false;
 
     public delegate void DeleteHandler(SongSlot ss);
@@ -28,7 +30,7 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        OnClickSlot(this);
+        OnClickSlot?.Invoke(this);
     }
     private void Awake()
     {
@@ -41,7 +43,7 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
         if (delBtn != null)
         {
             delBtn.gameObject.SetActive(false);
-            delBtn.onClick.AddListener(delegate{ OnDeleteButtonClick(this); });
+            delBtn.onClick.AddListener(delegate{ OnDeleteButtonClick?.Invoke(this); });
         }
             
     }
@@ -63,6 +65,13 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
 
         }
     }
+    public void SetTime()
+    {
+        if (timeText != null)
+        {
+            timeText.text = (int)music.time/60 +":"+(int)music.time % 60;
+        }
+    }
     public Music GetMusic()
     {
         return music;
@@ -76,6 +85,7 @@ public class SongSlot : MonoBehaviour, IPointerDownHandler
         LoadImage(music.imageLocate);
         if (toggle != null)
             toggle.isOn = false;
+        SetTime();
     }
     private void LoadImage(string filePath)
     {
