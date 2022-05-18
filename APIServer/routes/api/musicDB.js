@@ -102,16 +102,20 @@ router.get('/category', async(req, res) =>{
 
 router.get('/uploadList', async(req,res) => {
     const {userId} = req.body;
+    let musicInfo = [];
 
     User.findOne({id:userId}).then(async (user) => {
         for (let i = 0; i < user.uploadList.length; i++){
-            await Music.findOne({id: user.uploadList[i].musicID}).then((music) => {
+            await Music.findOne({id: user.uploadList[i]}).then((music) => {
                 if (!music) {
-                    User.updateOne({id: userId}, {$pull: { uploadList: {musicID: musicId}}});
+                    User.updateOne({id: userId}, {$pull: { uploadList: musicId}});
+                }
+                else {
+                    musicInfo.push(music);
                 }
             })
         }
-        res.status(200).json({uploadList: user.uploadList});
+        res.status(200).json({uploadList: musicInfo});
     })
 })
 
@@ -138,7 +142,7 @@ router.get('/personalGenre', auth, async(req, res)=>{
 })
 
 router.post('/', auth, async(req, res) => {
-    const {locate ,imageLocate, title, category, lyrics, info} = req.body;
+    const {locate ,imageLocate, title, category, lyrics, info, time} = req.body;
 
     const userID = req.user.id;
 
@@ -151,13 +155,13 @@ router.post('/', auth, async(req, res) => {
         // console.log(id);
 
         const newMusic = new Music({
-            locate, imageLocate, title, id, userID, userNickname, lyrics, category, info
+            locate, imageLocate, title, id, userID, userNickname, lyrics, category, info, time
         });
 
         newMusic.save().then(()=> console.log("music save success!!"));
 
         user.totalNum += 1;
-        user.uploadList.push({musicID:id});
+        user.uploadList.push(id);
 
         user.save();
 

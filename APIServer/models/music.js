@@ -37,6 +37,10 @@ const MusicSchema = new mongoose.Schema({
         type: String,
         default: ""
     },
+    time : {
+        type: Number,
+        default: 0
+    },
     created: {
         type:Date,
         default:Date.now
