@@ -135,7 +135,7 @@ public class ParkFollow: MusicWebRequest
         }
     }
 
-    void FollowUser(string id, string nickname)
+    public void FollowUser(string id, string nickname)
     {
         //팔로우 버튼 클릭시
         CallFollowApi(id, nickname);

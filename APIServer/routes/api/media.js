@@ -12,7 +12,7 @@ const app = express();
 
 //body-Parser
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: 5000000}));
 
 const { BUCKET_NAME } = config
 const { AWS_BUCKET_URL } = config
@@ -113,47 +113,76 @@ router.post('/delete',(req,res) =>{
     var del_musicKey = '';
     var del_imageKey = '';
 
-    //음악 파일만 삭제할 경우
-    if(del_imageKey === ''){
-        del_imageKey = 'Dummy.png'
-    }
 
     //파일 확장자
     const music_extension = path.extname(del_music);
     const image_extension = path.extname(del_image);
 
-    //파일 확장자 확인
-    if(music_extension === '.mp3' || music_extension === '.wav') {
-        del_musicKey = 'Music/' + del_music;
-    }
-    if(image_extension === '.jpg' || image_extension === '.png') {
-        del_imageKey = 'Image/' + del_image;
-    }
 
-    //음악&이미지 파일 삭제
-    var params = {
-        Bucket: BUCKET_NAME, 
-        Delete: {
-         Objects: [
-            {
-           Key: del_musicKey, 
-          }, 
-            {
-           Key: del_imageKey, 
-          }
-         ], 
-         Quiet: false
-        }
-       };
-    s3.deleteObjects(params, function(err, data) {
-    if (err){
-        console.log(err, err.stack);
-    } 
-    else{
-        console.log("Delete Object Success");
-        res.status(200).json({msg: "파일이 성공적으로 삭제되었습니다."})
+    //음악 파일만 삭제
+    if(!del_image){
+            
+
+            //음악 파일 확장자 확인
+            if(music_extension === '.mp3' || music_extension === '.wav' || music_extension === '.ogg') {
+                del_musicKey = 'Music/' + del_music;
+            }
+
+            var params = {
+                Bucket : BUCKET_NAME,
+                Key : del_musicKey
+            };
+
+            s3.deleteObject(params, function(err, data) {
+                if(err){
+                    console.log(err, err.stack);
+                } 
+                else{
+                    console.log("Delete Music Success");
+                    res.status(200).json({msg: "음악 파일이 성공적으로 삭제되었습니다."})
+                }     
+            });
     }
-    });
+    //음악 & 이미지 파일 삭제
+    else{
+        
+        //파일 확장자 확인
+        if(music_extension === '.mp3' || music_extension === '.wav'|| music_extension === '.ogg') {
+            del_musicKey = 'Music/' + del_music;
+        }
+        if(image_extension === '.jpg' || image_extension === '.png') {
+            del_imageKey = 'Image/' + del_image;
+        }
+
+        //파일 삭제
+        var params = {
+            Bucket: BUCKET_NAME, 
+            Delete: {
+            Objects: [
+                {
+            Key: del_musicKey, 
+            }, 
+                {
+            Key: del_imageKey, 
+            }
+            ], 
+            Quiet: false
+            }
+        };
+        s3.deleteObjects(params, function(err, data) {
+            if (err){
+                console.log(err, err.stack);
+            } 
+            else{
+                console.log("Delete Object Success");
+                res.status(200).json({msg: "파일이 성공적으로 삭제되었습니다."})
+            }
+        });
+    }
+    
+    
+
+    
 })
 
 

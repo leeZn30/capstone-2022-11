@@ -6,7 +6,6 @@ public class SmallVideoPanel : MonoBehaviour
 {
 
     Vector3 initPosition;
-    Vector3 initScale;
 
     private void Start()
     {
@@ -40,7 +39,7 @@ public class SmallVideoPanel : MonoBehaviour
     {
         FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.SetActive(true);
         transform.localScale = new Vector3(-2, -2, 1);
-        transform.localPosition = new Vector3(-350, 0, 0);
+        transform.localPosition = new Vector3(-320, -85, 0);
         this.gameObject.GetComponent<Button>().enabled = false;
     }
 
