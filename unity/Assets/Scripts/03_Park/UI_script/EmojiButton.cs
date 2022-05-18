@@ -22,13 +22,12 @@ public class EmojiButton : MonoBehaviourPun
         this.GetComponent<Button>().onClick.AddListener(sendBubble);
     }
 
-    [PunRPC]
     public void sendBubble()
     {
         GameObject player = GameManager.instance.myPlayer;
         player.GetComponent<PlayerControl>().rpcEmoji(emojiNum);
 
-        if (AgoraChannelPlayer.Instance.nowBuskingSpot != null && AgoraChannelPlayer.Instance.nowBuskingSpot.isUsed)
+        if (AgoraChannelPlayer.Instance.nowBuskingSpot != null)
         {
             chatPanel.emojimsg = "<sprite=" + emojiNum + ">";
             chatPanel.OnSendEmoji();

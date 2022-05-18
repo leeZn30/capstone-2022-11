@@ -38,6 +38,8 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     private float wheelSpeed = 10;
     [SerializeField] private float cameraDistance = 10;
 
+    // 팔로우
+    [SerializeField] private ParkFollow parkFollow;
 
     private Vector2 mapSize;
     private int isMoving=0;
@@ -54,6 +56,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
             ChatPanel = FindObjectOfType<Canvas>().transform.Find("bigVideoPanel").gameObject.transform.Find("ChatView").gameObject;
             buskerPanel = FindObjectOfType<Canvas>().transform.Find("BuskerVideoPanel").gameObject;
             animator = GetComponent<Animator>();
+            parkFollow = FindObjectOfType<ParkFollow>();
 
         }
     }
@@ -159,7 +162,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                     InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
                     break;
                 case 2:
-                    // 팔로우 기능
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { parkFollow.Open(AgoraChannelPlayer.Instance.nowBuskingSpot.buskerID); });
                     break;
                 case 3:
                     break;
@@ -204,7 +207,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                     InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { AgoraChannelPlayer.Instance.leaveChannel(); });
                     break;
                 case 2:
-                    // 팔로우 기능
+                    InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { parkFollow.Open(AgoraChannelPlayer.Instance.nowBuskingSpot.buskerID); });
                     break;
                 case 3:
                     break;

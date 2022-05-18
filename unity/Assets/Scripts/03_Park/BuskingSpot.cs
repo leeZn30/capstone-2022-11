@@ -9,76 +9,38 @@ public class BuskingSpot : MonoBehaviourPun
 {
     // Room 관련
     public int roomNum;
-    public bool isUsed = false;
 
     // Title 관련
     [SerializeField] private GameObject titleBar;
     public string titleText;
     public string buskerNickname = null;
+    public string buskerID = null;
 
     [SerializeField] private GameObject localuser;
-    [SerializeField] private List<string> userLists;
-    [SerializeField] private bool isFoundWrongUser = false;
 
     private void Start()
     {
         titleBar = FindObjectOfType<Canvas>().transform.Find("TitleBar").gameObject;
     }
 
-    public void callChangeUsed(string name = null, string t = null)
+    public void callSetBuskingZone(string id = null, string name = null, string t = null)
     {
-        photonView.RPC("changeUsed", RpcTarget.AllBuffered, name, t);
+        photonView.RPC("setBuskingZone", RpcTarget.AllBuffered, id, name, t);
     }
 
-    private void Update()
-    {
-        findWrongUser();
-    }
-
-    private void findWrongUser()
-    {
-        if (!string.IsNullOrEmpty(buskerNickname) && !isFoundWrongUser)
-        {
-            if (!userLists.Contains(buskerNickname))
-            {
-                isFoundWrongUser = true;
-                callChangeUsed();
-
-            }
-        }
-    }
 
     [PunRPC]
-    void changeUsed(string name = null, string t = null)
+    void setBuskingZone(string id = null, string name = null, string t = null)
     {
-        if (!isUsed)
-        {
-            isUsed = true;
-            buskerNickname = name;
-            titleText = t;
-        }
-        else
-        {
-            isUsed = false;
-            buskerNickname = null;
-            titleText = null;
-
-            if (isFoundWrongUser)
-            {
-                isFoundWrongUser = false;
-            }
-        }
+        buskerID = id;
+        buskerNickname = name;
+        titleText = t;
     }
 
     public void OnTriggerEnter2D(Collider2D collision)
     {
 
         GameObject player = GameManager.instance.myPlayer;
-
-        if (collision.tag == "Character")
-        {
-            userLists.Add(collision.transform.gameObject.GetComponent<PlayerManager>().nickName);
-        }
 
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
@@ -88,42 +50,20 @@ public class BuskingSpot : MonoBehaviourPun
             AgoraChannelPlayer.Instance.nowBuskingSpot = this;
             AgoraChannelPlayer.Instance.channelName = roomNum.ToString();
 
-            if (isUsed && !player.GetComponent<PlayerControl>().isVideoPanelShown)
-            {
-                // 여기가 아니라 join되면
-                //collision.transform.GetComponent<PlayerControl>().OnVideoPanel(0);
-
-                // Agora관련
-                AgoraChannelPlayer.Instance.callJoin(1);
-
-                player.GetComponent<PlayerControl>().OnInteractiveButton(2);
-
-            }
+            // Agora관련
+            AgoraChannelPlayer.Instance.callJoin(1);
         }
     }
 
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.tag == "Character")
-        {
-            foreach (string name in userLists)
-            {
-                if (collision.transform.gameObject.GetComponent<PlayerManager>().nickName == name)
-                {
-                    userLists.Remove(name);
-                    break;
-                }
-            }
-        }
-
         GameObject player = GameManager.instance.myPlayer;
         if (collision.gameObject == player && player.GetComponent<PhotonView>().IsMine)
         {
             localuser = null;
 
             AgoraChannelPlayer.Instance.leaveChannel();
-            GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton(2); // 팔로우 버튼 삭제 우연히 겹칠때를 대비해서 하나 더
 
             // AgoraManager의 버스킹 존 관련 정보 지우기
             AgoraChannelPlayer.Instance.nowBuskingSpot = null;
@@ -144,15 +84,7 @@ public class BuskingSpot : MonoBehaviourPun
     {
         if (AgoraChannelPlayer.Instance.role != "publisher" && localuser != null)
         {
-            // 만약 방송 준비중이었다면 지워줌
-            localuser.GetComponent<PlayerControl>().OffVideoPanel();
-            localuser.GetComponent<PlayerControl>().isMoveAble = true;
-            localuser.GetComponent<PlayerControl>().isUIActable = true;
-
-            //localuser.GetComponent<PlayerControl>().OnVideoPanel(0);
             AgoraChannelPlayer.Instance.callJoin(1);
-            localuser.GetComponent<PlayerControl>().OnInteractiveButton(2); // 버튼 활성화 아니었던 사람들
-            localuser.GetComponent<PlayerControl>().changeInteractiveButton(2); // 버튼 활성화 되어있던 사람들
         }
     }
 
@@ -167,7 +99,5 @@ public class BuskingSpot : MonoBehaviourPun
         titleBar.GetComponentInChildren<TextMeshProUGUI>().text = null;
         titleBar.SetActive(false);
     }
-
-
 
 }

@@ -1,5 +1,6 @@
 const express = require('express');
 const {RtcTokenBuilder, RtcRole} = require('agora-access-token');
+const res = require('express/lib/response');
 require('dotenv').config();
 
 // const APP_ID = process.env.APP_ID;
@@ -29,6 +30,36 @@ const checkChannel = (req, resp) =>
     console.log("key : " + key +", value : " + channels[key]); 
   }
   console.log("-----------------------------------");
+
+  let channelName = req.params.channel;
+  let role = req.params.role;
+  let uid = req.params.uid;
+
+  console.log(channelName + " " + uid);
+
+  if (role === 'publisher')
+  {
+    if (!(channelName in channels))
+    {
+      generateRTCToken(req, resp);
+    }
+    else {
+      console.log("Exist channel!");
+      return resp.json({ 'token': "not Token" });
+    }
+  }
+  else if (role === 'audience')
+  {
+    if (channelName in channels)
+    {
+      generateRTCToken(req, resp);
+    }
+    else 
+    {
+      console.log("No channel!");
+      return resp.json({ 'token': "not Token" });
+    }
+  }
 }
 
 const deleteChannel = (req, resp) => {
@@ -36,9 +67,15 @@ const deleteChannel = (req, resp) => {
 
   if (channelName in channels)
   {
-    delete channels.channelName;
+    delete channels[channelName];
 
     console.log("Delete channel " + channelName);
+
+    return resp.json({'resp': 'confirm'});
+  }
+  else 
+  {
+    return resp.json({'resp': 'noChannel'});
   }
 }
 
@@ -84,11 +121,11 @@ const generateRTCToken = (req, resp) =>
 
     console.log("ChannelName: " + channelName + "\nToken: " + token);
 
-    channels[channelName] = token;
+    channels[channelName] = uid;
     return resp.json({ 'token': token });
 };
 
-app.get('/rtc/:channel/:role/:tokentype/:uid', nocache , generateRTCToken);
+app.get('/rtc/:channel/:role/:tokentype/:uid', nocache , checkChannel);
 app.get('/rtc/:channel/delete', deleteChannel);
 
 app.listen(PORT, () => {

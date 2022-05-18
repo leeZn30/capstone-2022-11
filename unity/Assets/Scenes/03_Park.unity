@@ -933,6 +933,7 @@ GameObject:
   m_Component:
   - component: {fileID: 56357326}
   - component: {fileID: 56357327}
+  - component: {fileID: 56357328}
   m_Layer: 0
   m_Name: Content
   m_TagString: Untagged
@@ -957,7 +958,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 700}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &56357327
 MonoBehaviour:
@@ -976,7 +977,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
+  m_ChildAlignment: 6
   m_Spacing: 1
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
@@ -985,6 +986,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &56357328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 56357325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &72225457
 GameObject:
   m_ObjectHideFlags: 0
@@ -2889,8 +2904,8 @@ RectTransform:
   - {fileID: 172450413}
   - {fileID: 880809040}
   - {fileID: 1332429854}
-  - {fileID: 1461331702}
   - {fileID: 1006260500}
+  - {fileID: 1461331702}
   - {fileID: 1156017561}
   - {fileID: 101012512}
   - {fileID: 562089014}
@@ -5629,7 +5644,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4c440509cbf2e634fa3286390eeefc3f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b6050cef6a28e8e4b956a0e291c9e704, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -6202,6 +6217,7 @@ MonoBehaviour:
   ifSendMsg: {fileID: 83324820}
   emojimsg: 
   chatBox: {fileID: 3984101011810129282, guid: cc9fb112bc0547343be8ef1f908c9864, type: 3}
+  sendButton: {fileID: 1362440547}
   channelName: 
 --- !u!114 &577731775
 MonoBehaviour:
@@ -6222,7 +6238,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 40
   m_Viewport: {fileID: 1472121615}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}
@@ -6656,7 +6672,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 4c440509cbf2e634fa3286390eeefc3f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b6050cef6a28e8e4b956a0e291c9e704, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10839,7 +10855,7 @@ RectTransform:
   - {fileID: 587345458}
   - {fileID: 471019737}
   m_Father: {fileID: 305867188}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
@@ -10867,6 +10883,7 @@ MonoBehaviour:
   buttonImages:
   - {fileID: 21300000, guid: 1361e8bd8560a9744a3d82803b040049, type: 3}
   - {fileID: 21300000, guid: 362bdcbbb9a491c4da6ab1b804f159dc, type: 3}
+  parkFollow: {fileID: 0}
 --- !u!114 &1006260504
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13505,7 +13522,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 6.0999756, y: 850}
+  m_AnchoredPosition: {x: -40, y: 850}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 1, y: 0}
 --- !u!114 &1332429856
@@ -14878,11 +14895,11 @@ RectTransform:
   - {fileID: 1667225413}
   - {fileID: 1928649295}
   m_Father: {fileID: 305867188}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 908.4, y: 83.70001}
+  m_AnchorMin: {x: 1, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: -100, y: 84}
   m_SizeDelta: {x: 400, y: 137.66}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1461331703

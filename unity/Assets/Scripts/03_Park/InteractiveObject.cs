@@ -29,11 +29,8 @@ public class InteractiveObject : MonoBehaviour
             {
                 case 0:
                     if (componentObj.TryGetComponent<BuskingSpot>(out buskingSpot))
-                    { 
-                        if (!buskingSpot.isUsed)
-                        {
-                            player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
-                        }                      
+                    {
+                        player.GetComponent<PlayerControl>().OnInteractiveButton(InteractiveType);
                     }
                     break;
 
