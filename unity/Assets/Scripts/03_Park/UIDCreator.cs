@@ -15,9 +15,6 @@ public static class UIDCreator
     {
         uint uid = 0;
         string id_str = "";
-        //임시
-        return 0;
-
 
         foreach (char c in userID)
         {
@@ -33,15 +30,26 @@ public static class UIDCreator
 
         while (id_str.Length >= 10)
         {
-            char[] reverString = id_str.ToCharArray();
-            System.Array.Reverse(reverString);
-            string newString = new string(reverString);
+            string subString1 = id_str.Substring(0, id_str.Length / 2);
+            string subString2 = id_str.Substring(id_str.Length / 2);
 
-            ulong tmp = Math.Max(ulong.Parse(id_str), ulong.Parse(newString)) - Math.Min(ulong.Parse(id_str), ulong.Parse(newString));
+            ulong sub1 = ulong.Parse(subString1);
+            ulong sub2 = ulong.Parse(subString2);
 
-            id_str = tmp.ToString();
+            ulong rest1 = sub1 % 10;
+            ulong rest2 = sub2 % 10;
+
+            sub1 /= 2;
+            sub1 += rest1;
+
+            sub2 /= 2;
+            sub2 += rest2;
+
+            //id_str = sub1.ToString() + rest1.ToString() + sub2.ToString() + rest2.ToString();
+            id_str = sub1.ToString() + sub2.ToString();
         }
 
+        Debug.Log("UID: " + id_str);
         uid = (uint)int.Parse(id_str);
         return uid;
     }
