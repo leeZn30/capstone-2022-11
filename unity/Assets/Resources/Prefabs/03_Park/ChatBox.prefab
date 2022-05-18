@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.33333334}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -90,7 +90,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 1.1
 --- !u!1 &8943557792542818646
 GameObject:
   m_ObjectHideFlags: 0
@@ -158,8 +158,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uCC44\uD305 \uB0B4\uC6A9"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 3ab5e52ce10ba4f40bc96a5f8cd277e9, type: 2}
-  m_sharedMaterial: {fileID: 3102087626667676059, guid: 3ab5e52ce10ba4f40bc96a5f8cd277e9, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e8754e71af078c54fb90a6dfa5476822, type: 2}
+  m_sharedMaterial: {fileID: -4326787251800058793, guid: e8754e71af078c54fb90a6dfa5476822, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -183,8 +183,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 23
+  m_fontSizeBase: 23
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

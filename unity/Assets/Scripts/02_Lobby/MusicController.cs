@@ -142,14 +142,13 @@ public class MusicController : MusicWebRequest
             //볼륨 토글에 포인터 올리면 세부조절활성화
             volumeToggleObj.OnPointEnter += delegate
             {
-                Debug.Log("드감");
                 volumeSlider.gameObject.SetActive(true);
                 volumeSlider.value = AudioListener.volume;
             };
             //컨트롤바에서 포인터 나가면 세부조절 비활성화
             mainControllBar.OnPointExit += delegate
             {
-                Debug.Log("나감");
+
                 volumeSlider.gameObject.SetActive(false);
             };
 
@@ -177,6 +176,13 @@ public class MusicController : MusicWebRequest
                         isCleanListen = false;
 
                         ChangeState(!audioSource.isPlaying);
+                    }
+                    else
+                    {
+                        if (audioSource.isPlaying ==false && currentSongSlotList.Count > currentSongIndex)
+                        {
+                            StartGetAudioCoroution(currentSongIndex, true);
+                        }
                     }
                 });
                 pauseplayBtnImage[i] = (pauseplayBtns[i].gameObject).GetComponent<Image>();
@@ -206,7 +212,7 @@ public class MusicController : MusicWebRequest
             OnGetClip += SetAudioClip;
 
             dropdown.onValueChanged.AddListener(OnChangeDropDown);
-            StartGetListCoroution("uploadList", 0, false);
+            
             cts = new CancellationTokenSource();
         }
     }
@@ -257,11 +263,7 @@ public class MusicController : MusicWebRequest
                 playState = PlayState.Play;
 
                 StartCoroutine(enumerator);
-
-                for (int i = 0; i < 2; i++)
-                {
-                    pauseplayBtnImage[i].sprite = Resources.Load<Sprite>("Image/UI/pause");
-                }
+                ChangeControllImage(true);
 
             }
             else if(audioSource.isPlaying ==false && playState == PlayState.Play)
@@ -269,15 +271,20 @@ public class MusicController : MusicWebRequest
                 //Debug.Log("Pause");
                 playState = PlayState.Pause;
                 StopCoroutine(enumerator);
-                for (int i = 0; i < 2; i++)
-                {
-                    pauseplayBtnImage[i].sprite = Resources.Load<Sprite>("Image/UI/play");
-                }
+                ChangeControllImage(false);
+
             }
 
         }
 
         
+    }
+    private void ChangeControllImage(bool isPlay)
+    {
+        for (int i = 0; i < 2; i++)
+        {
+            pauseplayBtnImage[i].sprite = Resources.Load<Sprite>(isPlay? "Image/UI/pause": "Image/UI/play");
+        }
     }
     private void LoadInfo(string type)
     {
@@ -339,7 +346,14 @@ public class MusicController : MusicWebRequest
             }
             else
             {
+                for (int i=0; i<images.Length; i++)
+                {
+                    images[i].sprite= Resources.Load<Sprite>("Image/none");
+                }
 
+                currentSongIndex = 0;
+                audioSource.Stop();
+                audioSource.clip = null;
                 SetActiveNoList(true);
             }
             
@@ -420,7 +434,7 @@ public class MusicController : MusicWebRequest
         {
             flag = true;
             getAudioWWW.Dispose();
-            StopCoroutine(audioLoadIEnum);
+            StopCoroutine(audioLoadIEnum);GetAudioAsync
         }
         audioLoadIEnum = GetAudioCilpUsingWebRequest(currentSongSlotList[currentSongIndex].GetMusic().locate, play);
         StartCoroutine(audioLoadIEnum);
@@ -455,6 +469,10 @@ public class MusicController : MusicWebRequest
 
         if(a!=null)
             SetAudioClip(a.audioClip, a.play);
+        else
+        {
+            ChangeControllImage(false);
+        }
     }
     async void PostPlayCountPlus(string msID)
     {
@@ -467,6 +485,8 @@ public class MusicController : MusicWebRequest
         {
             tmpSongIndex = idx;
             currentListName = name;
+
+            dropdown.value = UserData.Instance.user.listName.IndexOf(name);
             MusicList ml= await GET_MusicListAsync(currentListName, play);
             if (ml != null)
             {

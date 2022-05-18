@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-public class LobbySetting : MonoBehaviour
+using Photon.Realtime;
+using Photon.Pun;
+public class LobbySetting : MonoBehaviourPunCallbacks
 {
     public GameObject panel;
 
@@ -22,17 +24,52 @@ public class LobbySetting : MonoBehaviour
     public string[] modeOptions;
     public string[] resolutionOptions;
 
+    private bool isLogOutClick;
     private void Start()
     {
         Init();
 
     }
-    void Logout()
+    public void Logout()
     {//로그아웃
-        
-        UserData.Instance.Clear();
-        SceneManager.LoadScene("01_Main");
+        if (SceneManager.GetActiveScene().name == "03_Park")
+        {
 
+            if (AgoraChannelPlayer.Instance.role != "publisher")
+            {
+                isLogOutClick = true;
+                AgoraChannelPlayer.Instance.leaveChannel();
+                PhotonNetwork.LeaveRoom();
+                //SceneManager.LoadScene(1);
+            }
+        }
+        else
+        {
+            SceneManager.LoadScene("01_Main");
+        }
+        UserData.Instance.Clear();
+
+    }
+
+    [System.Obsolete]
+    void OnApplicationQuit()
+    {
+        Application.CancelQuit();
+
+#if !UNITY_EDITOR
+
+        System.Diagnostics.Process.GetCurrentProcess().Kill();
+
+#endif
+
+    }
+    public override void OnLeftRoom()
+    {
+        if (isLogOutClick)
+        {
+            SceneManager.LoadScene(0);
+            isLogOutClick = !isLogOutClick;
+        }
     }
     void Quit()
     {//프로그램 종료 버튼
@@ -49,11 +86,14 @@ public class LobbySetting : MonoBehaviour
     }
     public void Load()
     {
+       
         volumeSlider.value = AudioListener.volume;
 
     }
      public void Init()
     {//설정창 초기세팅 and 기존 설정 불러오기
+        isLogOutClick = false;
+
         volumeSlider.value = AudioListener.volume;
         
         settingBtn.onClick.AddListener(delegate { panel.SetActive(true);
