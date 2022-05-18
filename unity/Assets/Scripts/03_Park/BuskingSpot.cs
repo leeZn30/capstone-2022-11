@@ -14,6 +14,7 @@ public class BuskingSpot : MonoBehaviourPun
     [SerializeField] private GameObject titleBar;
     public string titleText;
     public string buskerNickname = null;
+    public string buskerID = null;
 
     [SerializeField] private GameObject localuser;
 
@@ -22,15 +23,16 @@ public class BuskingSpot : MonoBehaviourPun
         titleBar = FindObjectOfType<Canvas>().transform.Find("TitleBar").gameObject;
     }
 
-    public void callSetBuskingZone(string name = null, string t = null)
+    public void callSetBuskingZone(string id = null, string name = null, string t = null)
     {
-        photonView.RPC("setBuskingZone", RpcTarget.AllBuffered, name, t);
+        photonView.RPC("setBuskingZone", RpcTarget.AllBuffered, id, name, t);
     }
 
 
     [PunRPC]
-    void setBuskingZone(string name = null, string t = null)
+    void setBuskingZone(string id = null, string name = null, string t = null)
     {
+        buskerID = id;
         buskerNickname = name;
         titleText = t;
     }

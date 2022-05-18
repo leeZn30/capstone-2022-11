@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 
-public class LobbyButton : MonoBehaviour
+public class LobbyButton : MonoBehaviourPunCallbacks
 {
     public void goToLobby()
     {
@@ -13,9 +13,15 @@ public class LobbyButton : MonoBehaviour
             AgoraChannelPlayer.Instance.leaveChannel();
 
             PhotonNetwork.LeaveRoom();
-            SceneManager.LoadScene(1);
+            //SceneManager.LoadScene(1);
         }
 
     }
+
+    public override void OnLeftRoom()
+    {
+        SceneManager.LoadScene(1);
+    }
+
 
 }

@@ -17,9 +17,13 @@ public class BigVideoPanel : MonoBehaviour
     [SerializeField] private Button dynamicButton;
     [SerializeField] private Sprite[] buttonImages;
 
+    // 팔로우
+    [SerializeField] private ParkFollow parkFollow;
+
     // Start is called before the first frame update
     void Start()
     {
+        parkFollow = FindObjectOfType<ParkFollow>();
         shutButton.GetComponent<Button>().onClick.AddListener(smallVideoPanel.ScaleDownPanle);
     }
 
@@ -39,7 +43,7 @@ public class BigVideoPanel : MonoBehaviour
         else if (AgoraChannelPlayer.Instance.role == "audience")
         {
             dynamicButton.GetComponent<Image>().sprite = buttonImages[1];
-            dynamicButton.onClick.AddListener(delegate { }); // 유저 정보 보는 판넬 띄우기
+            dynamicButton.onClick.AddListener(delegate { parkFollow.Open(AgoraChannelPlayer.Instance.nowBuskingSpot.buskerID); }); // 유저 정보 보는 판넬 띄우기
         }
         else
         {

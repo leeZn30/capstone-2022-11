@@ -190,6 +190,7 @@ MonoBehaviour:
   ChatPanel: {fileID: 0}
   buskerPanel: {fileID: 0}
   cameraDistance: 10
+  parkFollow: {fileID: 0}
 --- !u!114 &6924849003541504941
 MonoBehaviour:
   m_ObjectHideFlags: 0

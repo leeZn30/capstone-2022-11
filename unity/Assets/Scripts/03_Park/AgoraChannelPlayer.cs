@@ -30,6 +30,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     public BuskingSpot nowBuskingSpot;
     string buskerName;
     string title;
+    string buskerId;
 
     private void Start()
     {
@@ -37,11 +38,11 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     }
 
     // ======================= Join 관련 =============================
-    public void callJoin(int mode, string buskerNickname = null, string title = null)
+    public void callJoin(int mode, string buskerID = null, string buskerNickname = null, string title = null)
     {
-        join(mode, buskerNickname, title);
+        join(mode, buskerID, buskerNickname, title);
     }
-    private async UniTask join(int mode, string buskerNickname = null, string t = null) //IEnumerator
+    private async UniTask join(int mode, string buskerID = null, string buskerNickname = null, string t = null) //IEnumerator
     {
         if (nowChannel == null)
         {
@@ -51,6 +52,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             {
                 role = "publisher";
 
+                buskerId = buskerID;
                 buskerName = buskerNickname;
                 title = t;
 
@@ -213,7 +215,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         if (nowBuskingSpot != null)
         {
             Debug.Log("busker join handler");
-            nowBuskingSpot.callSetBuskingZone(buskerName, title);
+            nowBuskingSpot.callSetBuskingZone(buskerId, buskerName, title);
             nowBuskingSpot.onTitleBar();
         }
 

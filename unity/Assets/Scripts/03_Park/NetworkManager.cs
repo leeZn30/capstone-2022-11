@@ -17,7 +17,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     public string roomName = "MetaBuskingPark";
 
-
     // Start is called before the first frame update
     void Start()
     {
@@ -54,7 +53,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnDisconnected(DisconnectCause cause)
     {
         this.joinButton.interactable = false;
-        this.connectionInfoText.text = "�������� : ������ ������ ������� ����\n ���� ��õ���... ";
+        this.connectionInfoText.text = "연결 재확인 필요";
         //설정한 정보로 마스터 서버 접속 시도
         PhotonNetwork.ConnectUsingSettings();
     }
@@ -90,7 +89,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             PhotonNetwork.JoinRoom(roomName);
 
         else
-            Debug.Log("�� ���� ����");
+            Debug.Log("방 생성 실패");
     }
 
     public override void OnCreatedRoom()
@@ -102,11 +101,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
 
-        this.connectionInfoText.text = "�� ���� ����!";
-
-        //��� �� �����ڰ� Main ���� �ε��ϰ� ��
-        PhotonNetwork.LoadLevel("03_Park");
-        //PhotonNetwork.LoadLevel("Park test scene");
+        this.connectionInfoText.text = "광장으로!";
 
         PhotonNetwork.LocalPlayer.NickName = UserData.Instance.user.nickname;
         Hashtable playerData = new Hashtable();
@@ -122,5 +117,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         playerData["character"] = UserData.Instance.user.character;
         PhotonNetwork.LocalPlayer.SetCustomProperties(playerData);
 
+
+        //��� �� �����ڰ� Main ���� �ε��ϰ� ��
+        //SceneManager.LoadScene("03_Park");
+        PhotonNetwork.LoadLevel("03_Park");
+
     }
+
+
 }

@@ -160,7 +160,7 @@ public class BuskerVideoPanel : MonoBehaviour
             isMicOn = false;
             isCameraOn = false;
 
-            AgoraChannelPlayer.Instance.callJoin(0, PhotonNetwork.LocalPlayer.NickName, titleInput.text);
+            AgoraChannelPlayer.Instance.callJoin(0, UserData.Instance.id, PhotonNetwork.LocalPlayer.NickName, titleInput.text);
 
             titleInput.text = null;
             gameObject.SetActive(false);
