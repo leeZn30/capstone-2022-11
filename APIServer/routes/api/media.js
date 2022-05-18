@@ -12,7 +12,7 @@ const app = express();
 
 //body-Parser
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: 5000000}));
 
 const { BUCKET_NAME } = config
 const { AWS_BUCKET_URL } = config
