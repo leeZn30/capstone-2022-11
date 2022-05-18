@@ -26,7 +26,7 @@ public class AddPageInSongPage : Page
     private TMP_InputField[] infoInputs;
 
 
-    public ToggleGroup toggleGroup;
+    public MultipleToggleGroup toggleGroup;
 
     void Start()
     {
