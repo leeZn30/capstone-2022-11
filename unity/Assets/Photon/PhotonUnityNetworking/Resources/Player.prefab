@@ -177,9 +177,9 @@ MonoBehaviour:
   InteractiveButton: {fileID: 0}
   buttonImages:
   - {fileID: 21300000, guid: 8c092b00160f2724a9ee4c73c1163cd9, type: 3}
-  - {fileID: 21300000, guid: 8c092b00160f2724a9ee4c73c1163cd9, type: 3}
   - {fileID: 21300000, guid: 1361e8bd8560a9744a3d82803b040049, type: 3}
   - {fileID: 21300000, guid: 864e927c550b4904f8386aa005664184, type: 3}
+  - {fileID: 21300000, guid: 1361e8bd8560a9744a3d82803b040049, type: 3}
   - {fileID: 21300000, guid: 8f4d09d6b73355747acb9fa6166f59c9, type: 3}
   - {fileID: 21300000, guid: f43a9983497e19d4fb168479fc87dde3, type: 3}
   - {fileID: 0}

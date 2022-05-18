@@ -11,6 +11,11 @@ public class TokenObject
     //public string code;
 }
 
+public class Response
+{
+    public string resp;
+}
+
 public class channelInfo
 {
     public uint uid;
@@ -20,18 +25,21 @@ public class channelInfo
 
 public static class HelperClass
 {
-    public static IEnumerator deleteToken(string url, string channel)
+    public static async UniTask<string> deleteToken(string url, string channel)
     {
         UnityWebRequest request = UnityWebRequest.Get(string.Format(
           "{0}/rtc/{1}/delete/", url, channel
         ));
-        yield return request.SendWebRequest();
+        await request.SendWebRequest();
 
         if (request.isNetworkError || request.isHttpError)
         {
             Debug.LogWarning("deleteToken: url = " + url + " error:" + request.error);
-            yield break;
+            return null;
         }
+
+        Response resp = JsonUtility.FromJson<Response>(request.downloadHandler.text);
+        return resp.resp;
     }
 
     public static async UniTask<string> FetchToken(string url, string channel, string role, uint userId)

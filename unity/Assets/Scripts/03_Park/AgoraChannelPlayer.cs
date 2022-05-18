@@ -28,6 +28,8 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     // BuskingZone 정보
     [Header("BuskingZone 정보")]
     public BuskingSpot nowBuskingSpot;
+    string buskerName;
+    string title;
 
     private void Start()
     {
@@ -44,16 +46,22 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         if (nowChannel == null)
         {
             Debug.Log("calling Channel mode = " + mode);
+            nowBuskingSpot.offTitleBar();
             if (mode == 0) // Busker
             {
                 role = "publisher";
 
-                // 원래는 join되어야 하는게 맞지만 일단 빠르게 안변해서 여기다 둠
-                if (nowBuskingSpot != null)
-                    nowBuskingSpot.callChangeUsed(buskerNickname, t);
-                nowBuskingSpot.onTitleBar();
+                buskerName = buskerNickname;
+                title = t;
 
                 channelToken = await HelperClass.FetchToken(url: "http://localhost:8082", channel: channelName, role: role, userId: myUID);
+
+                if (channelToken == "not Token") // 실패할 경우
+                {
+                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
+                    GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+                    return;
+                }
 
                 nowChannel = AgoraEngine.mRtcEngine.CreateChannel(channelName);
                 nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -70,11 +78,10 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             {
                 role = "audience";
 
-                // 원래는 join되어야 하는게 맞지만 일단 빠르게 안변해서 여기다 둠
-                if (nowBuskingSpot != null)
-                    nowBuskingSpot.onTitleBar();
-
                 channelToken = await HelperClass.FetchToken(url: "http://localhost:8082", channel: channelName, role: role, userId: myUID);
+
+                if (channelToken == "not Token")
+                    return;
 
                 nowChannel = AgoraEngine.mRtcEngine.CreateChannel(channelName);
                 nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
@@ -86,7 +93,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
                 nowChannel.ChannelOnLeaveChannel = OnAudienceLeaveChannel;
                 nowChannel.ChannelOnUserOffLine = OnBuskerOffline;
 
-                nowChannel.JoinChannel(channelToken, null, myUID, new ChannelMediaOptions(true, true, false,false));
+                nowChannel.JoinChannel(channelToken, null, myUID, new ChannelMediaOptions(true, true, false, false));
 
                 Debug.Log("Joining channel: " + channelName);
             }
@@ -176,14 +183,19 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         VideoSurface videoSurface = makeImageSurface(rawImage);
     }
 
-    public void leaveChannel()
+    public async UniTask leaveChannel()
     {
         if (nowChannel != null)
         {
+
+            if (role == "publisher")
+            {
+                string s = await HelperClass.deleteToken(url: "localhost:8082", channelName);
+            }
+
             nowBuskingSpot.offTitleBar();
             nowChannel.LeaveChannel();
             Debug.Log("Leaving channel: " + channelName);
-
         }
         else
         {
@@ -198,17 +210,28 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     {
         Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
 
+        if (nowBuskingSpot != null)
+        {
+            Debug.Log("busker join handler");
+            nowBuskingSpot.callSetBuskingZone(buskerName, title);
+            nowBuskingSpot.onTitleBar();
+        }
+
         // Busker 화면 없애기
         buskersmallVideo.gameObject.SetActive(true);
         setBuskerVideoSurface(buskersmallVideo);
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
+
+        // 버튼 설정
+        PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
+        player.changeInteractiveButton(1);
+        nowBuskingSpot.callInsideUserJoin(AgoraChannelPlayer.Instance.channelName);
 
     }
     public void OnAudienceJoinChannelSuccess(string channelID, uint uid, int elapsed)
     {
         Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
 
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OnVideoPanel(0);
     }
 
 
@@ -223,7 +246,22 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             buskerUid = uid;
             setAudicenVideoSurface(audienceVideo, channelID, uid, elapsed);
 
+            PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
+
+            // 만약 방송 준비중이었다면 지워줌
+            player.OffVideoPanel();
+            player.isMoveAble = true;
+            player.isUIActable = true;
+
+            player.OnVideoPanel(0);
+            audienceVideo.gameObject.SetActive(true);
+            player.OnInteractiveButton(2); // 버튼 활성화 아니었던 사람들
+            player.changeInteractiveButton(2); // 버튼 활성화 되어있던 사람들
+
             isFoundBusker = true;
+
+            if (nowBuskingSpot != null)
+                nowBuskingSpot.onTitleBar();
         }
 
     }
@@ -236,13 +274,15 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
 
         Destroy(buskersmallVideo.GetComponent<VideoSurface>());
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
+        GameManager.instance.myPlayer.GetComponent<PlayerControl>().changeInteractiveButton(0);
 
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
 
-        nowBuskingSpot.callChangeUsed();
+        nowBuskingSpot.callSetBuskingZone();
         role = null;
         nowChannel = null;
+
     }
 
     public void OnBuskerOffline(string channelID, uint uid, USER_OFFLINE_REASON reason)
@@ -274,13 +314,8 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     {
         if (nowChannel != null)
         {
-            nowBuskingSpot.callChangeUsed();
-
             leaveChannel();
             nowChannel.ReleaseChannel();
-
-            Debug.Log("Quit!");
-
         }
     }
 

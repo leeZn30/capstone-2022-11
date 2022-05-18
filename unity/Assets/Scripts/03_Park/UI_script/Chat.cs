@@ -13,6 +13,7 @@ public class Chat : MonoBehaviourPunCallbacks
     public string emojimsg;
 
     [SerializeField] private GameObject chatBox;
+    [SerializeField] private Button sendButton;
 
     public string channelName;
 
@@ -20,7 +21,14 @@ public class Chat : MonoBehaviourPunCallbacks
     {
         channelName = AgoraChannelPlayer.Instance.channelName;
 
+        sendButton.onClick.AddListener(delegate { OnSendChatMsg(); });
         ifSendMsg.onSubmit.AddListener(delegate { OnSendChatMsg(); });
+    }
+
+    private void Start()
+    {
+        ScrollRect scrollRect = GetComponent<ScrollRect>();
+        scrollRect.normalizedPosition = new Vector2(0, 0);
     }
 
     public void OnSendEmoji()
@@ -61,9 +69,9 @@ public class Chat : MonoBehaviourPunCallbacks
             GameObject go = Instantiate<GameObject>(chatBox);
             go.GetComponentInChildren<TextMeshProUGUI>().text = msg;
 
-
             go.transform.parent = msgList.transform;
             go.transform.localScale = new Vector3(1, 1, 0);
         }
     }
+
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using agora_gaming_rtc;
 using Photon.Pun;
 
 public class BuskerVideoPanel : MonoBehaviour
@@ -43,14 +42,14 @@ public class BuskerVideoPanel : MonoBehaviour
     void Update()
     {
         if (isCameraOn)
-            CameraCheck.color = Color.green;
+            CameraCheck.color = Color.white;
         else
-            CameraCheck.color = Color.red;
+            CameraCheck.color = Color.gray;
 
         if (isMicOn)
-            MicCheck.color = Color.green;
+            MicCheck.color = Color.white;
         else
-            MicCheck.color = Color.red;
+            MicCheck.color = Color.gray;
     }
 
     private void cameraConnect()
@@ -109,16 +108,11 @@ public class BuskerVideoPanel : MonoBehaviour
         try
         {
             string mic = Microphone.devices[0];
-            /**
-            micAudioSource.clip = Microphone.Start(mic, true, 10, 44100);
-            while (!(Microphone.GetPosition(mic) > 0)) { } // Wait until the recording has started
-            micAudioSource.Play(); // Play the audio source!
-            **/
+
             if (mic != null)
             {
                 isMicOn = true;
             }
-            // 마이크 켜졌다고 표시
 
         }
         catch
@@ -130,6 +124,12 @@ public class BuskerVideoPanel : MonoBehaviour
 
     private void exitPanel()
     {
+
+        objectTarget.GetComponent<RawImage>().texture = null;
+        textureWebCam.Stop();
+        isMicOn = false;
+        isCameraOn = false;
+
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isMoveAble = true;
         GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
@@ -162,22 +162,8 @@ public class BuskerVideoPanel : MonoBehaviour
 
             AgoraChannelPlayer.Instance.callJoin(0, PhotonNetwork.LocalPlayer.NickName, titleInput.text);
 
+            titleInput.text = null;
             gameObject.SetActive(false);
-
-            /**
-            // Busker 화면 없애기
-            gameObject.SetActive(false);
-            smallVideo.SetActive(true);
-            AgoraChannelPlayer.Instance.setBuskerVideoSurface(smallVideo.GetComponent<RawImage>());
-            GameManager.instance.myPlayer.GetComponent<PlayerControl>().isUIActable = true;
-            **/
-
-            // 그만두기 버튼 설정
-            PlayerControl player = GameManager.instance.myPlayer.GetComponent<PlayerControl>();
-            player.changeInteractiveButton(1);
-            player.InteractiveButton.GetComponent<Button>().onClick.AddListener(delegate { player.changeInteractiveButton(0); }); // 버스킹 그만두기 버튼 삭제 or 그대로 트리거 안에 있으니까 시작하기로 다시 바꾸기
-
-            AgoraChannelPlayer.Instance.nowBuskingSpot.callInsideUserJoin(AgoraChannelPlayer.Instance.channelName);
 
         }
     }
