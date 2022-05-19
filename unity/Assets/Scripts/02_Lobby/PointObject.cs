@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PointObject : MonoBehaviour, IPointerDownHandler,IPointerEnterHandler,IPointerExitHandler
+public class PointObject : MonoBehaviour, IPointerUpHandler,IPointerDownHandler, IPointerEnterHandler,IPointerExitHandler
 {
 
 
     public delegate void PointHandler();
+    public event PointHandler OnPointUp;
     public event PointHandler OnPointDown;
     public event PointHandler OnPointExit;
     public event PointHandler OnPointEnter;
@@ -23,5 +24,8 @@ public class PointObject : MonoBehaviour, IPointerDownHandler,IPointerEnterHandl
     {
         OnPointDown?.Invoke();
     }
-
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        OnPointUp?.Invoke();
+    }
 }
