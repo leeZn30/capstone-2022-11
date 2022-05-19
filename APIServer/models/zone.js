@@ -14,15 +14,13 @@ const ZoneSchema = new mongoose.Schema({
         default: []
     },
     totalTime : {
-        type: Array,
-        default: []
+        type: Number
     },
     startTime : {
-        type: Array,
-        default: []
+        type: Number
     },
     id : {
-        type: Number
+        type: String
     }
 });
 
