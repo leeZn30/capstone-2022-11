@@ -28,7 +28,13 @@ public class AgoraEngine : MonoBehaviour
 
     private void OnApplicationQuit()
     {
+        mRtcEngine?.LeaveChannel();
         mRtcEngine = null;
         IRtcEngine.Destroy();
+    }
+    private void OnDestroy()
+    {
+        if (mRtcEngine != null)
+            mRtcEngine?.LeaveChannel();
     }
 }

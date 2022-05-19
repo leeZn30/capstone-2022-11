@@ -44,8 +44,10 @@ public class SongPage : Page
             deleteMode = false;
             songFolderList = new List<SongFolder>(GetComponentsInChildren<SongFolder>());
             searchBtn.onClick.AddListener(searchPage.OpenSearchObject);
-       
+
+#if !UNITY_ANDROID
             addBtn.onClick.AddListener(addPage.Open);
+#endif
             folderAddBtn.onClick.AddListener(folderAddPage.Open);
             folderDelBtn.onClick.AddListener(delegate { ChangeModeDeleteFolder(!deleteMode); });
 
@@ -227,7 +229,9 @@ public class SongPage : Page
     {
         listPage.Close();
         searchPage.Close();
+#if !UNITY_ANDROID
         addPage.Close();
+#endif
         folderAddPage.Close();
     }
 

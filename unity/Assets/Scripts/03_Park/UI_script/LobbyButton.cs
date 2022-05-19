@@ -6,10 +6,12 @@ using Photon.Pun;
 
 public class LobbyButton : MonoBehaviourPunCallbacks
 {
+    private bool isClick = false;
     public void goToLobby()
     {
         if (AgoraChannelPlayer.Instance.role != "publisher")
         {
+            isClick = true;
             AgoraChannelPlayer.Instance.leaveChannel();
 
             PhotonNetwork.LeaveRoom();
@@ -20,7 +22,12 @@ public class LobbyButton : MonoBehaviourPunCallbacks
 
     public override void OnLeftRoom()
     {
-        SceneManager.LoadScene(1);
+        if (isClick)
+        {
+            SceneManager.LoadScene(1);
+            isClick = false;
+        }
+       
     }
 
 

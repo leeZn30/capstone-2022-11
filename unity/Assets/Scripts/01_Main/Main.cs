@@ -90,7 +90,7 @@ public class Main : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(jsonToSend);
             request.downloadHandler = (DownloadHandler)new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-
+            Debug.Log(url + "/api/auth");
             yield return request.SendWebRequest();//결과 응답이 올 때까지 기다리기
 
 

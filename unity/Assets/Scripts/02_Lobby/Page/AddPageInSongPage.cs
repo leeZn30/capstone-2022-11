@@ -12,8 +12,9 @@ public class AddPageInSongPage : Page
     public Button musicUploadBtn;
     public Button okayBtn;
     public Button removeImageBtn;
+    #if !UNITY_ANDROID
     public FileOpenDialog fileOpenDialog;
-    
+    #endif
     public Image songImage;
     public TextMeshProUGUI localFileName;
 
@@ -46,8 +47,8 @@ public class AddPageInSongPage : Page
                 tmps[i].text = GlobalData.Genre[i];
 
             }
-            
 
+#if !UNITY_ANDROID
             imageUploadBtn.onClick.AddListener(delegate
             {
                 string filePath = fileOpenDialog.FileOpen(FileOpenDialog.Type.Image);
@@ -71,6 +72,7 @@ public class AddPageInSongPage : Page
             okayBtn.onClick.AddListener(UploadAndFinish);
             removeImageBtn.onClick.AddListener(RemoveImage);
             OnUploaded += AfterUpload;
+#endif
 
         }
     }
