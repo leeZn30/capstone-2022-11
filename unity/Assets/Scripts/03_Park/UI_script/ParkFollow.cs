@@ -139,14 +139,13 @@ public class ParkFollow: MusicWebRequest
     {
         //팔로우 버튼 클릭시
         CallFollowApi(id, nickname);
-        UserData.Instance.AddFollow(id);
 
     }
     void FollowCancelUser(string id, string nickname)
     {
         // 팔로우 취소 버튼 클릭시
         CallFollowApi(id, nickname, true);
-        UserData.Instance.DelFollow(id);
+       
     }
 
     //유저 프로필을 로드하는 함수
@@ -169,16 +168,19 @@ public class ParkFollow: MusicWebRequest
 
 
         User user = await GET_UserInfoAsync(_id);
+        if (user != null)
+        {
+            currentUserId = user.id;
+            currentUserNickname = user.nickname;
+            userNameText.text = user.GetName();
+            followText.text = user.followNum + "\n팔로우";
+            followerText.text = user.followerNum + "\n팔로워";
+            musicCntText.text = "\n올린 음원";
 
-        currentUserId = user.id;
-        currentUserNickname = user.nickname;
-        userNameText.text = user.GetName();
-        followText.text = user.followNum + "\n팔로우";
-        followerText.text = user.followerNum + "\n팔로워";
-        musicCntText.text = "\n올린 음원";
-
-        character.ChangeSprite(user.character);
-        GetuploadedMusicListAsync(user == UserData.Instance.user?null : user.id);//본인이면 null, 본인이 아니면 id
+            character.ChangeSprite(user.character);
+            GetuploadedMusicListAsync(user.id == UserData.Instance.user.id ? null : user.id);//본인이면 null, 본인이 아니면 id
+        }
+      
 
     }
 
@@ -232,7 +234,13 @@ public class ParkFollow: MusicWebRequest
 
     async void CallFollowApi(string userID, string userName, bool isDelete = false)
     {
-        await POST_FollowUserAsync(userID, userName, isDelete);
+        StringList sl=await POST_FollowUserAsync(userID, userName, isDelete);
+        if (sl != null)
+        {
+            UserData.Instance.ChangeFollow(sl.stringList, userID, isDelete);
+            followText.text = UserData.Instance.user.followNum + "\n팔로우";
+
+        }
 
     }
     void RemoveSlots()

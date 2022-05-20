@@ -1,9 +1,13 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+#if !UNITY_ANDROID
 using System.Windows.Forms;
 using Ookii.Dialogs;
+
+
 public class FileOpenDialog : MonoBehaviour
 {
     public enum Type
@@ -50,3 +54,4 @@ public class FileOpenDialog : MonoBehaviour
         
     }
 }
+#endif

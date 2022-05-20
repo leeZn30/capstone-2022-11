@@ -6795,15 +6795,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4191697866416477311, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}
       propertyPath: Token
-      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3QwMCIsImlhdCI6MTY0OTM1NDA1NywiZXhwIjoxNjQ5MzU3NjU3fQ.LWsZADg9jqlNelGaX_jEfYeMfdFe4SVWL10WnPNd8YY
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4191697866416477311, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}
       propertyPath: user.id
-      value: test00
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4191697866416477311, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}
       propertyPath: user.password
-      value: test00!!
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 03f8e909a9df6214fa53f912a03fde99, type: 3}

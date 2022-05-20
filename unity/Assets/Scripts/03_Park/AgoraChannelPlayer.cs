@@ -31,6 +31,11 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     string buskerName;
     string title;
     string buskerId;
+#if !UNITY_ANDROID
+    string url = "http://metabusking.c.cs.kookmin.ac.kr"; //string url = "http://localhost:8082";
+#else
+    string url = "http://metabusking.c.cs.kookmin.ac.kr";
+#endif
 
     private void Start()
     {
@@ -56,7 +61,9 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
                 buskerName = buskerNickname;
                 title = t;
 
-                channelToken = await HelperClass.FetchToken(url: "http://localhost:8082", channel: channelName, role: role, userId: myUID);
+                 channelToken = await HelperClass.FetchToken(url: url, channel: channelName, role: role, userId: myUID);
+
+   
 
                 if (channelToken == "not Token") // 실패할 경우
                 {
@@ -80,7 +87,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             {
                 role = "audience";
 
-                channelToken = await HelperClass.FetchToken(url: "http://localhost:8082", channel: channelName, role: role, userId: myUID);
+                channelToken = await HelperClass.FetchToken(url: url, channel: channelName, role: role, userId: myUID);
 
                 if (channelToken == "not Token")
                     return;
@@ -192,7 +199,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
 
             if (role == "publisher")
             {
-                string s = await HelperClass.deleteToken(url: "localhost:8082", channelName);
+                string s = await HelperClass.deleteToken(url:url, channelName);
             }
 
             nowBuskingSpot.offTitleBar();
@@ -302,8 +309,13 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         Debug.Log("Audience(me) is leave");
 
         Destroy(audienceVideo.GetComponent<VideoSurface>());
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
-        GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton(2); // 팔로우 버튼 삭제
+        if (GameManager.instance.myPlayer != null)
+        {
+            GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
+            GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton(2); // 팔로우 버튼 삭제
+
+        }
+
 
         buskerUid = 0;
         isFoundBusker = false;

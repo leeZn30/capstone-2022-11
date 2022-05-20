@@ -9,7 +9,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 {
 
     // 플레이어 설정
-    float moveSpeed = 6f;
+    float moveSpeed = 5.4f;
     public bool isMoveAble = true;
     public bool isUIActable = true;
 
@@ -44,7 +44,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
     private Vector2 mapSize;
     private int isMoving=0;
     private Animator animator;
-
+    public Vector2 dir;
     // Start is called before the first frame update
     void Start()
     {
@@ -57,7 +57,10 @@ public class PlayerControl : MonoBehaviourPunCallbacks
             buskerPanel = FindObjectOfType<Canvas>().transform.Find("BuskerVideoPanel").gameObject;
             animator = GetComponent<Animator>();
             parkFollow = FindObjectOfType<ParkFollow>();
-
+#if UNITY_ANDROID
+            FindObjectOfType<Canvas>().transform.Find("Move UI").GetComponent<MobileMoveUI>().SetPlayer(this);
+#endif
+            dir = new Vector2(0, 0);
         }
     }
 
@@ -76,8 +79,9 @@ public class PlayerControl : MonoBehaviourPunCallbacks
         if (this.photonView.IsMine)
         {
             isMoving = 0;
+            
 
-            if (Input.GetKey(KeyCode.W))
+            if (Input.GetKey(KeyCode.W)|| Input.GetKey(KeyCode.UpArrow) || dir.y>0)
             {
                 isMoving = 1;
                 Debug.DrawRay(gameObject.transform.position, Vector3.up * 0.3f, Color.green);
@@ -90,7 +94,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
             }
 
-            if (Input.GetKey(KeyCode.S))
+            if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow) || dir.y < 0)
             {
                 isMoving = 1;
                 Debug.DrawRay(gameObject.transform.position, Vector3.down * 0.3f, Color.green);
@@ -105,7 +109,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                
             }
 
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || dir.x > 0)
             {
                 isMoving = 1;
                 Debug.DrawRay(gameObject.transform.position, Vector3.right * 0.3f, Color.green);
@@ -116,7 +120,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
                 }
             }
 
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || dir.x < 0)
             {
                 isMoving = -1;
                 Debug.DrawRay(gameObject.transform.position, Vector3.left * 0.3f, Color.green);
