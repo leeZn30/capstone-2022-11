@@ -94,7 +94,6 @@ public class MusicController : MusicWebRequest
     private List<SongSlot> currentSongSlotList;
     public GameObject scrollViewObject;
     private ScrollViewRect scrollViewRect;
-    CancellationTokenSource cts;
     private IEnumerator audioLoadIEnum;
 
     private float lastVolume;
@@ -213,7 +212,6 @@ public class MusicController : MusicWebRequest
 
             dropdown.onValueChanged.AddListener(OnChangeDropDown);
             
-            cts = new CancellationTokenSource();
         }
     }
     public void Stop()

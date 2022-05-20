@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using Photon.Realtime;
 using Photon.Pun;
-public class LobbySetting : MonoBehaviourPunCallbacks
+public class Setting : MonoBehaviourPunCallbacks
 {
     public GameObject panel;
 

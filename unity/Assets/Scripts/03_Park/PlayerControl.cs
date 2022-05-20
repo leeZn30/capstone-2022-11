@@ -9,7 +9,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 {
 
     // 플레이어 설정
-    float moveSpeed = 6f;
+    float moveSpeed = 5.4f;
     public bool isMoveAble = true;
     public bool isUIActable = true;
 

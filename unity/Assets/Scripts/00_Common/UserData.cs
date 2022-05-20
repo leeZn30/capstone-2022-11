@@ -78,20 +78,19 @@ public class UserData : Singleton<UserData>
         }
         DontDestroyOnLoad(gameObject);
     }
-    public void AddFollow(string id)
+    public void ChangeFollow(List<string> strs,string id, bool isDelete = false)
     {
-        user.follow.Add(id);
-        user.followNum++;
+        user.follow = strs;
+        user.followNum = user.follow.Count;
         OnChangeFollow?.Invoke();
-        OnAddFollow?.Invoke(id);
-    }
-    public void DelFollow(string id)
-    {
-        user.follow.Remove(id);
-        user.followNum--;
-        OnChangeFollow?.Invoke();
-        OnDeleteFollow?.Invoke(id);
-
+        if (isDelete == true)
+        {//삭제
+            OnDeleteFollow?.Invoke(id);
+        }
+        else
+        {//팔로우
+            OnAddFollow?.Invoke(id);
+        }
     }
     public void Clear()
     {

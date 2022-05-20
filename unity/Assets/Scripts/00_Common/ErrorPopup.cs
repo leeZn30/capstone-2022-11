@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
 using Photon.Pun;
-public class Popup : Singleton<Popup>
+public class ErrorPopup : Singleton<ErrorPopup>
 {
     enum type
     {
@@ -30,7 +30,7 @@ public class Popup : Singleton<Popup>
             {
 
                 Panel.SetActive(false);
-                FindObjectOfType<LobbySetting>().Logout();            
+                FindObjectOfType<Setting>().Logout();            
             }
         });
 

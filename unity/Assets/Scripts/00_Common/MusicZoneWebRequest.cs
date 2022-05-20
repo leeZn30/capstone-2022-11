@@ -68,7 +68,7 @@ public class MusicZoneWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400 || e.ResponseCode == 401)
             {
-                Popup.Instance.Open(0);
+                ErrorPopup.Instance.Open(0);
                 Debug.Log(e.ResponseCode + "[POST_DeleteListAsync] 토큰 만료");
 
             }
@@ -80,7 +80,7 @@ public class MusicZoneWebRequest : MonoBehaviour
             else if (e.ResponseCode == 0)
             {
                 Debug.Log("서버와 연결 끊어짐");
-                Popup.Instance.Open(1);
+                ErrorPopup.Instance.Open(1);
             }
             else
             {
@@ -150,7 +150,7 @@ public class MusicZoneWebRequest : MonoBehaviour
         {
             if (e.ResponseCode == 400 || e.ResponseCode == 401)
             {
-                Popup.Instance.Open(0);
+                ErrorPopup.Instance.Open(0);
                 Debug.Log(e.ResponseCode + "[POST_DeleteListAsync] 토큰 만료");
 
             }
@@ -162,7 +162,7 @@ public class MusicZoneWebRequest : MonoBehaviour
             else if (e.ResponseCode == 0)
             {
                 Debug.Log("서버와 연결 끊어짐");
-                Popup.Instance.Open(1);
+                ErrorPopup.Instance.Open(1);
             }
             else
             {

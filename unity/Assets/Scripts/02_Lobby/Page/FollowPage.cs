@@ -286,39 +286,42 @@ public class FollowPage : Page
     {
         //유저슬롯 팔로우 버튼 클릭시
         CallFollowApi(us.user.id, us.user.nickname);
-        UserData.Instance.AddFollow(us.user.id);
 
     }
     void FollowUser(string id, string nickname)
     {
         // 팔로우 버튼 클릭시
         CallFollowApi(id, nickname);
-        UserData.Instance.AddFollow(id);
 
     }
     void FollowCancelUser(UserSlot us)
     {
         //유저슬롯 팔로우 취소 버튼 클릭시
         CallFollowApi(us.user.id, us.user.nickname, true);
-        UserData.Instance.DelFollow(us.user.id);
     }
     void FollowCancelUser(string id, string nickname)
     {
         // 팔로우 취소 버튼 클릭시
         CallFollowApi(id, nickname, true);
-        UserData.Instance.DelFollow(id);
     }
     async void CallFollowApi(string userID, string userName, bool isDelete = false)
     {
-        await POST_FollowUserAsync(userID, userName, isDelete);
-        if (followBtns[1].image.color.r == 1.0f)
-        {   //팔로우 리스트가 보이고 있을 때
-            //팔로우 리스트 업데이트
-            GetUserListAsync(FollowSystemType.follow);
+        StringList sl= await POST_FollowUserAsync(userID, userName, isDelete);
+        if (sl != null)
+        {
+            //팔로우 리스트 변환
+            UserData.Instance.ChangeFollow(sl.stringList, userID,isDelete);
+
+            if (followBtns[1].image.color.r == 1.0f)
+            {   //팔로우 리스트가 보이고 있을 때
+                //팔로우 리스트 업데이트
+                GetUserListAsync(FollowSystemType.follow);
+            }
+            if (currentUserId[0] == UserData.Instance.user.id)
+                followText.text = UserData.Instance.user.followNum + "\n팔로우";
+
         }
 
-        if(currentUserId[0]==UserData.Instance.user.id)
-            followText.text = UserData.Instance.user.follow.Count + "\n팔로우";
 
     }
     void UserSlotClickHandler(UserSlot us)

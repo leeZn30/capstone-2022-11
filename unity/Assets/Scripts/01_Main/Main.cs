@@ -43,8 +43,8 @@ public class Main : MonoBehaviour
         wrong_obj.SetActive(false);
         wrongText = wrong_obj.GetComponentInChildren<TextMeshProUGUI>();
         join.OnClickJoinButton_ += PostJoin;
+
         timewaitter = waitTime(5);
-        
     }
     void PostJoin(User user)
     {
@@ -72,6 +72,10 @@ public class Main : MonoBehaviour
     IEnumerator waitTime(float value)
     {
         yield return new WaitForSeconds(value);
+        animator.SetBool("isLoading", false);
+
+        wrongText.text = "서버와 연결이 원활하지 않습니다.";
+        wrong_obj.SetActive(true);
         StopAllCoroutines();
     }
     IEnumerator Login_UnityWebRequestPOST()
@@ -140,7 +144,13 @@ public class Main : MonoBehaviour
                     wrongText.text = "서버와의 연결이 끊어졌습니다.";
                     wrong_obj.SetActive(true);
                 }
-                Debug.Log(request.error);
+                else
+                {
+                    wrongText.text = "서버와의 연결이 끊어졌습니다.";
+                    wrong_obj.SetActive(true);
+                    Debug.Log(request.error);
+                }
+
             }
         }
        
