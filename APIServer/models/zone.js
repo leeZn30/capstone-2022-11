@@ -3,24 +3,28 @@ const mongoose = require('mongoose');
 const ZoneSchema = new mongoose.Schema({
     musicTitle : {
         type: Array,
-        default: []
+        required: true
     },
     musicList : {
         type: Array,
-        default: []
+        required: true
     },
     musicTime : {
         type: Array,
-        default: []
+        required: true
     },
     totalTime : {
-        type: Number
+        type: Number,
+        required: true
     },
     startTime : {
-        type: Number
+        type: Number,
+        required: true
     },
     id : {
-        type: String
+        type: String,
+        required: true,
+        unique: true
     }
 });
 
