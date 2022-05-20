@@ -135,7 +135,7 @@ router.get('/personalGenre', auth, async(req, res)=>{
 
     User.findOne({id:userId}).then((user)=>{
         // console.log(user.preferredGenres);
-        Music.find({category:user.preferredGenres}).sort({playedNum: -1}).limit(20).then((music)=>{
+        Music.find({category:{$in:user.preferredGenres}}).sort({playedNum: -1}).limit(20).then((music)=>{
             res.status(200).json({personalGenre:music})
         })
     })
