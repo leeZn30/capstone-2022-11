@@ -306,7 +306,7 @@ public class PlayerControl : MonoBehaviourPunCallbacks
 
     public void rpcEmoji(int emojiNum)
     {
-        photonView.RPC("callEmoji", RpcTarget.AllBuffered, emojiNum);
+        photonView.RPC("callEmoji", RpcTarget.All, emojiNum);
     }
     //----------------------------------------------------------------
 

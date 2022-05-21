@@ -56,6 +56,7 @@ public class Chat : MonoBehaviourPunCallbacks
                 photonView.RPC("ReceiveMsg", RpcTarget.All, msg, channelName);
 
                 ifSendMsg.text = "";
+                ifSendMsg.ActivateInputField();
             }
         }
     }
