@@ -27,7 +27,7 @@ router.post('/', (req, res)=> {
 
         bcrypt.compare(password, user.password).then((isMatch)=> {
             if (!isMatch) return res.status(400).json({msg: "비밀번호가 일치하지 않습니다."})
-            jwt.sign({id:user.id, nickname: user.nickname}, JWT_SECRET, {expiresIn: "1 hours"}, (err, token)=>{
+            jwt.sign({id:user.id, nickname: user.nickname}, JWT_SECRET, {expiresIn: "24h"}, (err, token)=>{
                 if(err) throw err;
                 res.json({
                     token,
