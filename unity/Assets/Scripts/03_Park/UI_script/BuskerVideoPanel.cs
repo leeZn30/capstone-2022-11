@@ -126,7 +126,8 @@ public class BuskerVideoPanel : MonoBehaviour
     {
 
         objectTarget.GetComponent<RawImage>().texture = null;
-        textureWebCam.Stop();
+        if (textureWebCam != null)
+            textureWebCam.Stop();
         isMicOn = false;
         isCameraOn = false;
 

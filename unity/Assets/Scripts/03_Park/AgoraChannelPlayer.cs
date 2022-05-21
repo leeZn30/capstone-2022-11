@@ -18,7 +18,7 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
     // 필요 Object
     [SerializeField] private RawImage buskersmallVideo;
     [SerializeField] private RawImage audienceVideo;
-    [SerializeField] private InfoPanel infoPanel;
+    [SerializeField] private VolumeControl soundSlider;
 
     // User 정보
     [Header("User 정보")]
@@ -262,6 +262,9 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
             player.isMoveAble = true;
             player.isUIActable = true;
 
+            // soundSlider
+            soundSlider.mode = 1;
+
             player.OnVideoPanel(0);
             audienceVideo.gameObject.SetActive(true);
             player.OnInteractiveButton(2); // 버튼 활성화 아니었던 사람들
@@ -313,9 +316,10 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         {
             GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffVideoPanel();
             GameManager.instance.myPlayer.GetComponent<PlayerControl>().OffInteractiveButton(2); // 팔로우 버튼 삭제
-
         }
 
+        // soundSlider
+        soundSlider.mode = 0;
 
         buskerUid = 0;
         isFoundBusker = false;
