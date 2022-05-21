@@ -102,6 +102,8 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
                 nowChannel.ChannelOnLeaveChannel = OnAudienceLeaveChannel;
                 nowChannel.ChannelOnUserOffLine = OnBuskerOffline;
 
+                nowChannel.ChannelOnClientRoleChanged = OnAudienceRoleChanged;
+
                 nowChannel.JoinChannel(channelToken, null, myUID, new ChannelMediaOptions(true, true, false, false));
 
                 Debug.Log("Joining channel: " + channelName);
@@ -113,6 +115,11 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         }
         else
         {
+            if (role == "audience" && mode == 0)
+            {
+                nowChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+            }
+
             Debug.Log("nowChannel is not null!");
         }
 
@@ -325,6 +332,14 @@ public class AgoraChannelPlayer : Singleton<AgoraChannelPlayer>
         isFoundBusker = false;
         role = null;
         nowChannel = null;
+    }
+
+    private void OnAudienceRoleChanged(string channelName , CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+    {
+        if (oldRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE && newRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER)
+        {
+            leaveChannel();
+        }
     }
     #endregion
 
