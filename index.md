@@ -58,7 +58,7 @@ github: https://github.com/leeZn30/capstone-2022-11
 ```
 ```
 이연주 ⭐⭐⭐⭐1644
-역할: 미디어 서버 구축 및 배포
+역할: 서버 구축 및 배포
 github: https://github.com/yannJu/capstone-2022-11
 ```
 
