@@ -1,5 +1,4 @@
 ### 1. 프로젝트 소개
-![image](https://user-images.githubusercontent.com/28584277/170517700-ea355904-477a-45ba-b424-da01af20c0e5.png)
 ![KakaoTalk_20220521_201321474](https://user-images.githubusercontent.com/55120146/170523953-4b2b9bec-5b50-40f9-958a-bffb23838f67.png)
 
 
