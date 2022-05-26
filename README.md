@@ -28,9 +28,7 @@ Meta Busking is a platform that will lead the new online busking culture. Form y
 ---------------------------------------------------------------------------------------------------------------
 
 ### 3. 소개 영상
-
-https://www.youtube.com/watch?v=1KLL5PhhYOs&list=PL--pUG4naVyfb9n-smmZTJ0xrnYqgyg22
-
+<iframe width="1044" height="587" src="https://www.youtube.com/watch?v=1KLL5PhhYOs&list=PL--pUG4naVyfb9n-smmZTJ0xrnYqgyg22" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---------------------------------------------------------------------------------------------------------------
 
