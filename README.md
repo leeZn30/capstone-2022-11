@@ -64,7 +64,13 @@ github: https://github.com/yannJu/capstone-2022-11
 
 ### 5. 사용법
 
-소스코드제출시 설치법이나 사용법을 작성하세요.
+1. [다운로드 사이트](https://github.com/kookmin-sw/capstone-2022-11/blob/master/docs/MetaBusking%20Installer.exe)로 접속한다.
+2. download를 클릭한다.
+3. 다운로드 한 MetaBusking Installer.exe를 실행한다.
+4. 언어를 선택하고 확인 버튼을 클릭한다.
+5. 설치 버튼을 클릭한다.
+6. 설치 된 프로그램을 실행한다.
+7. 즐겁게 즐긴다.
 
 ---------------------------------------------------------------------------------------------------------------
 
