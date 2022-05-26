@@ -70,7 +70,11 @@ github: https://github.com/yannJu/capstone-2022-11
 4. 언어를 선택하고 확인 버튼을 클릭한다.
 5. 설치 버튼을 클릭한다.
 6. 설치 된 프로그램을 실행한다.
-7. 즐겁게 즐긴다. → [사용자 매뉴얼 및 배포 매뉴얼 ](https://github.com/kookmin-sw/capstone-2022-11/tree/master/docs/%EB%A7%A4%EB%89%B4%EC%96%BC)
+7. 즐겁게 즐긴다. 
+
+    → [사용자 매뉴얼](https://github.com/kookmin-sw/capstone-2022-11/blob/master/docs/%EA%B2%B0%EA%B3%BC%EB%AC%BC/%5BMetabusking%5D%20%EC%82%AC%EC%9A%A9%EC%9E%90%20%EB%A7%A4%EB%89%B4%EC%96%BC.pdf)
+
+    → [배포 매뉴얼](https://github.com/kookmin-sw/capstone-2022-11/blob/master/docs/%EA%B2%B0%EA%B3%BC%EB%AC%BC/%5BMetabusking%5D%20%EB%B0%B0%ED%8F%AC%20%EB%A7%A4%EB%89%B4%EC%96%BC.pdf)
 
 ---------------------------------------------------------------------------------------------------------------
 
