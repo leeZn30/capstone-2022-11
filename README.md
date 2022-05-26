@@ -28,7 +28,10 @@ Meta Busking is a platform that will lead the new online busking culture. Form y
 ---------------------------------------------------------------------------------------------------------------
 
 ### 3. 소개 영상
-<iframe width="1044" height="587" src="https://www.youtube.com/watch?v=1KLL5PhhYOs&list=PL--pUG4naVyfb9n-smmZTJ0xrnYqgyg22" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+[![sumnail](https://user-images.githubusercontent.com/28584277/170485776-e70e0bd0-ea68-4187-8115-ae7ec7789b7e.png)](https://www.youtube.com/watch?v=1KLL5PhhYOs&list=PL--pUG4naVyfb9n-smmZTJ0xrnYqgyg2)
+
+https://www.youtube.com/watch?v=1KLL5PhhYOs&list=PL--pUG4naVyfb9n-smmZTJ0xrnYqgyg2
 
 ---------------------------------------------------------------------------------------------------------------
 
@@ -74,6 +77,7 @@ github: https://github.com/yannJu/capstone-2022-11
  Figma - [Figma](https://www.figma.com/file/0LDKCL7QrKHWbvc2wObYl7/%ED%8E%98%EC%9D%B4%EC%A7%80%EB%B3%84-%EC%99%80%EC%9D%B4%EC%96%B4%ED%94%84%EB%A0%88%EC%9E%84(2%EC%B0%A8)?node-id=0%3A1)<br>
  Slack - Slack
  
- 
+
+
 #### Software Architecture
-![소프트웨어 아키텍처](https://user-images.githubusercontent.com/55120146/162163938-247107b2-5950-474f-87b5-ff95324ac976.png)
+ ![소프트웨어 아키텍처](https://user-images.githubusercontent.com/28584277/170485563-d451d90b-ceb7-416b-a352-6884ae5f0e79.png)
