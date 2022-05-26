@@ -56,7 +56,7 @@ github: https://github.com/leeZn30/capstone-2022-11
 ```
 ```
 이연주 ⭐⭐⭐⭐1644
-역할: 서버 구축 및 배포
+역할: 미디어 서버 구축 및 배포
 github: https://github.com/yannJu/capstone-2022-11
 ```
 
@@ -70,7 +70,7 @@ github: https://github.com/yannJu/capstone-2022-11
 4. 언어를 선택하고 확인 버튼을 클릭한다.
 5. 설치 버튼을 클릭한다.
 6. 설치 된 프로그램을 실행한다.
-7. 즐겁게 즐긴다.
+7. 즐겁게 즐긴다. → [사용자 매뉴얼 및 배포 매뉴얼 ](https://github.com/kookmin-sw/capstone-2022-11/tree/master/docs/%EB%A7%A4%EB%89%B4%EC%96%BC)
 
 ---------------------------------------------------------------------------------------------------------------
 
