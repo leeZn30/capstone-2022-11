@@ -1,5 +1,5 @@
 ### 1. 프로젝트 소개
-![image](https://github.com/kookmin-sw/capstone-2022-11/blob/master/unity/Assets/Resources/Image/logo.png).
+![image](https://user-images.githubusercontent.com/28584277/170517498-54d9370f-0b78-41c9-992b-6d004ea92c27.png)
 
 신개념 메타버스 버스킹 플랫폼 <메타 버스킹>은 오프라인 버스킹의 공간적/시간적 한계를 벗어나 온라인으로 버스킹 문화를 확장하고자 한다.
 메타 버스킹은 가상공간에서 나의 음악을 공유하고, 공연할 수 있으며 다양한 아티스트의 음악을 감상하고 소통할 수 있다. 또한 음원 플레이 리스트를 제공해서 온라인 음원 유통 플랫폼의 역할을 겸한다.
