@@ -43,7 +43,7 @@ github: https://github.com/yeringii/capstone-2022-11
 ```
 ```
 김서경 ⭐⭐⭐⭐1560
-역할: 클라이언트 개발, 디자인
+역할: 클라이언트 개발, 음원 스트리밍, 디자인
 github: https://github.com/Kimseogyoung/capstone-2022-11
 ```
 ```
@@ -53,12 +53,12 @@ github: https://github.com/20171609/capstone-2022-11
 ```
 ```
 이아연 ⭐⭐⭐⭐1643
-역할: 클라이언트 개발, 라이브 스트리밍
+역할: 클라이언트 개발, 화상 라이브 스트리밍
 github: https://github.com/leeZn30/capstone-2022-11
 ```
 ```
 이연주 ⭐⭐⭐⭐1644
-역할: 서버 구축 및 배포
+역할: 미디어 서버 구축 및 배포
 github: https://github.com/yannJu/capstone-2022-11
 ```
 
